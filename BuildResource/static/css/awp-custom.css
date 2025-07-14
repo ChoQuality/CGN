@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+.icon.is-side-custom-ai {
+    background-image: url("/static/assets/AI.svg");
+    background-size: 36px 37px;
+    background-repeat: no-repeat;
+}
+
+.icon.is-side-custom-erp {
+    background-image: url("/static/assets/ERP.svg");
+    background-size: 36px 37px;
+    background-repeat: no-repeat;
+}

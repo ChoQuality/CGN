@@ -1,0 +1,8 @@
+file:
+  messenger:
+    maxSize: 10MB
+    allowedExtensions: hwp,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,gif,bmp,png,txt,zip,pdf,tif,mp4,pdf
+  common:
+    rootPath: /awp
+    maxSize: 500MB
+    allowedExtensions: hwp,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,gif,bmp,png,txt,zip,pdf,tif,mp4,pdf,sql

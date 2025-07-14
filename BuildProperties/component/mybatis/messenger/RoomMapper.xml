@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="RoomMapper">
+
+    <!-- 채팅방명 조회 쿼리 -->
+    <sql id="roomName">
+        CASE WHEN IFNULL(room.room_name, '') != '' THEN room.room_name
+             ELSE CASE room.room_type WHEN 'SELF' THEN MAX(IF(#{userKey} = user.user_key, user.user_nm, ''))
+                                      WHEN 'PRIVATE' THEN MAX(IF(#{userKey} != user.user_key, user.user_nm, ''))
+                                      WHEN 'GROUP' THEN IF(COUNT(user.user_nm) > 3, CONCAT(GROUP_CONCAT(user.user_nm ORDER BY user.user_nm ASC LIMIT 3), ' 외 ', COUNT(user.user_nm)-3, '명'), GROUP_CONCAT(user.user_nm ORDER BY user.user_nm ASC))
+                                      WHEN 'ALARM' THEN '알림봇'
+                                      WHEN 'DOROTHY' THEN '도로시'
+                   END
+        END
+    </sql>
+
+    <!-- 채팅방 정보 저장(채팅방 생성) -->
+    <insert id="saveRoom" parameterType="com.gsbizple.wiz.messenger.dto.RoomDto">
+        /*RoomMapper.saveRoom*/
+        INSERT INTO messenger.tbl_room (room_id, room_type, room_name, description, room_thumbnail, create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES (#{roomId}, #{roomType}, #{roomName}, #{description}, #{roomThumbnail}, #{createUserKey}, NOW(), #{modifyUserKey}, NOW())
+    </insert>
+
+    <!-- roomId, userKey로 채팅방 정보조회 -->
+    <select id="getRoomInfo" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.RoomDto">
+        /*RoomMapper.getRoomInfo*/
+        SELECT room.room_id
+             , room.room_type
+             , <include refid="roomName"></include> AS room_name
+             , room.description
+             , room.active_yn
+             , room.room_thumbnail
+          FROM messenger.tbl_room room
+         INNER JOIN messenger.tbl_participant participant
+            ON room.room_id = participant.room_id
+           AND participant.present_yn = 'Y'
+           AND participant.deleted_yn = 'N'
+         INNER JOIN dwp.tbl_com_user user
+            ON participant.user_key = user.user_key
+         WHERE room.room_id = #{roomId}
+         GROUP BY room.room_id
+    </select>
+
+    <!-- 참여중인 채팅방 리스트 조회 -->
+    <select id="getRoomList"  parameterType="int" resultType="com.gsbizple.wiz.messenger.dto.RoomListDto">
+        /*RoomMapper.getRoomList*/
+        select a.room_id, a.room_type, a.room_name, a.description, b.read_message_id, c.fix_order
+        from MESSENGER.tbl_room a
+                 inner join MESSENGER.tbl_participant b
+                            on a.room_id = b.room_id
+                                and b.user_key = #{userKey}
+                                and b.present_yn = 'Y'
+                                AND b.deleted_yn = 'N'
+                                and a.room_type != 'ALARM'
+                 left join MESSENGER.tbl_room_fix c
+                           on a.room_id = c.room_id
+                               and b.user_key = c.user_key
+                               and b.room_id = c.room_id
+    </select>
+
+    <select id="getLastMessageByRoomId"  parameterType="java.util.List"  resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*RoomMapper.getLastMessageByRoomId*/
+        select room_id,
+               message_id,
+               message_type,
+               IF(deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', message_content) AS message_content,
+               create_dt,
+               send_user_key,
+               deleted_yn
+        from MESSENGER.tbl_message
+        where message_id in (select max(message_id)
+                             from MESSENGER.tbl_message
+                             where room_id in
+                                    <foreach collection="list" item="item" open="(" separator="," close=")">
+                                        #{item.roomId}
+                                    </foreach>
+                                and message_type not in ('DISCARD')
+                             group by room_id)
+    </select>
+
+    <select id="getUnreadMessageCount"  parameterType="map"  resultType="int">
+        /*RoomMapper.getUnreadMessageCount*/
+        select count(*) as unread_message_count
+        from messenger.tbl_message
+        where room_id = #{roomId}
+          and message_id > #{readMessageId}
+          and deleted_yn = 'N'
+    </select>
+
+<!--    <select id="getUnreadMessageCountList" parameterType="java.util.List"  resultType="com.gsbizple.wiz.messenger.dto.RoomListDto">-->
+<!--        /*RoomMapper.getUnreadMessageCountList*/-->
+<!--        WITH room_info AS (-->
+<!--        <foreach collection="list" item="item" separator=" UNION ALL ">-->
+<!--            SELECT #{item.roomId} AS room_id, #{item.readMessageId} AS read_message_id-->
+<!--        </foreach>-->
+<!--        )-->
+<!--        SELECT m.room_id, COUNT(*) AS unread_message_count-->
+<!--        FROM messenger.tbl_message m-->
+<!--        JOIN room_info r ON m.room_id = r.room_id-->
+<!--        WHERE m.message_id > r.read_message_id-->
+<!--        AND m.deleted_yn = 'N'-->
+<!--        GROUP BY m.room_id-->
+<!--    </select>-->
+
+    <select id="getRoomInfoOfAlarm" parameterType="int" resultType="com.gsbizple.wiz.messenger.dto.RoomListDto">
+        /*RoomMapper.getRoomInfoOfAlarm*/
+        SELECT room.room_id
+             , room.room_type
+             , room.room_name
+             , room.description
+             , message.message_id
+             , message.send_user_key
+             , room.read_message_id
+             , (SELECT COUNT(0)
+                FROM messenger.tbl_alarm_message
+                WHERE room_id = room.room_id AND message_id > room.read_message_id) AS unread_message_count
+             , CASE
+                   WHEN message.deleted_yn = 'Y' THEN CAST('사용자가 삭제한 메시지입니다.' AS char)
+                   ELSE message.message_text
+            END
+                                                                                    AS last_message_content
+             , message.create_dt                                                    AS last_message_dt
+             , roomFix.fix_order
+        FROM (SELECT room.room_id
+                   , room.room_type
+                   , '알림봇' AS room_name
+                   , room.description
+                   , participant.read_message_id
+                   , participant.enter_dt
+                   , participant.public_yn
+              FROM messenger.tbl_participant participant
+                       INNER JOIN messenger.tbl_room room
+                                  ON participant.room_id = room.room_id
+                                      AND room.active_yn = 'Y'
+                                      AND room.room_type = 'ALARM'
+                       INNER JOIN messenger.tbl_participant participant2
+                                  ON room.room_id = participant2.room_id
+                                      AND participant2.present_yn = 'Y'
+                                      AND participant2.deleted_yn = 'N'
+                       INNER JOIN dwp.tbl_com_user user
+                                  ON participant2.user_key = user.user_key
+              WHERE participant.present_yn = 'Y'
+                AND participant.deleted_yn = 'N'
+                AND participant.user_key = #{userKey}
+              GROUP BY room.room_id) room
+                 LEFT JOIN MESSENGER.tbl_room_fix roomFix
+                           ON room.room_id = roomFix.room_id
+                               AND roomFix.user_key = #{userKey}
+                 LEFT JOIN messenger.tbl_alarm_message message
+                           ON room.room_id = message.room_id
+                               AND message.message_id = (SELECT message_id
+                                                         FROM messenger.tbl_alarm_message
+                                                         WHERE room_id = room.room_id
+                                                         ORDER BY message_id DESC
+                                                         LIMIT 1)
+        ORDER BY IF(roomFix.fix_order IS NULL, 1, 0) ASC, roomFix.fix_order ASC, message.create_dt DESC
+    </select>
+
+    <!-- 참여중인 채팅방 keyword 검색 -->
+    <select id="getRoomListByKeyword" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.RoomListDto">
+        /*RoomMapper.getRoomListByKeyword*/
+        SELECT room.room_id
+             , room.room_type
+             , room.room_name
+             , room.description
+             , (SELECT COUNT(0) FROM messenger.tbl_message WHERE room_id = room.room_id AND message_id > room.read_message_id) AS unread_message_count
+             , message.message_type
+             , CASE WHEN room.room_type = 'GROUP' AND room.public_yn = 'N' AND room.enter_dt > message.create_dt THEN NULL
+                    ELSE IF(message.deleted_yn = 'Y', CAST('사용자가 삭제한 메시지입니다.' AS char), message.message_content)
+                END AS last_message_content
+             , CASE WHEN room.room_type = 'GROUP' AND room.public_yn = 'N' AND room.enter_dt > message.create_dt THEN NULL
+                    ELSE message.create_dt
+                END AS last_message_dt
+             , roomFix.fix_order
+          FROM (SELECT room.room_id
+                     , room.room_type
+                     , <include refid="roomName"></include> AS room_name
+                     , room.description
+                     , participant.read_message_id
+                     , participant.enter_dt
+                     , participant.public_yn
+                     , GROUP_CONCAT(user.user_nm ORDER BY user.user_nm ASC) AS user_list
+                  FROM messenger.tbl_participant participant
+                 INNER JOIN messenger.tbl_room room
+                    ON participant.room_id = room.room_id
+                   AND room.active_yn = 'Y'
+                 INNER JOIN messenger.tbl_participant participant2
+                    ON room.room_id = participant2.room_id
+                   AND participant2.present_yn = 'Y'
+                   AND participant2.deleted_yn = 'N'
+                 INNER JOIN dwp.tbl_com_user user
+                    ON participant2.user_key = user.user_key
+                 WHERE participant.present_yn = 'Y'
+                   AND participant.deleted_yn = 'N'
+                   AND participant.user_key = #{userKey}
+                 GROUP BY room.room_id
+               ) room
+          LEFT JOIN MESSENGER.tbl_room_fix roomFix
+            ON room.room_id = roomFix.room_id
+           AND roomFix.user_key = #{userKey}
+          LEFT JOIN messenger.tbl_message message
+            ON room.room_id = message.room_id
+           AND message.message_id = (SELECT message_id FROM messenger.tbl_message WHERE room_id = room.room_id ORDER BY message_id DESC LIMIT 1)
+         WHERE (LOWER(room.room_name) LIKE CONCAT('%' ,LOWER(#{keyword}) ,'%') OR LOWER(room.user_list) LIKE CONCAT('%' ,LOWER(#{keyword}) ,'%'))
+         ORDER BY IF(roomFix.fix_order IS NULL, 1, 0) ASC, roomFix.fix_order ASC, message.create_dt DESC
+    </select>
+
+    <!-- 채팅방 참여자로 중복된 채팅방이 있는지 확인 -->
+    <select id="getParticipatingRoom" parameterType="Map" resultType="com.gsbizple.wiz.messenger.dto.RoomDto">
+        /*RoomMapper.getParticipatingRoom*/
+        SELECT participant.room_id
+             , <include refid="roomName"></include> AS room_name
+             , room.description
+             , room.room_type
+             , room.active_yn
+             , GROUP_CONCAT(user.user_key ORDER BY user.user_key ASC)
+          FROM messenger.tbl_participant participant
+         INNER JOIN messenger.tbl_room room
+            ON participant.room_id = room.room_id
+           AND room.active_yn = 'Y'
+         INNER JOIN messenger.tbl_participant participant2
+            ON room.room_id = participant2.room_id
+           AND participant2.present_yn = 'Y'
+           AND participant2.deleted_yn = 'N'
+         INNER JOIN dwp.tbl_com_user user
+            ON participant2.user_key = user.user_key
+         WHERE participant.user_key = #{userKey}
+           AND participant.present_yn = 'Y'
+         GROUP BY participant.room_id
+        HAVING GROUP_CONCAT(user.user_key ORDER BY user.user_key ASC) = #{participantList}
+    </select>
+
+    <!-- 채팅방 정보 수정 -->
+    <update id="updateRoomInfo" parameterType="com.gsbizple.wiz.messenger.dto.RoomDto">
+        /*RoomMapper.updateRoomInfo*/
+        UPDATE messenger.tbl_room
+           SET modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+             <if test="roomName != null">
+             , room_name = #{roomName}
+             </if>
+             <if test="description != null">
+             , description = #{description}
+             </if>
+             <if test="activeYn != null and activeYn != ''">
+             , active_yn = #{activeYn}
+             </if>
+         WHERE room_id = #{roomId}
+    </update>
+
+    <!-- userId로 참여룸 리스트 조회 -->
+    <select id="getRoomListByUserKey" parameterType="int" resultType="com.gsbizple.wiz.messenger.dto.RoomDto">
+        /*RoomMapper.getRoomListByUserKey*/
+        SELECT room.room_id
+             , room.room_name
+             , room.room_type
+             , room.description
+             , room.active_yn
+             , participant.user_key
+          FROM messenger.tbl_participant participant
+         INNER JOIN messenger.tbl_room room
+            ON participant.room_id = room.room_id
+         WHERE participant.user_key = #{userKey}
+           AND participant.present_yn = 'Y'
+           AND participant.deleted_yn = 'N'
+           AND room.active_yn = 'Y'
+    </select>
+
+    <select id="getDefaultRoomList" parameterType="int" resultType="com.gsbizple.wiz.common.spec.messenger.RoomType">
+        /*RoomMapper.getDefaultRoomList*/
+        SELECT room_type
+        FROM messenger.tbl_participant participant
+                 INNER JOIN messenger.tbl_room room
+                            ON participant.room_id = room.room_id
+        WHERE participant.present_yn = 'Y'
+          AND participant.deleted_yn = 'N'
+          AND room.active_yn = 'Y'
+          AND participant.user_key = #{userKey}
+          and room.room_type in ('SELF', 'ALARM', 'DOROTHY')
+        group by room_type
+        having count(*) > 0
+    </select>
+
+    <select id="getSelfRoomId" parameterType="int" resultType="String">
+        /*RoomMapper.getSelfRoomId*/
+        SELECT room.room_id
+        FROM messenger.tbl_participant participant
+                 INNER JOIN messenger.tbl_room room
+                            ON participant.room_id = room.room_id
+        WHERE participant.present_yn = 'Y'
+          AND participant.deleted_yn = 'N'
+          AND room.active_yn = 'Y'
+          AND participant.user_key = #{userKey}
+          and room.room_type in ('SELF')
+
+    </select>
+
+    <select id="getRoomId" parameterType="String" resultType="String">
+        /*RoomMapper.getRoomId*/
+        SELECT room.room_id
+        FROM messenger.tbl_room room
+        WHERE room.room_id = #{roomId}
+    </select>
+
+</mapper>

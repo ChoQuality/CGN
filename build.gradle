@@ -1,0 +1,15 @@
+plugins {
+    id 'java'
+}
+repositories {
+    mavenCentral()
+}
+dependencies {}
+test {}
+
+tasks.named('build') {
+    dependsOn ':wizportal:bootJar'
+}
+tasks.named('jar') {
+    enabled = false
+}

@@ -1,0 +1,254 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="roomDto" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="room" type="com.gsbizple.wiz.messenger.dto.RoomDto"*/-->
+<!--/*@thymesVar id="alarmDtos" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="alarmDto" type="com.gsbizple.wiz.messenger.dto.AlarmDto"*/-->
+<div class="messenger__header">
+    <div class="messenger__headerTop">
+        <div class="messenger__title">
+
+            <th:block th:with="room=${roomDto.getData()}">
+                <div class="userThumb is-bot">
+                    <div class="userThumb__img">
+                    </div>
+                </div>
+
+                <div class="title">
+                    <h3 th:text="${room.getRoomName()}"></h3>
+                    <p class="description" > AWP 알림방 입니다. </p>
+                </div>
+            </th:block>
+        </div>
+
+        <div class="btnGroup gap-3">
+            <button type="button" data-function="sideBoxOpen" data-type="is-search" class="btn has-icon" id="searchBtn"><i class="icon is-32 is-chat-search"></i></button>
+        </div>
+    </div>
+
+    <ul data-tabs="tabs" class="tabs is-line">
+        <li id="contentsTab"><a href="#tab01" class="tab__link is-active">알림</a></li>
+    </ul>
+</div>
+
+<div class="messenger__body">
+    <div id="tab01" class="tab__contents" style="display: block;">
+        <div class="chatBox">
+            <div class="chatBox__scroll has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                <div class="chatBox__body"></div>
+            </div>
+                <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+
+            <div class="chatBox__footer">
+
+
+                <div class="chatBox__writeField">
+                    <textarea id="emojiTargeet" class="textarea" placeholder="" disabled></textarea>
+                </div>
+
+                <div class="chatBox__writeButton">
+                    <div class="btnGroup gap-10">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab02" class="tab__contents messenger__file" style="display: none;">
+        <!--
+        <div class="formGroup justify-content-end gap-5 mb-15">
+            <div class="formSelect" style="width: 10rem;">
+                <div class="select-1">
+                    <div class="tui-select-box">
+                        <div class="tui-select-box-input" tabindex="0"><p class="tui-select-box-placeholder">전체</p><span class="tui-select-box-icon">select</span></div>
+                        <ul class="tui-select-box-dropdown tui-select-box-hidden">
+                            <li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="all" data-index="0">전체</li>
+                            <li class="tui-select-box-item tui-select-box-selected" tabindex="-2" data-value="all" data-index="0">일부</li>
+                        </ul>
+                        <select class="tui-select-box-hidden" tabindex="-1">
+                            <option value="all" label="전체"></option>
+                            <option value="all2" label="일부"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSelect" style="width: 12rem;">
+                <div class="select-2"><div class="tui-select-box"><div class="tui-select-box-input" tabindex="0"><p class="tui-select-box-placeholder">전체</p><span class="tui-select-box-icon">select</span></div><ul class="tui-select-box-dropdown tui-select-box-hidden"><li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="all" data-index="0">전체</li></ul><select class="tui-select-box-hidden" tabindex="-1"><option value="all" label="전체"></option></select></div></div>
+            </div>
+
+            <div class="formSearch is-square" style="width: 25rem;">
+                <input type="text" class="form__search" placeholder="선택하세요">
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+        -->
+
+        <div class="tui-grid-container-wrap">
+            <div id="fileGrid" class="grid" style="width: 100%;"></div>
+            <div class="tui-pagination tui-grid-pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <div class="messenger__side is-search" data-function="sideBox" id="msgSearch">
+        <div class="sideBox">
+            <div class="sideBox__top">
+                <div class="title">
+                    <h3>대화방 채팅 검색</h3>
+                    <button type="button" data-function="sideBoxClose" class="btn has-icon">
+                        <i class="icon is-24 is-close-24"></i>
+                    </button>
+                </div>
+                <div class="sideBox__search">
+                    <div id="msgSearchForm" class="formSearch is-round is-background">
+                        <input type="text" class="form__search" placeholder="검색어를 입력하세요.">
+                        <button class="btn has-icon form__searchBtn">
+                            <i class="icon is-24 is-search-24"></i>
+                            <span class="visually-hidden">검색</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sideBox__body">
+                <div class="searchList">
+                    <span class="searchList__count">검색결과: <span></span>건</span>
+                    <div class="searchList__list">
+                        <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                            <div class="os-size-observer">
+                                <div class="os-size-observer-listener">
+                                </div>
+                            </div>
+                            <div id="msgSearchList" class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                <!--<a href="" class="chatList is-small">
+                                    <div class="userThumb is-state is-offline">
+                                        <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                                    </div>
+                                    <div class="chatList__body">
+                                        <div class="chatUser">
+
+                                        </div>
+                                        <div class="chat">
+                                            <p class="chat__text">
+                                                곧 <span class="word">점심</span>
+                                                시간이네요
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track">
+                                    <div class="os-scrollbar-handle"></div>
+                                </div>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-visible os-scrollbar-cornerless" style="--os-viewport-percent: 0.3852; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track">
+                                    <div class="os-scrollbar-handle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="messenger__side is-setting" data-function="sideBox" id="setting">
+        <div class="sideBox">
+            <div class="sideBox__top">
+                <div class="title">
+                    <h3>대화방 설정</h3>
+                    <button type="button" data-function="sideBoxClose" class="btn has-icon"><i class="icon is-24 is-close-24"></i></button>
+                </div>
+            </div>
+
+            <div class="sideBox__body">
+                <div class="settingList">
+                    <div class="settingList__item">
+                        <div class="label">대화방 이름</div>
+                        <div class="formGroup">
+                            <!-- 썸네일 이미지는 일단 제외
+                            <div class="userThumb is-small is-state is-online">
+                                <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                            </div>
+                            -->
+                            <input type="text" class="form__input" placeholder="대화방 이름을 입력하세요." id="roomName">
+                            <button type="button" class="btn has-btn" id="roomNameButton"><i class="icon is-24 is-edit-24"></i></button>
+                        </div>
+                    </div>
+                    <div class="settingList__item">
+                        <div class="label">설명</div>
+                        <div class="formGroup">
+                            <input type="text" class="form__input" placeholder="대화방 설명을 입력하세요." id="description">
+                            <button type="button" class="btn has-btn" id="descriptionButton"><i class="icon is-24 is-edit-24"></i></button>
+                        </div>
+                    </div>
+                    <div class="settingList__item gap-20">
+                        <div class="label">멤버 <span class="bold" id="participantCnt"></span>명</div>
+                        <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                            <div class="os-size-observer"><div class="os-size-observer-listener"></div></div>
+                            <div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                <ul class="memberList" id="participantList">
+                                    <li class="memberList__item">
+                                        <button type="button" class="btn memberList__add" id="addChatModalOpenBtn">
+                                            <i class="icon is-28 is-chat-addMember"></i>
+                                            <p>멤버 추가</p>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<th:block th:if="${not #lists.isEmpty(alarmDtos.getData())}">
+
+    <div id="tempServerAlarmData" style="display: none;">
+        <th:block th:each="alarmDto : ${alarmDtos.getData()}">
+            <div
+                    th:data-message-id="${alarmDto.getMessageId()}"
+                    th:data-room-id="${alarmDto.getRoomId()}"
+                    th:data-send-user-key="${alarmDto.getSendUserKey()}"
+                    th:data-send-system="${alarmDto.getSendSystem()}"
+                    th:data-receive-user-key="${alarmDto.getReceiveUserKey()}"
+                    th:data-alarm-type="${alarmDto.getAlarmType()}"
+                    th:data-template-code="${alarmDto.getTemplateCode()}"
+                    th:data-template-body="${alarmDto.getTemplateBody()}"
+                    th:data-template-message="${alarmDto.getTemplateMessage()}"
+                    th:data-message-text="${alarmDto.getMessageText()}"
+                    th:data-message-content="${alarmDto.getMessageContent()}"
+                    th:data-link-text="${alarmDto.getLinkText()}"
+                    th:data-link-url="${alarmDto.getLinkUrl()}"
+                    th:data-accept-url="${alarmDto.getAcceptUrl()}"
+                    th:data-reject-url="${alarmDto.getRejectUrl()}"
+                    th:data-confirm-yn="${alarmDto.getConfirmYn()}"
+                    th:data-confirm-dt="${alarmDto.getConfirmDt()}"
+                    th:data-deleted-yn="${alarmDto.getDeletedYn()}"
+                    th:data-create-user-key="${alarmDto.getCreateUserKey()}"
+                    th:data-create-dt="${alarmDto.getCreateDtFormatted()}"
+                    th:data-modify-user-key="${alarmDto.getModifyUserKey()}"
+                    th:data-modify-dt="${alarmDto.getModifyDtFormatted()}"
+                    th:data-keyword="${alarmDto.getKeyword()}"
+                    th:data-language="${alarmDto.getLanguage()}"
+                    th:data-company="${alarmDto.getCompany()}"
+                    th:data-create-dt-formatted="${alarmDto.getCreateDtFormatted()}"
+                    th:data-modify-dt-formatted="${alarmDto.getModifyDtFormatted()}"
+            >
+            </div>
+        </th:block>
+    </div>
+</th:block>

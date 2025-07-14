@@ -1,0 +1,57 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<div class="contents__title">
+    <h3 class="title">일반 보고서</h3>
+</div>
+
+<div class="listSearch">
+    <div class="listSearch__count">총 <span class="fw-500" id="total_count"></span>건</div>
+
+    <div class="d-flex align-items-center gap-10">
+        <div class="formGroup gap-10">
+            <span class="label">업무기간</span>
+            <div class="dateRange">
+                <div class="datePicker">
+                    <input type="text" id="search_start_input" class="datePicker__input" style="width: 14rem;" autocomplete="off"/>
+                    <div id="search_start_container" class="datePicker__calendar"></div>
+                </div>
+                <div class="datePicker__mid">~</div>
+                <div class="datePicker">
+                    <input type="text" id="search_end_input" class="datePicker__input" style="width: 14rem;" autocomplete="off"/>
+                    <div id="search_end_container" class="datePicker__calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="searchGroup">
+            <div class="formSelect" style="width: 11rem;">
+                <div class="listSearchSelect" id="searchType"></div>
+            </div>
+            <div class="formSearch is-square">
+                <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요.">
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span
+                        class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-20">
+    <div class="flex-center gap-15">
+        <button type="button" class="btn has-icon" id="prev_month"><i class="icon is-30 is-prev-30"></i></button>
+        <div class="fs-22 fw-500" id="year_month" style="cursor: pointer;">2025년 2월</div>
+        <button type="button" class="btn has-icon" id="next_month"><i class="icon is-30 is-next-30"></i></button>
+    </div>
+
+    <div class="btnGroup gap-5">
+        <button type="button" id="open_report_modal" class="btn is-primary" data-function="modal" data-target="#writeReportModal-1">보고서 작성하기
+        </button>
+    </div>
+</div>
+
+<div class="mt-20">
+    <div class="tui-grid-container-wrap">
+        <div id="grid" class="grid" style="width: 100%; position: relative; z-index: 0;"></div>
+    </div>
+</div>
+

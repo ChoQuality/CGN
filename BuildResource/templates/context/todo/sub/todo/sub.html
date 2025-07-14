@@ -1,0 +1,20 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<div class="subSidebar__title">
+    <i class="icon is-24 is-title-todo"></i>
+    <h2 class="title">MY TO DO</h2>
+</div>
+<nav>
+    <ul class="pageMenu">
+        <li><a href="/todo/main/dashboard" class="pageMenu__item">대시보드</a></li>
+        <li><a href="/todo/main" class="pageMenu__item is-active">MY TO DO</a></li>
+        <li><a href="/todo/main/weekly" class="pageMenu__item">업무 보고서</a>
+            <ul class="pageMenu is-twoDepth">
+                <li><a href="/todo/main/weekly" class="pageMenu__item">주간 보고서</a></li>
+                <li><a href="/todo/main/general" class="pageMenu__item">일반 보고서</a></li>
+            </ul>
+        </li>
+        <li><a href="/todo/main/praise" class="pageMenu__item">칭찬하기 현황</a></li>
+        <li><a href="/todo/main/praiseGlobal" class="pageMenu__item">칭찬하기 현황 (전사)</a></li>
+    </ul>
+</nav>

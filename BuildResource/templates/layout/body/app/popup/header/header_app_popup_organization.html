@@ -1,0 +1,46 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!-- [S] 멤버 추가 팝업 -->
+<div id="orgModal" class="modal is-xlarge">
+    <div class="modal__inner">
+        <div class="modal__header is-noneBorder pb-0">
+            <div class="top">
+                <h2 class="title">조직도</h2>
+                <button type="button" class="btn has-icon" data-function="modalClose"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+
+            <div class="modal__search">
+                <div class="searchGroup">
+                    <div class="formSelect">
+                        <div class="modalSelect-1" id="orgModal_SelectBox"></div>
+                    </div>
+                    <div class="formSearch is-square">
+                        <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요.">
+                        <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="modalTree">
+                <div class="modalTree__item" style="width: 34rem;">
+                    <div class="has-scrollbars is-small pl-40 pt-10 pr-0">
+                        <div id="modalTree01" class="tui-tree-wrap tree"></div>
+                    </div>
+                </div>
+                <div class="modalTree__item is-noneBorder prl-40 pt-10" style="width: calc(100% - 34rem);">
+                    <h3 class="fs-15 fw-500" id="selectedOrgInfo">글로벌마케팅팀 <span class="fw-400">18명</span></h3>
+
+                    <div class="mt-10">
+                        <div class="tui-grid-container-wrap">
+                            <div id="orgModalGrid" class="grid" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask" data-function="modalClose"></div>
+</div>
+

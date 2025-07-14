@@ -1,0 +1,101 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="userDto" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="user" type="com.gsbizple.wiz.common.dto.TblComUserDto"*/-->
+<!--/*@thymesVar id="loginInfoDto" type="com.gsbizple.wiz.common.dto.LoginInfoDto"*/-->
+
+<div class="d-flex align-items-center justify-content-between">
+    <h4 class="title">기본정보</h4>
+</div>
+
+<th:block th:with="user=${userDto.getData()}">
+    <table class="formTable mt-20">
+        <colgroup>
+            <col style="width: 14rem;">
+            <col style="width: calc(50% - 14rem);">
+            <col style="width: 14rem;">
+            <col style="width: calc(50% - 14rem);">
+        </colgroup>
+        <tbody>
+            <tr>
+                <th rowspan="2"><div class="label"><span>사진</span></div></th>
+                <td rowspan="2">
+                    <input type="file" id="imageInput" accept=".jpg, .png, .gif" style="display: none;">
+                    <div class="formTable__item">
+                        <div class="d-flex align-items-center gap-15">
+                            <div class="userThumb is-xxlarge" style="cursor: pointer;">
+                                <div class="userThumb__img">
+                                    <img id="thumbnail" th:src="${user.getThumbImgPath()}" alt="">
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="icon is-24 is-system-info"></i>
+                                <span class="fs-13">최대 600Kb (JPG, PNG, GIF)</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <th><div class="label is-required"><span>이름</span></div></th>
+                <td><div class="formTable__item" th:text="${user.getUserNm()}"></div></td>
+            </tr>
+            <tr>
+                <th><div class="label is-required"><span>아이디</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getUserId()}"></div>
+                </td>
+            </tr>
+            <tr>
+                <th><div class="label"><span>사번</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getEmpNo()}"></div>
+                </td>
+                <th><div class="label"><span>소속부서</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getOrgNm()}"></div>
+                </td>
+            </tr>
+            <tr>
+                <th><div class="label"><span>고용형태</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getEmploymentTypeNm()}">-</div>
+                </td>
+                <th><div class="label"><span>입사일</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getHireDate()}"></div>
+                </td>
+            </tr>
+            <tr>
+                <th><div class="label"><span>직위</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getJobPosition()}"></div>
+                </td>
+                <th><div class="label"><span>직책</span></div></th>
+                <td>
+                    <div class="formTable__item" th:text="${user.getJobResponsibility()}"></div>
+                </td>
+            </tr>
+            <tr>
+                <th><div class="label"><span>휴대전화 번호</span></div></th>
+                <td>
+                    <div class="formTable__item">
+                        <div class="formControl">
+                            <input type="text" class="form__input" th:value="${user.getMobilePhoneNo()}" id="mobileNo"/>
+                        </div>
+                    </div>
+                </td>
+                <th><div class="label"><span>회사전화 번호</span></div></th>
+                <td>
+                    <div class="formTable__item">
+                        <div class="formControl">
+                            <input type="text" class="form__input" th:value="${user.getOfficePhoneNo()}" id="officeNo" />
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</th:block>
+<div class="btnGroup justify-content-end gap-10 mt-20">
+    <button type="button" class="btn is-secondary" id="cancel">취소</button>
+    <button type="button" class="btn is-primary" id="save">저장</button>
+</div>

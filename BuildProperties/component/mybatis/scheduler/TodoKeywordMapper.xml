@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TodoKeywordMapper">
+
+    <!-- 키워드 작업 시작 내역 저장 -->
+    <insert id="setStartKeywordJob" parameterType="com.gsbizple.wiz.scheduler.dto.keyword.DwpKeywordJobDto" useGeneratedKeys="true" keyProperty="keywordJobId">
+        /* TodoKeywordMapper.setStartKeywordJob */
+        INSERT INTO dwp.tbl_dwp_keyword_job
+            ( CORPORATE_ID, ORG_CD, ORG_TYPE, BASE_YYYY_MM_WW, JOB_EXEC_STATUS, WORK_FROM_DT, WORK_TO_DT,
+             JOB_START_DT, JOB_END_DT, USE_FLAG, CREATE_DT, CREATE_USER_KEY)
+        VALUES (
+             #{corporateId}, #{orgCd}, #{orgType}, #{baseYyyyMmWeek}, 'S', #{workFromDt}, #{workToDt},
+             current_timestamp(), NULL, 1, current_timestamp(), #{createUserKey}  )
+    </insert>
+
+    <!-- 키워드 추출 작업 결과 내역 저장 -->
+    <insert id="insertDwpKeywordResult" parameterType="java.util.List" >
+        /*TodoKeywordMapper.insertDwpKeywordResult*/
+        INSERT INTO dwp.tbl_dwp_keyword_result (
+            KEYWORD_JOB_ID, SOURCE_TYPE, KEYWORD_GROUP, KEYWORD_NM, KEYWORD_CNT, USE_FLAG, CREATE_DT
+        ) VALUES
+        <foreach collection="list" item="keyword" separator=",">
+            (#{keyword.keywordJobId}, #{keyword.sourceType}, #{keyword.keywordGroup}, #{keyword.keywordNm}, #{keyword.keywordCnt}, 1, NOW()
+            )
+        </foreach>
+    </insert>
+
+    <!-- 키워드 작업 시작 내역 결과 저장 -->
+    <update id="updateEndKeywordJob" parameterType="com.gsbizple.wiz.scheduler.dto.keyword.DwpKeywordJobDto">
+        /*TodoKeywordMapper.updateEndKeywordJob*/
+        UPDATE dwp.tbl_dwp_keyword_job
+        SET job_exec_status = #{jobExecStatus}, job_end_dt = NOW()
+         WHERE KEYWORD_JOB_ID = #{keywordJobId}
+    </update>
+
+    <sql id="selectTodoItems">
+        SELECT tdt.TODO_ID, tdt.REQ_DT, DATE_FORMAT(tdt.JOB_START_DT, '%Y.%m.%d') JOB_START_DT, DATE_FORMAT(tdt.JOB_END_DT, '%Y.%m.%d') JOB_END_DT
+            , tdt.TODO_STATUS, tdt.TODO_REQ_CONTS
+            , tco2.ORG_CD
+            , tdt.COMPLETE_RATIO, tdt.TODO_FLAG, tdt.REF_TODO_ID, tdt.CREATE_USER_KEY
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("memoConts", t0.MEMO_CONTS, "createDt", DATE_FORMAT(t0.CREATE_DT, '%Y.%m.%d') ) ), ']')
+                from dwp.tbl_dwp_todo_memo t0
+                where t0.TODO_ID = tdt.TODO_ID and t0.USE_FLAG= 1  ORDER BY t0.CREATE_DT DESC ) memoListStr
+    </sql>
+
+    <!-- 키워드 추출용 AwpTODO 목록  -->
+    <select id="selectKeywordTodoList" parameterType="com.gsbizple.wiz.scheduler.dto.keyword.AiKeywordTodoDto" resultType="com.gsbizple.wiz.scheduler.dto.keyword.AiKeywordTodoDto">
+        /** TodoKeywordMapper.selectKeywordTodoList */
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt
+            inner join dwp.tbl_dwp_todo_rep tdtr on tdt.TODO_ID = tdtr.TODO_ID
+            inner join dwp.tbl_com_user tcu2 on tdtr.REP_USER_KEY = tcu2.USER_KEY
+            inner join dwp.tbl_com_org tco2 on tcu2.ORG_KEY = tco2.ORG_KEY
+        WHERE 1 = 1
+          AND tdt.JOB_START_DT <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d')
+          AND tdt.TODO_STATUS IN ('S', 'P', 'F')
+          AND TDT.DELETE_YN = 0
+<!--          AND tco2.ORG_CD =  ${orgCd}-->
+        ORDER BY tco2.ORG_CD, tdt.JOB_START_DT, tdt.JOB_END_DT
+    </select>
+
+    <!-- 미사용 처리.  -->
+    <update id="updateDwpKeywordNotUse" parameterType="com.gsbizple.wiz.scheduler.dto.keyword.DwpKeywordJobDto">
+        /*TodoKeywordMapper.updateDwpKeywordNotUse*/
+        update dwp.tbl_dwp_keyword dk join dwp.tbl_dwp_keyword_job dkj
+        on dkj.KEYWORD_JOB_ID = ${keywordJobId} and dkj.CORPORATE_ID = dk.CORPORATE_ID and dkj.BASE_YYYY_MM_WW = dk.BASE_YYYY_MM
+        set dk.USE_FLAG = 0, dk.DELETE_DT = NOW()
+        where dkj.KEYWORD_JOB_ID <![CDATA[ <> ]]> IFNULL(dk.KEYWORD_JOB_ID, -1)
+    </update>
+
+    <!-- Ai Result 에서 복사 해오기.  -->
+    <update id="insertDwpKeywordFromJOB" parameterType="com.gsbizple.wiz.scheduler.dto.keyword.DwpKeywordJobDto">
+        /*TodoKeywordMapper.updateDwpKeywordNotUse*/
+        insert into dwp.tbl_dwp_keyword
+        (BASE_YYYY_MM , CORPORATE_ID, ORG_CD, KEYWORD_NM, KEYWORD_CNT, KEYWORD_JOB_ID)
+        select dkj.BASE_YYYY_MM_WW, dkj.CORPORATE_ID, dkr.KEYWORD_GROUP as ORG_CD, dkr.KEYWORD_NM, dkr.KEYWORD_CNT, dkj.KEYWORD_JOB_ID
+        from dwp.tbl_dwp_keyword_job dkj inner join dwp.tbl_dwp_keyword_result dkr on dkj.KEYWORD_JOB_ID = dkr.KEYWORD_JOB_ID
+        where dkj.KEYWORD_JOB_ID = ${keywordJobId}
+        ON DUPLICATE KEY UPDATE
+        KEYWORD_CNT = VALUES(KEYWORD_CNT), UPDATE_DT = NOW(), USE_FLAG = 1, KEYWORD_JOB_ID = VALUES(KEYWORD_JOB_ID)
+    </update>
+
+
+</mapper>

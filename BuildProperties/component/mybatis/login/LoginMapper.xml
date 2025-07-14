@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LoginMapper">
+
+    <select id="getSysCorp" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+            tcc.corporate_id as corporate_id
+        FROM
+            dwp.tbl_com_corporate_info tcc
+        WHERE
+            tcc.corporate_cd = #{corporate_cd}
+    </select>
+
+
+    <select id="attemptLogin" parameterType="java.util.Map" resultType="com.gsbizple.wiz.common.dto.LoginInfoDto">
+        SELECT
+             dwporg.org_key as orgKey
+             ,dwporg.org_cd as orgCode
+             ,dwporg.org_nm as orgName
+             ,dwporg.org_path as orgPath
+             ,dwporg.upper_org_cd as orgHigh
+
+             ,dwpcompany.corporate_id as corpId
+             ,dwpcompany.corporate_cd as corpCode
+             ,dwpcompany.corporate_nm as corpName
+
+             ,dwpuser.user_key as userKey
+             ,dwpuser.user_password as userPw
+             ,dwpuser.user_nm as userName
+             ,dwpuser.user_id as userId
+             ,dwpuser.emp_no as userEmpNo
+             ,dwpuser.auth_cd as userAuthCode
+             ,dwpuser.email as userEmail
+             ,dwpuser.thumb_img_path as userImageUrl
+        FROM
+            dwp.tbl_com_org dwporg
+            JOIN dwp.tbl_com_user dwpuser ON dwporg.org_key = dwpuser.org_key
+            JOIN dwp.tbl_com_corporate_info dwpcompany ON dwporg.corporate_id = dwpcompany.corporate_id
+        WHERE
+            dwporg.corporate_id = #{corporate_id}
+            AND dwpuser.user_id = #{user_id}
+            AND dwpuser.use_flag = #{use_flag}
+    </select>
+
+    <select id="attemptMenu" parameterType="java.lang.Integer" resultType="com.gsbizple.wiz.common.dto.LoginMenuInfoDto">
+        select
+            menu_id as menuId
+            ,menu_nm as menuName
+            ,menu_path as menuPath
+            ,menu_lvl as menuLvl
+            ,menu_ico_path as menuIcoPath
+            ,menu_type as menuType
+            ,menu_disp_yn as isMenuDisplay
+            ,execute_path as menuExecutePath
+            ,sort_order as menuSortOrder
+            ,menu_auth_flag as menuAuthFlag
+            ,t_menu.srvc_cd as menuServiceCode
+        from dwp.tbl_com_menu t_menu
+                 inner join dwp.tbl_com_corp_srvc tccs on t_menu.SRVC_CD = tccs.SRVC_CD and tccs.use_flag = 1
+        where t_menu.MENU_AUTH_FLAG = 0
+           or ( t_menu.MENU_AUTH_FLAG = 1
+            and MENU_ID in
+                ( select distinct tcma.MENU_ID
+                  from dwp.tbl_com_user tcu left join dwp.tbl_com_job_resp tcjr on tcu.RESPONSIBILITY_CD = tcjr.RESPONSIBILITY_CD
+                                            inner join dwp.tbl_com_menu_auth tcma
+                                                       on ( tcu.USER_KEY = tcma.USER_KEY or tcu.ORG_KEY = tcma.ORG_KEY or tcjr.RESPONSIBILITY_KEY = tcma.RESPONSIBILITY_KEY ) and tcma.USE_FLAG = 1
+                  where tcu.USER_KEY = #{value} )
+            )
+    </select>
+
+
+</mapper>

@@ -1,0 +1,87 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group" th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="card pb-20">
+        <div class="portlet__top">
+            <h2 class="title" th:text="${portlet.portletNm}">전자결재</h2>
+
+            <div class="btnGroup">
+                <button type="button" class="btn has-icon" onclick=""
+                        th:attr="onClick='redirectToWorksWithParam(\'' + ${portlet.getLinkUrl()} + '\', \'approval\')'"
+                >
+                    <i class="icon is-30 is-link-30"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card__body">
+            <div id="tab01" class="tab__contents is-active" style="height: 25.8rem;">
+                <ul class="detailList has-line">
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup">
+                                <div class="badge is-approval">품의서</div>
+                                <div class="badge is-ing">진행중</div>
+                            </div>
+                            <p>GS칼텍스 그룹웨어 고도화 프로젝트 품의입니다.GS칼텍스 그룹웨어 고도화 프로젝트 품의입니다.</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup">
+                                <div class="badge is-approval">휴가기안서</div>
+                                <div class="badge is-ing">진행중</div>
+                            </div>
+                            <p>크리스마스가 다가와서 발리를 갑니다. 허가부탁드립니다.</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup">
+                                <div class="badge is-approval">휴가기안서</div>
+                                <div class="badge is-finish">완료</div>
+                            </div>
+                            <p>연말휴가 신청서입니다.</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="tab02" class="tab__contents" style="height: 25.8rem;">
+                <ul class="detailList has-line">
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div>
+                                <div class="badge is-approval">휴가기안서</div>
+                                <div class="badge is-ing">진행중</div>
+                            </div>
+                            <p>크리스마스가 다가와서 발리를 갑니다. 허가부탁드립니다.</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div>
+                                <div class="badge is-approval">휴가기안서</div>
+                                <div class="badge is-finish">완료</div>
+                            </div>
+                            <p>연말휴가 신청서입니다.</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-28">
+                <ul class="tabs is-round" data-tabs="tabs">
+                    <li><a href="javascript:void(0);" class="tab__link is-active">기안함</a></li>
+                    <li><a href="javascript:void(0);" class="tab__link">결재함</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

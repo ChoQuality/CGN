@@ -1,0 +1,4 @@
+redis:
+  host: 13.209.126.112
+  port: 6379
+  password: "messenger4321!"

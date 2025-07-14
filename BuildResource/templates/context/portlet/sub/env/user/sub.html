@@ -1,0 +1,21 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<div class="subSidebar">
+    <div class="subSidebar__title">
+        <i class="icon is-24 is-title-setting"></i>
+        <h2 class="title">환경설정</h2>
+    </div>
+
+    <nav>
+        <ul class="pageMenu">
+            <li>
+                <a href="/portlet/env/user" class="pageMenu__item is-active">나의 정보</a>
+            </li>
+            <li>
+                <a id="isEnvMainButton" href="javascript:void(0)" class="pageMenu__item">메인관리</a>
+            </li>
+        </ul>
+    </nav>
+</div>

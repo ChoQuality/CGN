@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="RoomFixMapper">
+
+    <!-- 채팅방 핀고정 여부 확인 -->
+    <select id="getRoomFixInfo" resultType="com.gsbizple.wiz.messenger.dto.RoomFixDto" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.getRoomFixInfo*/
+        SELECT room_id
+             , user_key
+             , fix_order
+          FROM messenger.tbl_room_fix
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </select>
+
+    <!-- 유저의 채팅방 핀고정 순번 최대값을 조회 -->
+    <select id="getLastRoomFixInfo" resultType="com.gsbizple.wiz.messenger.dto.RoomFixDto" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.getLastRoomFixInfo*/
+        SELECT room_id
+             , user_key
+             , fix_order
+          FROM messenger.tbl_room_fix
+         WHERE user_key = #{userKey}
+         ORDER BY fix_order DESC
+         LIMIT 1
+    </select>
+
+    <!-- 채팅방 핀고정 정보 저장 -->
+    <insert id="saveRoomFixOrder" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.saveRoomFixOrder*/
+        INSERT INTO messenger.tbl_room_fix (room_id, user_key, fix_order, create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES (#{roomId}, #{userKey}, #{fixOrder}, #{createUserKey}, NOW(), #{modifyUserKey}, NOW())
+    </insert>
+
+    <!--채팅방 핀고정 정보 삭제 -->
+    <delete id="deleteRoomFixOrder" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.deleteRoomFixOrder*/
+        DELETE
+          FROM messenger.tbl_room_fix
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </delete>
+
+    <!-- 삭제한 채팅방 핀 고정 순번보다 큰 핀고정 순번을 업데이트 처리-->
+    <update id="updateRoomFixOrderSign" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.updateRoomFixOrderSign*/
+        UPDATE messenger.tbl_room_fix
+           SET fix_order = fix_order ${sign} 1
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE user_key = #{userKey}
+           AND fix_order > #{fixOrder}
+    </update>
+
+    <!-- 채팅방 핀고정 정보 업데이트 -->
+    <update id="updateRoomFixOrder" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.updateRoomFixOrder*/
+        UPDATE messenger.tbl_room_fix
+           SET fix_order = #{fixOrder}
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </update>
+
+    <!-- 나머지 순번을 업데이트 -->
+    <update id="updateOtherRoomfixOrder" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.updateOtherRoomfixOrder*/
+        UPDATE messenger.tbl_room_fix tb1
+         INNER JOIN (SELECT @fOrder := 1) tb2
+           SET tb1.fix_order = (@fOrder := @fOrder + 1)
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE tb1.user_key = #{userKey}
+           AND tb1.room_id != #{roomId}
+         ORDER BY fix_order ASC
+    </update>
+
+    <!-- 핀고정 순번 업데이트 대상 리스트 조회 -->
+    <select id="getOneSpaceList" parameterType="com.gsbizple.wiz.messenger.dto.RoomFixDto" resultType="com.gsbizple.wiz.messenger.dto.RoomFixDto">
+        /*RoomFixMapper.getOneSpaceList*/
+        SELECT room_id
+             , user_key
+             , IF(room_id = #{roomId}, #{fixOrder} ${sign} 1, #{fixOrder}) AS fixOrder
+          FROM messenger.tbl_room_fix
+         WHERE user_key = #{userKey}
+           AND (room_id = #{roomId} OR fix_order = (#{fixOrder} ${sign} 1))
+    </select>
+
+</mapper>

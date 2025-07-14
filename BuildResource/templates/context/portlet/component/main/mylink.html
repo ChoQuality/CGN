@@ -1,0 +1,40 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group gap-15"  th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="myLink">
+        <div class="myLink__top">
+            <div class="portlet__top">
+                <h2 class="title"  th:text="${portlet.portletNm}">Mylink</h2>
+
+                <div class="btnGroup">
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-setting-white-30"></i></button>
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-link-white-30"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="myLink__body">
+            <div class="profile">
+                <div class="userThumb is-max">
+                    <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                </div>
+                <div class="profileText">
+                    <p class="name">정우성 이사/본부장</p>
+                    <div class="profile__desc">
+                        <p><span>IT2024</span><span>전략 기획팀</span></p>
+                        <p>abcdefghi123@gsitm.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="linkList">
+        <li><a href="javascript:void(0);" class="linkList__item">GS비즈풀 eHR 시스템 <i class="icon is-24 is-go-round-24"></i></a></li>
+        <li><a href="javascript:void(0);" class="linkList__item">USTRA ITSM <i class="icon is-24 is-go-round-24"></i></a></li>
+        <li><a href="javascript:void(0);" class="linkList__item">GS비즈플 eHR 시스템 <i class="icon is-24 is-go-round-24"></i></a></li>
+        <li><a href="javascript:void(0);" class="linkList__item">사업관리 시스템 (PMS) <i class="icon is-24 is-go-round-24"></i></a></li>
+    </ul>
+</div>

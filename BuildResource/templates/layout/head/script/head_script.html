@@ -1,0 +1,129 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<script defer src="/assets/js/base.js?v=20250701"></script>
+<script defer src="/assets/js/uid.js?v=20250701"></script>
+
+<script defer type="module" src="/static/js/external/emojiButton/emojiButton.js?v=20250701">
+    import Emoji from "/static/js/external/emojiButton/emojiButton.js?v=20250701";
+</script>
+
+<script defer src="/static/js/awp/AWP.js?v=20250701"></script>
+<!--  Common script   -->
+<script defer src="/static/js/awp/main/common/dto/LoginInfo.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/common/func/CommonFunc.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/common/view/AWPHeaderOrganization.js?v=20250701"></script>
+
+<!--  Messenger script   -->
+<script defer src="/static/js/awp/main/messenger/AWPMessenger.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/company/MsgCompanyUser.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/company/MsgCompanyOrg.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/company/MsgCompanyOrgUser.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/constant/MsgEnum.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/dto/MsgAttachment.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgMessage.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgMessageResponse.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgRoom.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgRoomList.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgUpperMessage.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgPaginationData.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/dto/MsgAlarm.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/func/MsgFunc.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/func/api/MsgApi.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/message/AWPMessage.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/message/AWPMessageAlarm.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/message/AWPMessageDetail.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/message/AWPMessengerPub.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/message/AWPMessengerSub.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/toast/tui-code.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/toast/tui-pagination.js?v=20250701"></script>
+<!--<script type="text/javascript" src="https://uicdn.toast.com/tui.code-snippet/v1.5.0/tui-code-snippet.js?v=20250701"></script>
+<script type="text/javascript" src="https://uicdn.toast.com/tui.pagination/v3.3.0/tui-pagination.js?v=20250701"></script>-->
+
+<script defer src="/static/js/awp/main/messenger/toast/tui-tree.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/toast/MsgToastFunc.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/view/alarm/AWPMessengerAlarmView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/alarm/AWPMessengerAlarmViewEvent.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/default/AWPMessengerDefaultView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/default/AWPMessengerDefaultViewEvent.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/dorothy/AWPMessengerDorothyView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/dorothy/AWPMessengerDorothyViewEvent.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/self/AWPMessengerSelfView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/self/AWPMessengerSelfViewEvent.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/view/AWPMessageViewComponent.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/messenger/view/AWPMessengerView.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/messenger/websocket/AWPWebSocket.js?v=20250701"></script>
+<!--  Todo script   -->
+<script defer src="/static/js/awp/main/todo/AWPTodo.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/todo/constant/TodoEnum.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/todo/func/TodoFunc.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/todo/view/AWPTodoView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/dashboard/AWPDashBoardView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/praise/global/AWPPraiseGlobalView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/praise/normal/AWPPraiseNormalView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/report/general/AWPReportGeneralView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/report/weekly/AWPReportWeeklyView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/todo/view/todo/AWPSituationView.js?v=20250701"></script>
+
+<!--  portlet script   -->
+<script defer src="/static/js/awp/main/portlet/AWPPortlet.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/constant/PortletEnum.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/constant/PortletComponentEnum.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/func/PortletFunc.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/portlet/view/AWPPortletView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/view/main/AWPPortletMainView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/view/user/AWPPortletUserView.js?v=20250701"></script>
+
+<script defer src="/static/js/awp/main/portlet/view/component/AWPPortletTodoView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/view/component/AWPPortletMylinkView.js?v=20250701"></script>
+<script defer src="/static/js/awp/main/portlet/view/component/AWPPortletBoardView.js?v=20250701"></script>
+
+<!--  common script   -->
+<script defer src="/static/js/awp/main/common/alertMessage.js?v=20250701"></script>
+<script defer src="/static/js/common/api/CommonApi.js?v=20250710"></script>
+<script defer src="/static/js/common/api/AiApi.js?v=20250701"></script>
+<!--<script defer src="/static/js/common/api/CommonApi.js?v=20250701"></script>-->
+
+
+<script defer src="/static/js/external/socket/sockjs.min.js?v=20250701"></script>
+<script defer src="/static/js/external/socket/stomp.min.js?v=20250701"></script>
+<script defer src="/static/js/external/vanillaEmojiPicker/vanillaEmojiPicker.js?v=20250701"></script>
+
+<!--<script defer src="/static/js/login/login.js?v=20250701"></script>-->
+
+<script defer src="/static/js/messenger/api/MsgAlarmApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgAttachmentApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/msgCrypto.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgGroupApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgMessageApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgParticipantApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgRedisApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgRedisChannelApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgRoomApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgRoomFixApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgUserApi.js?v=20250701"></script>
+<script defer src="/static/js/messenger/api/MsgEmojiApi.js?v=20250701"></script>
+<!--<script defer src="/static/js/messenger/api/MsgWebSocket.js?v=20250701"></script>-->
+
+<script defer src="/static/js/todo/api/TodoPraiseApi.js?v=20250701"></script>
+<script defer src="/static/js/todo/api/TodoSituationApi.js?v=20250701"></script>
+<script defer src="/static/js/todo/api/TodoDashboardApi.js?v=20250701"></script>
+
+<!--to do api -->
+<script defer src="/static/js/todo/api/GeneralReport.js?v=20250701"></script>
+<script defer src="/static/js/todo/api/TodoWeeklyReportApi.js?v=20250701"></script>
+
+<!-- portlet api -->
+<script defer src="/static/js/portlet/api/PortletApi.js?v=20250701"></script>

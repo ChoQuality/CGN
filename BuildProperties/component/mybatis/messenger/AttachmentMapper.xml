@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AttachmentMapper">
+
+    <!--roomId로 채팅방의 파일리스트 조회 -->
+    <select id="getAttachmentHistory" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.AttachmentDto">
+        /*AttachmentMapper.getAttachmentHistory*/
+        SELECT tb1.attachment_id
+             , tb1.origin_file_name
+             , tb1.file_extension
+             , DATE_FORMAT(tb1.create_dt, '%Y-%m-%d %H:%i:%s') AS create_dt
+          FROM messenger.tbl_attachment tb1
+         INNER JOIN messenger.tbl_message tb2
+            ON tb1.message_id = tb2.message_id
+           AND tb1.room_id = tb2.room_id
+         WHERE tb1.room_id = #{roomId}
+           AND tb1.deleted_yn = 'N'
+           AND tb2.deleted_yn = 'N'
+         ORDER BY tb1.create_dt DESC
+         LIMIT ${limit} OFFSET ${offset}
+    </select>
+
+    <!-- 채팅방의 파일 수 확인 -->
+    <select id="getAttachmentHistoryCount" parameterType="map" resultType="int">
+        /*AttachmentMapper.getAttachmentHistoryCount*/
+        SELECT COUNT(0)
+          FROM messenger.tbl_attachment tb1
+         INNER JOIN messenger.tbl_message tb2
+            ON tb1.message_id = tb2.message_id
+           AND tb1.room_id = tb2.room_id
+         WHERE tb1.room_id = #{roomId}
+           AND tb1.deleted_yn = 'N'
+           AND tb2.deleted_yn = 'N'
+    </select>
+
+    <!-- 첨부파일 저장 -->
+    <insert id="saveAttachment" parameterType="com.gsbizple.wiz.messenger.dto.AttachmentDto" useGeneratedKeys="true" keyProperty="attachmentId">
+        /*AttachmentMapper.saveAttachment*/
+        INSERT INTO messenger.tbl_attachment (room_id, send_user_key
+                                            , origin_file_name, file_extension, file_size, saved_file_path
+                                            , create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES (#{roomId}, #{sendUserKey}
+              , #{originFileName}, #{fileExtension}, #{fileSize}, #{savedFilePath}
+              , #{sendUserKey}, NOW(), #{sendUserKey}, NOW())
+    </insert>
+
+    <!-- 첨부파일 다운로드 -->
+    <select id="downloadAttachment" parameterType="int" resultType="com.gsbizple.wiz.messenger.dto.AttachmentDto">
+        /*AttachmentMapper.downloadAttachment*/
+        SELECT attachment_id
+             , room_id
+             , send_user_key
+             , origin_file_name
+             , file_extension
+             , file_size
+             , saved_file_path
+          FROM messenger.tbl_attachment
+         WHERE attachment_id = #{attachmentId}
+    </select>
+
+    <!-- 첨부파일 삭제 -->
+    <update id="deleteAttachment" parameterType="java.util.List">
+        /*AttachmentMapper.deleteAttachment*/
+        UPDATE messenger.tbl_attachment
+           SET deleted_yn = 'Y'
+             , modify_dt = NOW()
+         WHERE attachment_id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.attachmentId}
+        </foreach>
+    </update>
+
+    <!-- 메시지별 첨부파일 리스트 조회 -->
+    <select id="getMessageAttachmentList" parameterType="com.gsbizple.wiz.messenger.dto.MessageDto" resultType="com.gsbizple.wiz.messenger.dto.AttachmentDto">
+        /*AttachmentMapper.getMessageAttachmentList*/
+        SELECT attachment_id
+             , message_id
+             , deleted_yn
+             , file_extension
+             , saved_file_path
+             , file_size
+             , origin_file_name
+          FROM messenger.tbl_attachment
+         WHERE room_id = #{roomId}
+           AND message_id = #{messageId}
+           AND deleted_yn = 'N'
+         ORDER BY attachment_id ASC
+    </select>
+
+    <!-- messageId 값 세팅 -->
+    <update id="updateAttachmentsMessageId" parameterType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*AttachmentMapper.updateAttachmentsMessageId*/
+        UPDATE messenger.tbl_attachment
+           SET message_id = #{messageId}
+             , modify_dt = NOW()
+         WHERE attachment_id IN
+        <foreach collection="attachmentList" item="item" index="index" separator="," open="(" close=")">
+            #{item.attachmentId}
+        </foreach>
+    </update>
+
+    <!-- 편집에서 삭제된 점부파일을 삭제 처리 -->
+    <update id="updateAttachmentDeletedYn" parameterType="com.gsbizple.wiz.messenger.dto.AttachmentDto">
+        /*AttachmentMapper.updateAttachmentDeletedYn*/
+        UPDATE messenger.tbl_attachment
+           SET deleted_yn = 'Y'
+             , modify_dt = NOW()
+         WHERE attachment_id = #{attachmentId}
+    </update>
+
+</mapper>

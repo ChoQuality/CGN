@@ -1,0 +1,18 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="loginInfoDto" type="com.gsbizple.wiz.common.dto.LoginInfoDto"*/-->
+
+<!-- 푸터 아래 숨겨진 로그인 정보 -->
+<div id="user-info"
+     th:data-awp-corp-id="${loginInfoDto.getCorpId()}"
+     th:data-awp-org-key="${loginInfoDto.getOrgKey()}"
+     th:data-awp-org-name="${loginInfoDto.getOrgName()}"
+     th:data-awp-user-key="${loginInfoDto.getUserKey()}"
+     th:data-awp-user-name="${loginInfoDto.getUserName()}"
+     th:data-awp-user-image="${loginInfoDto.getUserImageUrl()}"
+     th:data-awp-selected-db="${loginInfoDto.getSelectedDB()}"
+     th:data-awp-token="${loginInfoDto.getToken()}"
+     style="display: none;">
+</div>
+

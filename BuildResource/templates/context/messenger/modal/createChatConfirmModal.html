@@ -1,0 +1,39 @@
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<div id="createRoomConfirm" class="modal is-large">
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">새로운 대화방</h2>
+                <button type="button" class="btn has-icon" data-function="modalClose"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+            <div class="modal__search">
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="modalTree">
+                <div class="modalTree__item" style="width: 34rem;">
+                    <div class="has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                        <div id="orgTree" class="tui-tree-wrap tree"></div>
+                    </div><div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+                </div>
+                <div class="modalTree__item" style="width: 30rem;">
+                    <div class="settingList">
+                        <div class="settingList__item gap-20" id="invitedDiv"></div>
+                    </div>
+                </div>
+                <div class="modalTree__item" style="width: 36rem;">
+                    <div class="settingList">
+                        <div class="settingList__item" id="activeRoomList"></div>
+                    </div>
+                    <div class="modalTree__btn">
+                        <button type="button" class="btn is-secondary is-small" data-function="modalClose">이전</button>
+                        <button type="button" class="btn is-primary is-small" id="createRoom">신규 대화방 생성</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask" data-function="modalClose"></div>
+</div>

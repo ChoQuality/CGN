@@ -1,0 +1,48 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group" th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="portlet__top">
+        <h2 class="title" th:text="${portlet.portletNm}">연차현황</h2>
+
+        <div class="btnGroup">
+            <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+        </div>
+    </div>
+
+    <div class="vacation">
+        <div class="vacation__item">
+            <div class="vacation__title">
+                <i class="icon is-60 is-vacation-1"></i>
+                총연차
+            </div>
+            <div class="vacation__count">20</div>
+        </div>
+
+        <div class="vacation__item">
+            <div class="vacation__title">
+                <i class="icon is-60 is-vacation-2"></i>
+                사용연차
+            </div>
+            <div class="vacation__count">8.5</div>
+        </div>
+
+        <div class="vacation__item">
+            <div class="vacation__title">
+                <i class="icon is-60 is-vacation-3"></i>
+                잔여연차
+            </div>
+            <div class="vacation__count">10.5</div>
+        </div>
+
+        <div class="vacation__item">
+            <div class="vacation__title">
+                <i class="icon is-60 is-vacation-4"></i>
+                기타
+            </div>
+            <div class="vacation__count">1</div>
+        </div>
+    </div>
+</div>

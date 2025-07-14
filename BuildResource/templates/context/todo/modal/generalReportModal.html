@@ -1,0 +1,120 @@
+<div id="writeReportModal-1" class="modal is-xlarge">
+    <!-- 일반보고서 작성하기 모달 -->
+
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">일반보고 작성하기</h2>
+                <button type="button" class="btn has-icon" id="close_button"><i
+                        class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <div>
+                    <table class="formTable">
+                        <colgroup>
+                            <col style="width: 14rem;">
+                            <col style="width: auto;">
+                            <col style="width: 14rem;">
+                            <col style="width: 26rem;">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>
+                                <div class="label"><span>보고서명</span></div>
+                            </th>
+                            <td>
+                                <div class="formTable__item">
+                                    <div class="formGroup">
+                                        <input id="write_report_nm" type="text" class="form__input is-noneBorder"
+                                               placeholder="최대 30자까지 작성 가능">
+                                    </div>
+                                </div>
+                            </td>
+
+                            <th>
+                                <div class="label"><span>소속부서</span></div>
+                            </th>
+                            <td>
+                                <div class="formTable__item" id="write_report_org_nm"></div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <div class="label is-required"><span>업무기간</span></div>
+                            </th>
+                            <td colspan="3">
+                                <div class="formTable__item">
+                                    <div class="dateRange">
+                                        <div class="datePicker">
+                                            <input type="text" id="write_work_from_dt" class="datePicker__input is-noneBorder" placeholder="선택하세요" style="width: 18rem;"/>
+                                            <div id="write_from_container" class="datePicker__calendar"></div>
+                                        </div>
+                                        <div class="datePicker__mid">~</div>
+                                        <div class="datePicker">
+                                            <input type="text" id="write_work_to_dt" class="datePicker__input is-noneBorder" placeholder="선택하세요" style="width: 18rem;"/>
+                                            <div id="write_to_container" class="datePicker__calendar"></div>
+                                        </div>
+                                        <button type="button" class="btn is-primary is-small" id="callAiBtn">내용 불러오기</button>
+                                        <span class="fs-12 text-system-danger pl-5">* 업무기간은 최대 30일까지 설정 가능합니다.</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <div class="label"><span>작성자</span></div>
+                            </th>
+                            <td>
+                                <div class="formTable__item" id="write_report_user_nm"></div>
+                            </td>
+
+                            <th>
+                                <div class="label"><span>작성일시</span></div>
+                            </th>
+                            <td>
+                                <div class="formTable__item" id="write_create_dt"></div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <h3 class="title">내용</h3>
+                    <div class="formControl divider">
+                        <textarea class="form__textarea is-borderBottom border-gray-400" style="height: 27.2rem;"
+                                  placeholder="내용을 입력해주세요." id="write_report_dtl_conts"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-30">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 class="title">기타</h3>
+                        <div class="formCount"><span id="generalTextCnt">0</span>/500</div>
+                    </div>
+                    <div class="formControl mt-10">
+                        <textarea class="form__textarea" placeholder="내용을 입력해주세요." id="write_report_etc_conts"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button type="button" class="btn is-secondary " id="remove_button" style="display: none">삭제</button>
+                <input id="write_report_id" type="hidden">
+                <button type="button" class="btn is-secondary " id="cancel_button">취소</button>
+                <button type="button" class="btn is-primary" id="save_button" style="display: none">저장</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal__mask"></div>
+<!--    <div class="modal__mask" data-function="modalClose"></div>-->
+
+</div>

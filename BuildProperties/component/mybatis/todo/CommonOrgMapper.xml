@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommonOrgMapper">
+    <!-- 조직도 조회 -->
+    <select id="getOrgTree"  parameterType="java.lang.Integer" resultType="com.gsbizple.wiz.common.dto.TblComOrgTreeDto">
+        /* CommonOrgMapper.getOrgTree */
+        SELECT org_key AS group_id
+             , org_nm AS text
+             , org_cd
+             , upper_org_cd
+          FROM dwp.tbl_com_org
+         WHERE use_flag = 1
+           AND corporate_id = #{corporateId}
+    </select>
+
+    <!-- 조직도  -->
+    <select id="getComOrgList" parameterType="com.gsbizple.wiz.common.dto.TblComOrgDto" resultType="com.gsbizple.wiz.common.dto.TblComOrgDto">
+        /* CommonOrgMapper.getComOrgList */
+        SELECT ORG_KEY, ORG_CD, CORPORATE_ID, ORG_PATH, UPPER_ORG_CD, ORG_NM, ORG_TYPE, SORT_ORDER, USE_FLAG, CREATE_DT, CREATE_USER_KEY
+          FROM dwp.tbl_com_org
+         WHERE 1 = 1
+        <if test='orgNm !=null'> AND ORG_NM LIKE CONCAT('%', #{orgNm}, '%')  </if>
+
+    </select>
+
+
+
+
+</mapper>

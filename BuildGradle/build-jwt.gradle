@@ -1,0 +1,19 @@
+apply plugin :"java"
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'com.auth0', name: 'java-jwt', version: '4.2.0'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5' //드림라인 토큰 발급용 임시 추가
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'//드림라인 토큰 발급용 임시 추가
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'//드림라인 토큰 발급용 임시 추가
+}
+
+
+test {
+    useJUnitPlatform()
+}

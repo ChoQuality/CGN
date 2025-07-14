@@ -1,0 +1,272 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="ContextTypeMain" type="com.gsbizple.wiz.common.config.view.ContextType"*/-->
+<!--/*@thymesVar id="ContextTypeSub" type="com.gsbizple.wiz.common.config.view.ContextType"*/-->
+<!--/*@thymesVar id="ContextTypeMessenger" type="com.gsbizple.wiz.common.config.view.ContextType"*/-->
+<style>
+  /* 로딩 화면 스타일 */
+  #loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8); /* 반투명 배경 */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all; /* 클릭 차단 */
+  }
+
+  #loading-screen.hidden {
+    opacity: 0; /* 페이드 아웃 */
+    pointer-events: none; /* 클릭 가능하도록 해제 */
+    transition: opacity 0.5s ease; /* 전환 효과 */
+  }
+
+  .loading-screen-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+</style>
+<div id="loading-screen">
+  <div class="loading-screen-spinner"></div>
+</div>
+
+<div id="app" style="overflow-x: auto; overflow-y: hidden">
+  <div class="loading" style="display: none">
+    <div class="spinner">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <th:block th:replace="~{layout/body/app/header/body_app_header}" th:with="layoutService=${layoutService}"></th:block>
+
+    <th:block th:if="${layoutService.getContextType() == @ContextTypeDefault}">
+
+      <div class="container is-sub">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="sub">
+          <th:block th:replace="~{layout/body/app/context/body_app_context_sub}" th:with="layoutService=${layoutService}"></th:block>
+          <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+          <th:block th:each="modal : ${layoutService.getContextModals()}">
+            <th:block th:utext="${modal}"></th:block>
+          </th:block>
+
+          <th:block th:replace="~{context/portlet/modal/confirmModal}"></th:block>
+          <th:block th:replace="~{context/portlet/modal/alertModal}"></th:block>
+        </main>
+      </div>
+
+    </th:block>
+
+    <th:block th:if="${layoutService.getContextType() == @ContextTypePortlet}">
+
+      <div class="container is-main">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="main">
+          <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+
+        </main>
+      </div>
+    </th:block>
+
+    <th:block th:if="${layoutService.getContextType() == @ContextTypeAI}">
+
+      <div class="container is-sub">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="sub">
+          <div class="subSidebar">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_sub}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <div class="contents">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <th:block th:each="modal : ${layoutService.getContextModals()}">
+            <th:block th:utext="${modal}"></th:block>
+          </th:block>
+        </main>
+      </div>
+
+    </th:block>
+    <th:block th:if="${layoutService.getContextType() == @ContextTypeAIMain}">
+
+
+      <div class="container is-sub">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="sub">
+          <div class="subSidebar" style="display: none">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_sub}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <div class="contents">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <th:block th:each="modal : ${layoutService.getContextModals()}">
+            <th:block th:utext="${modal}"></th:block>
+          </th:block>
+        </main>
+      </div>
+
+    </th:block>
+
+
+
+    <th:block th:if="${layoutService.getContextType() == @ContextTypeMessenger}">
+      <div class="container is-sub">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="sub">
+          <div class="subSidebar is-messenger">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_sub}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <div class="contents">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+            <div id="__contents__loading" class="contents__loading" style="
+                display:none;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.8);">
+              <div class="loading">
+                <div class="spinner">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+              파일 업로드 중입니다.
+            </div>
+          </div>
+          <th:block th:each="modal : ${layoutService.getContextModals()}">
+            <th:block th:utext="${modal}"></th:block>
+          </th:block>
+
+          <th:block th:replace="~{context/messenger/modal/addMemberModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/summaryModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/alertModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/chatPublicModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/chatFileLayer}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/chatListLayer}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/createChatModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/createChatConfirmModal}"></th:block>
+          <th:block th:replace="~{context/messenger/modal/chatLayer}"></th:block>
+
+        </main>
+      </div>
+    </th:block>
+
+    <th:block th:if="${layoutService.getContextType() == @ContextTypeTodo}">
+      <div class="container is-sub">
+        <div class="sidebarWrap" style="zoom: 0.95;">
+          <th:block th:replace="~{layout/body/app/gnb/body_app_gnb}" th:with="layoutService=${layoutService}"></th:block>
+        </div>
+        <main class="sub">
+          <div class="subSidebar">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_sub}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <div class="contents">
+            <th:block th:replace="~{layout/body/app/context/body_app_context_content}" th:with="layoutService=${layoutService}"></th:block>
+          </div>
+          <th:block th:each="modal : ${layoutService.getContextModals()}">
+            <th:block th:utext="${modal}"></th:block>
+          </th:block>
+
+          <th:block th:replace="~{context/todo/modal/writeReportModal}"></th:block>
+          <th:block th:replace="~{context/todo/modal/mergeReportModal}"></th:block>
+          <th:block th:replace="~{context/todo/modal/viewReportModal}"></th:block>
+          <th:block th:replace="~{context/todo/modal/generalReportModal}"></th:block>
+          <th:block th:replace="~{context/todo/modal/viewGeneralReportModal}"></th:block>
+
+        </main>
+      </div>
+    </th:block>
+
+    <th:block th:replace="~{layout/body/app/popup/header/header_app_popup_organization}"></th:block>
+    <th:block th:replace="~{layout/body/app/popup/body_app_popup}"></th:block>
+    <th:block th:replace="~{layout/body/app/alert/body_app_alret}"></th:block>
+  </div>
+
+  <div class="contentsLoading" style="display: none;">
+    <div class="contentsLoading__inner">
+      <div class="loading">
+        <div class="spinner">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div id="loadingText"></div>
+      <!-- 보고서 작성 중입니다. -->
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div class="toast">
+    <div class="toast__inner">
+      <i class="icon is-20 is-check-white-20"></i>
+      <p class="toast__text"><!--여기 토스트 문구가 들어가면 됩니다.--></p>
+    </div>
+  </div>
+
+  <!-- 알럿모달 추가 -->
+  <div id="alertModal" class="modal is-alert">
+    <div class="modal__inner">
+      <div class="modal__header">
+        <div class="top"><h2 class="title">알림</h2></div>
+      </div>
+      <!-- 여기다가 문구를 넣어주세요. -->
+      <div class="modal__contents"></div>
+
+      <div class="modal__footer">
+        <button type="button" class="btn is-primary is-small">확인</button>
+      </div>
+    </div>
+
+    <div class="modal__mask"></div>
+    <!-- <div class="modal__mask" data-function="modalClose"></div> -->
+  </div>
+
+  <!-- 알럿모달 추가 -->
+  <div id="confirmModal" class="modal is-alert">
+    <div class="modal__inner">
+      <div class="modal__header">
+        <div class="top"><h2 class="title">알림</h2></div>
+      </div>
+      <!--여기다가 문구를 넣어주시면 되요 -->
+      <div class="modal__contents"></div>
+
+      <div class="modal__footer">
+        <button type="button" class="btn is-secondary is-small" data-value="cancel" data-function="modalClose">취소</button>
+        <button type="button" class="btn is-primary is-small" data-value="ok">확인</button>
+      </div>
+    </div>
+
+    <div class="modal__mask"></div>
+    <!-- <div class="modal__mask" data-function="modalClose"></div> -->
+  </div>
+
+
+</div>
+

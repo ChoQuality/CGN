@@ -1,0 +1,12 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<th:block th:with="loginInfo=${layoutService.getLoginInfo()}">
+    <div class="sidebar__profile">
+        <div class="userThumb is-xlarge">
+            <div class="userThumb__img">
+                <img th:src="${loginInfo.getUserImageUrl()}" alt="">
+            </div>
+        </div>
+    </div>
+</th:block>

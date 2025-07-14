@@ -1,0 +1,34 @@
+component:
+  mybatis:
+    config: mybatis/MyBatisConfig.xml
+    map: mybatis/portlet/PortletMapper.xml
+      ,mybatis/portlet/LinkMapper.xml
+      ,mybatis/portlet/HumanResourcesMapper.xml
+      ,mybatis/portlet/WorksMapper.xml
+      ,mybatis/todo/TodoMapper.xml
+      ,mybatis/todo/CommonFileMapper.xml
+      ,mybatis/todo/CommonOrgMapper.xml
+      ,mybatis/todo/CommonUserMapper.xml
+      ,mybatis/todo/WeeklyReportMapper.xml
+      ,mybatis/todo/GeneralReportMapper.xml
+      ,mybatis/todo/PraiseMapper.xml
+      ,mybatis/todo/DashboardMapper.xml
+      ,mybatis/messenger/AttachmentMapper.xml
+      ,mybatis/messenger/GroupMapper.xml
+      ,mybatis/messenger/MessageMapper.xml
+      ,mybatis/messenger/participantMapper.xml
+      ,mybatis/messenger/RoomFixMapper.xml
+      ,mybatis/messenger/RoomMapper.xml
+      ,mybatis/messenger/UserMapper.xml
+      ,mybatis/messenger/AlarmMapper.xml
+      ,mybatis/messenger/AlarmTemplateMapper.xml
+      ,mybatis/messenger/CryptoMapper.xml
+      ,mybatis/messenger/EmojiMapper.xml
+      ,mybatis/login/LoginMapper.xml
+      ,mybatis/common/CommonAiMapper.xml
+      ,mybatis/ai/AiServiceMapper.xml
+
+
+     
+
+

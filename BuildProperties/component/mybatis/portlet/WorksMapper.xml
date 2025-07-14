@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="WorksMapper">
+
+    <!-- 연차현황 연동 대상 API URL정보 조회 -->
+    <select id="getApiUrl" parameterType="Integer" resultType="String">
+        /*WorksMapper.getApiUrl*/
+        SELECT link_api_url
+          FROM dwp.tbl_dwp_portlet
+         WHERE portlet_id = #{portletId}
+    </select>
+
+</mapper>

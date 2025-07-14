@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MessageMapper">
+
+    <insert id="saveMessage" parameterType="com.gsbizple.wiz.messenger.dto.MessageDto" useGeneratedKeys="true"
+            keyProperty="messageId">
+        /*MessageMapper.saveMessage*/
+        INSERT INTO messenger.tbl_message(create_dt, create_user_key, message_content, message_type, modify_dt, modify_user_key, room_id, send_user_key, reply_message_id, attachment_yn)
+        VALUES (#{createDt}, #{sendUserKey}, #{messageContent}, #{messageType}, #{modifyDt}, #{sendUserKey}, #{roomId}, #{sendUserKey}, #{replyMessageId}, #{attachmentYn})
+    </insert>
+
+    <!-- 메시지 편집(수정) -->
+    <update id="updateMessage" parameterType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.updateMessage*/
+        UPDATE messenger.tbl_message
+           SET message_content = #{messageContent}
+             , update_yn = 'Y'
+            <if test="attachmentYn != null and attachmentYn != ''">
+             , attachment_yn = #{attachmentYn}
+            </if>
+            <if test="deletedYn != null and deletedYn != ''">
+             , deleted_yn = #{deletedYn}
+            </if>
+             , modify_dt = NOW()
+         WHERE message_id = #{messageId}
+    </update>
+
+    <select id="findByMessageId" resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.findByMessageId*/
+        select m.message_id,
+               m.attachment_id,
+               m.create_dt,
+               m.create_user_key,
+               m.deleted_yn,
+               m.update_yn,
+               IF(m.deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', m.message_content) AS message_content,
+               m.message_type,
+               m.modify_dt,
+               m.modify_user_key,
+               m.room_id,
+               m.send_user_key,
+               m.reply_message_id
+        from messenger.tbl_message m
+        where m.message_id = #{messageId}
+    </select>
+
+    <select id="findPagedMessagesByRoomId" parameterType="com.gsbizple.wiz.messenger.dto.MessageDto"
+            resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.findPagedMessagesByRoomId*/
+        select
+        m1_0.send_user_key,
+        m1_0.create_dt,
+        m1_0.deleted_yn,
+        m1_0.update_yn,
+        IF(m1_0.deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', m1_0.message_content) AS message_content,
+        m1_0.message_type,
+        m1_0.room_id,
+        m1_0.message_id,
+        m1_0.reply_message_id,
+        m1_0.emoji_yn,
+        m1_0.attachment_yn,
+        u1_0.user_key,
+        u1_0.email,
+        u1_0.emp_no,
+        u1_0.org_key,
+        u1_0.user_password,
+        u1_0.position_cd,
+        u1_0.responsibility_cd,
+        u1_0.user_nm,
+        g1_0.org_nm,
+        p1_0.enter_dt,
+        r1_0.room_type
+        from messenger.tbl_message m1_0
+        join dwp.tbl_com_user u1_0 on u1_0.USER_KEY = m1_0.send_user_key
+        join messenger.tbl_room r1_0 on r1_0.room_id = m1_0.room_id
+        left join dwp.tbl_com_org g1_0 on g1_0.ORG_KEY = u1_0.ORG_KEY
+        left join messenger.tbl_participant p1_0
+        on p1_0.room_id = m1_0.room_id and p1_0.user_key = m1_0.send_user_key
+        where r1_0.room_id = #{roomId}
+            and m1_0.message_type not in ('DISCARD')
+        <!--<include refid="createDtConditionOne"/>-->
+        <if test="messageId != null and messageId != ''">
+            AND m1_0.message_id <![CDATA[<]]> #{messageId}
+        </if>
+        order by m1_0.message_id desc
+        limit 50
+    </select>
+
+    <select id="findUpperMessagesByRoomId" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.findUpperMessagesByRoomId*/
+        select
+        m1_0.send_user_key,
+        m1_0.create_dt,
+        m1_0.deleted_yn,
+        m1_0.update_yn,
+        m1_0.message_content,
+        IF(m1_0.deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', m1_0.message_content) AS message_content,
+        m1_0.message_type,
+        m1_0.room_id,
+        m1_0.message_id,
+        m1_0.reply_message_id,
+        a1_0.attachment_id,
+        a1_0.create_user_key,
+        a1_0.file_extension,
+        a1_0.saved_file_path,
+        a1_0.file_size,
+        a1_0.origin_file_name,
+        u1_0.user_key,
+        u1_0.email,
+        u1_0.emp_no,
+        u1_0.org_key,
+        u1_0.USER_PASSWORD,
+        u1_0.POSITION_CD,
+        u1_0.RESPONSIBILITY_CD,
+        u1_0.user_nm,
+        g1_0.ORG_NM,
+        p1_0.enter_dt
+        from messenger.tbl_message m1_0
+        join dwp.tbl_com_user u1_0 on u1_0.USER_KEY = m1_0.send_user_key
+        join messenger.tbl_room r1_0 on r1_0.room_id = m1_0.room_id
+        left join dwp.tbl_com_org g1_0 on g1_0.ORG_KEY = u1_0.ORG_KEY
+        left join messenger.tbl_attachment a1_0 on a1_0.message_id = m1_0.message_id
+        left join messenger.tbl_participant p1_0
+        on p1_0.room_id = m1_0.room_id and p1_0.user_key = m1_0.send_user_key
+        where r1_0.room_id = #{roomId}
+        <!--<include refid="createDtConditionOne"/>-->
+        AND m1_0.message_id <![CDATA[<]]> #{messageId}
+        AND m1_0.message_id <![CDATA[>=]]> #{upperMessageId}
+        order by m1_0.message_id desc
+    </select>
+
+    <select id="selectUnReadMessageInfo" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.selectUnReadMessageInfo*/
+        SELECT m1_0.send_user_key
+             , m1_0.create_dt
+             , m1_0.deleted_yn
+             , m1_0.update_yn
+             ,IF(m1_0.deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', m1_0.message_content) AS message_content
+             , m1_0.message_type
+             , m1_0.room_id
+             , m1_0.message_id
+             , m1_0.reply_message_id
+             , a1_0.attachment_id
+             , a1_0.create_user_key
+             , a1_0.file_extension
+             , a1_0.saved_file_path
+             , a1_0.file_size
+             , a1_0.origin_file_name
+             , u1_0.user_key
+             , u1_0.email
+             , u1_0.emp_no
+             , u1_0.org_key
+             , u1_0.user_password
+             , u1_0.position_cd
+             , u1_0.responsibility_cd
+             , u1_0.user_nm
+             , g1_0.ORG_NM
+             , p1_0.enter_dt
+          FROM messenger.tbl_message m1_0
+          JOIN dwp.tbl_com_user u1_0
+            ON u1_0.USER_KEY = m1_0.send_user_key
+          JOIN messenger.tbl_room r1_0
+            ON r1_0.room_id = m1_0.room_id
+          LEFT join dwp.tbl_com_org g1_0
+            ON g1_0.ORG_KEY = u1_0.ORG_KEY
+          LEFT join messenger.tbl_attachment a1_0
+            ON a1_0.message_id = m1_0.message_id
+          LEFT join messenger.tbl_participant p1_0
+            ON p1_0.room_id = m1_0.room_id
+           AND p1_0.user_key = m1_0.send_user_key
+         WHERE r1_0.room_id = #{roomId}
+           AND m1_0.message_type not in ('DISCARD')
+           AND m1_0.message_id <![CDATA[>]]> #{readMessageId}
+         ORDER BY m1_0.message_id DESC
+    </select>
+
+    <!-- 안 읽은 메시지 건수 조회 -->
+    <select id="selectUnreadMessageCount" parameterType="map" resultType="int">
+        /*MessageMapper.selectUnreadMessageCount*/
+        SELECT COUNT(0)
+          FROM messenger.tbl_message m1_0
+         WHERE m1_0.room_id = #{roomId}
+           AND m1_0.message_type NOT IN ('DISCARD')
+           AND m1_0.message_id <![CDATA[>]]> #{readMessageId}
+    </select>
+
+    <select id="countAllMessageByRoomId" resultType="int">
+        /*MessageMapper.countAllMessageByRoomId*/
+        select count(m1_0.message_id)
+        from messenger.tbl_message m1_0
+                 join dwp.tbl_com_user u1_0 on u1_0.USER_KEY = m1_0.send_user_key
+                 join messenger.tbl_room r1_0 on r1_0.room_id = m1_0.room_id
+                 left join messenger.tbl_participant p1_0
+                           on p1_0.room_id = m1_0.room_id and p1_0.user_key = m1_0.send_user_key
+        where r1_0.room_id = #{roomId}
+    </select>
+
+    <select id="findUpperMessageByMessageId" resultType="com.gsbizple.wiz.messenger.dto.UpperMessageDto">
+        /*MessageMapper.findUpperMessageByMessageId*/
+        SELECT m1_0.message_id
+             , m1_0.room_id
+             , m1_0.send_user_key
+             , u1_0.user_nm
+             , IF(m1_0.deleted_yn = 'Y', '사용자가 삭제한 메시지입니다.', m1_0.message_content) AS message_content
+             , m1_0.deleted_yn
+             , m1_0.create_dt
+             , m1_0.attachment_yn
+          FROM messenger.tbl_message m1_0
+         INNER JOIN dwp.tbl_com_user u1_0
+            ON m1_0.send_user_key = u1_0.USER_KEY
+         WHERE m1_0.message_id = #{messageId}
+         LIMIT 1
+    </select>
+
+    <select id="countMessageId" parameterType="map" resultType="int">
+        /*MessageMapper.countMessageId*/
+        select count(m1_0.message_id)
+        from messenger.tbl_message m1_0
+                 join dwp.tbl_com_user u1_0 on u1_0.USER_KEY = m1_0.send_user_key
+                 join messenger.tbl_room r1_0 on r1_0.room_id = m1_0.room_id
+                 left join dwp.tbl_com_org g1_0 on g1_0.ORG_KEY = u1_0.org_key
+                 left join messenger.tbl_attachment a1_0 on a1_0.attachment_id = m1_0.attachment_id
+                 left join messenger.tbl_participant p1_0
+                           on p1_0.room_id = m1_0.room_id and p1_0.user_key = m1_0.send_user_key
+        where r1_0.room_id = #{roomId}
+          and m1_0.message_id >= #{messageId}
+    </select>
+
+    <!--    <select id="countMessageByRoomId" resultType="int"></select>-->
+    <select id="findMessageReadByRoomIdAndUserId"
+            resultType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*MessageMapper.findMessageReadByRoomIdAndUserId*/
+        SELECT room_id, user_key, read_message_id
+        FROM messenger.tbl_participant a
+        WHERE a.room_id = #{roomId}
+          AND a.USER_KEY = #{userKey}
+        LIMIT 1
+    </select>
+
+    <select id="searchMessageByKeyword" resultType="com.gsbizple.wiz.messenger.dto.MessageSearchDto">
+        /*MessageMapper.searchMessageByKeyword*/
+        select m1_0.message_id, m1_0.message_content, m1_0.create_dt, s1_0.user_nm, a1_0.origin_file_name
+        ,s1_0.THUMB_IMG_PATH,s1_0.LOGIN_STATUS
+        from messenger.tbl_message m1_0
+                 join messenger.tbl_room r1_0 on m1_0.room_id = r1_0.room_id
+                 join messenger.tbl_participant p1_0 on m1_0.room_id = p1_0.room_id
+                 left join messenger.tbl_attachment a1_0 on m1_0.message_id = a1_0.message_id
+                 join dwp.tbl_com_user s1_0 on s1_0.USER_KEY = m1_0.send_user_key
+        where m1_0.room_id = #{roomId}
+          AND (m1_0.message_content LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+            OR a1_0.origin_file_name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!')
+        <!--<include refid="createDtConditionTwo"/>-->
+          and m1_0.message_type = 'TALK'
+          and p1_0.room_id = #{roomId}
+          and p1_0.user_key = #{userKey}
+          and m1_0.deleted_yn = 'N'
+    </select>
+
+    <select id="countMessageByKeyword" resultType="java.lang.Integer">
+        /*MessageMapper.countMessageByKeyword*/
+        select count(m1_0.message_id)
+        from messenger.tbl_message m1_0
+                 join messenger.tbl_room r1_0 on m1_0.room_id = r1_0.room_id
+                 join messenger.tbl_participant p1_0 on m1_0.room_id = p1_0.room_id
+                 left join messenger.tbl_attachment a1_0 on m1_0.attachment_id = a1_0.attachment_id
+                 join dwp.tbl_com_user s1_0 on s1_0.USER_KEY = m1_0.send_user_key
+        where m1_0.room_id = #{roomId}
+          AND (m1_0.message_content LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+            OR a1_0.origin_file_name LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!')
+        <!--<include refid="createDtConditionTwo"/>-->
+          and m1_0.message_type = 'TALK'
+          and p1_0.room_id = #{roomId}
+          and p1_0.user_key = #{userKey}
+          and m1_0.deleted_yn = 'N'
+
+    </select>
+
+    <select id="findByLatestMessage" parameterType="map" resultType="java.lang.Integer">
+        /*MessageMapper.findByLatestMessage*/
+        select nvl(max(m1_0.message_id),0)
+        from messenger.tbl_message m1_0
+                 join messenger.tbl_room r1_0 on r1_0.room_id = m1_0.room_id
+                 join messenger.tbl_participant p1_0 on p1_0.room_id = r1_0.room_id
+                 join dwp.tbl_com_user u1_0 on u1_0.USER_KEY = p1_0.user_key
+        where r1_0.room_id = #{roomId}
+          and p1_0.user_key = #{userKey}
+    </select>
+
+    <update id="deleteMessageRead">
+        /*MessageMapper.deleteMessageRead*/
+        update messenger.tbl_participant
+        set read_message_id = null
+        where room_id = #{roomId}
+          and user_key = #{userKey}
+    </update>
+
+    <update id="deleteMessage">
+        /*MessageMapper.deleteMessage*/
+        update messenger.tbl_message
+        set deleted_yn = 'Y', emoji_yn = 'N'
+        where message_id = #{messageId}
+        <if test="roomId != null">
+            and room_id = #{roomId}
+        </if>
+    </update>
+
+    <update id="updateReadMessageId">
+        /*MessageMapper.updateReadMessageId*/
+        update messenger.tbl_participant
+        set read_message_id = #{messageId}
+        where room_id = #{roomId}
+          and user_key = #{userKey}
+    </update>
+
+    <select id="getUserInfo" resultType="com.gsbizple.wiz.messenger.dto.UserDto">
+        /*MessageMapper.getUserInfo*/
+        select user.USER_NM
+             , user.THUMB_IMG_PATH
+             , user.LOGIN_STATUS
+             , user.USER_KEY
+        from dwp.tbl_com_user user
+        where user.USER_KEY in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            <foreach collection="item.participantList" item="item" separator="," >
+                #{item}
+            </foreach>
+        </foreach>
+    </select>
+
+    <!-- 신규 메시지 작성 전 DB현재 시간을 조회 -->
+    <select id="getNowDate" resultType="com.gsbizple.wiz.messenger.dto.MessageDto">
+        /*MessageMapper.getNowDate*/
+        SELECT NOW() AS create_dt
+    </select>
+
+    <!-- 칭찬하기 받는 유저정보 조회(칭찬하기 메시지 발송 이력에 받는 지구언정보 처리) -->
+    <select id="getPraiseReceiveUserInfo" parameterType="int" resultType="String">
+        /*MessageMapper.getPraiseReceiveUserInfo*/
+        SELECT CONCAT('TO. ', tb1.USER_NM, '(', tb2.ORG_NM, ')') AS receiveInfo
+          FROM dwp.tbl_com_user tb1
+         INNER JOIN dwp.tbl_com_org tb2
+            ON tb1.org_key = tb2.org_key
+         WHERE tb1.user_key = #{userKey}
+         LIMIT 1
+    </select>
+
+<!--    <sql id="createDtConditionOne">-->
+<!--    <![CDATA[-->
+<!--        and m1_0.create_dt >= CASE-->
+<!--                                    WHEN r1_0.room_type = '1' THEN p1_0.enter_dt-->
+<!--                                    WHEN r1_0.room_type = '2' THEN-->
+<!--                                        CASE-->
+<!--                                            WHEN p1_0.public_yn = 'Y' THEN r1_0.create_dt-->
+<!--                                            ELSE p1_0.enter_dt-->
+<!--                                            END-->
+<!--                                    ELSE r1_0.create_dt-->
+<!--            END-->
+<!--        ]]>-->
+<!--    </sql>-->
+
+<!--    <sql id="createDtConditionTwo">-->
+<!--    <![CDATA[-->
+<!--        and m1_0.create_dt >= case-->
+<!--                                    when (p1_0.public_yn = 'Y' and r1_0.room_type = '2') then p1_0.enter_dt-->
+<!--                                    when (p1_0.public_yn = 'Y' and r1_0.room_type = '1') then p1_0.enter_dt-->
+<!--                                    else p1_0.create_dt end-->
+<!--        ]]>-->
+<!--    </sql>-->
+</mapper>

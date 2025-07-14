@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="todo.TodoMapper">
+    <sql id="selectTodoItems">
+        SELECT tdt.TODO_ID, tdt.REQ_USER_KEY, tdt.REQ_DT
+            , date_format(tdt.JOB_START_DT, '%Y-%m-%d %H:%i' ) as JOB_START_DT
+            , date_format(tdt.JOB_END_DT, '%Y-%m-%d %H:%i' ) as JOB_END_DT
+            , DATEDIFF(CURRENT_DATE(), STR_TO_DATE( date_format(tdt.JOB_END_DT, '%Y-%m-%d' ), '%Y-%m-%d' )) AS JOB_END_DAY
+            , tdt.COMPLETE_DT, tdt.TODO_STATUS, tdt.IMPORTANT_YN, tdt.PRIVATE_YN, tdt.TODO_REQ_CONTS
+            , tdt.COMPLETE_RATIO, tdt.TODO_FLAG, tdt.REF_TODO_ID, tdt.CREATE_USER_KEY
+            , tdt.CREATE_DT, tdt.UPDATE_DT, tdt.DELETE_DT
+            , tcu.USER_NM as REQ_USER_NM, tcu.LOGIN_STATUS as REQ_USER_LOGIN_STATUS, tco.ORG_NM as REQ_ORG_NM
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("repUserKey", t0.rep_user_key, "repUserNm", t1.user_nm, "repOrgNm", t2.ORG_NM, "loginStatus", t1.LOGIN_STATUS) ), ']')
+                from dwp.tbl_dwp_todo_rep t0 inner join dwp.tbl_com_user t1 on t0.rep_user_key = t1.user_key
+                    left outer join dwp.tbl_com_org t2 on t1.ORG_KEY = t2.ORG_KEY
+                where TODO_ID = tdt.TODO_ID  and REP_STATUS != 'C' ) repUserKeyListStr
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("memoId", t0.MEMO_ID, "memoConts", t0.MEMO_CONTS, "createUserKey", t1.USER_KEY, "createUserNm", t1.USER_NM, "createUserOrgNm", t2.ORG_NM, "createDt", t0.CREATE_DT) ORDER BY t0.CREATE_DT DESC ), ']')
+                from dwp.tbl_dwp_todo_memo t0 left outer join dwp.tbl_com_user t1 on t0.CREATE_USER_KEY  = t1.USER_KEY
+                    left outer join dwp.tbl_com_org t2 on t1.ORG_KEY = t2.ORG_KEY
+                where t0.TODO_ID = tdt.TODO_ID  and t0.USE_FLAG = 1 ) memoListStr
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("fileId", t0.FILE_ID, "fileNm", t1.FILE_NM, "fileSize", t1.FILE_SIZE, "createDt", t0.CREATE_DT) ORDER BY t0.CREATE_DT DESC ), ']')
+                from dwp.tbl_dwp_todo_file t0 inner join dwp.tbl_com_file t1 on t0.FILE_ID = t1.FILE_ID
+                where TODO_ID = tdt.TODO_ID  and t0.USE_FLAG = 1 ) fileListStr
+    </sql>
+
+    <!--AWP_TODO 조회 -->
+    <select id="findByTodoId" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+                left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+        WHERE 1 = 1 AND tdt.TODO_ID = #{todoId}
+    </select>
+
+    <!-- AWP_TODO 목록 조회  -->
+    <select id="selectTodoList" parameterType="com.gsbizple.wiz.todo.dto.TodoSearchDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+                left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+        WHERE 1 = 1
+          AND ( 1 <![CDATA[ <> ]]> 1 <if test='reqUserKey != null'> OR REQ_USER_KEY = #{reqUserKey} </if>
+                <if test='repUserKey != null'> OR TODO_ID IN ( SELECT TODO_ID FROM dwp.tbl_dwp_todo_rep WHERE rep_user_key = #{repUserKey} AND REP_STATUS != 'C' ) </if> )
+        <if test='todoStatus != null and !"".equals(todoStatus)'> AND TODO_STATUS = #{todoStatus} </if>
+        <if test='workToDt != null and !"".equals(workToDt)'> AND TDT.JOB_START_DT <![CDATA[ <= ]]> date_add(STR_TO_DATE(#{workToDt}, '%Y-%m-%d'), interval 1 day) </if>
+        <if test='workFromDt != null and !"".equals(workFromDt)'> AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d') </if>
+          AND TDT.TODO_STATUS in ('S', 'P', 'F', 'R')
+          AND TDT.DELETE_YN = '0'
+        <if test='searchType != null and searchType != "" '>
+            AND ( 1 <![CDATA[ <> ]]> 1
+            <if test='todoReqConts != null and todoReqConts != "" '> OR tdt.TODO_REQ_CONTS LIKE CONCAT('%', #{todoReqConts}, '%')  </if>
+            <if test='fileNm != null and fileNm != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_file t0 inner join dwp.tbl_com_file t1 on t0.FILE_ID = t1.FILE_ID where T1.FILE_NM LIKE CONCAT('%', #{fileNm}, '%') AND T0.TODO_ID = TDT.TODO_ID and t0.USE_FLAG = 1  ) </if>
+            <if test='reqUserNm != null and reqUserNm != "" '> OR tcu.USER_NM LIKE CONCAT('%', #{reqUserNm}, '%')    </if>
+            <if test='repUserNm != null and repUserNm != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_rep T0 inner join dwp.tbl_com_user T1 on T0.rep_user_key = T1.user_key where T1.USER_NM LIKE CONCAT('%', #{repUserNm}, '%') AND T0.TODO_ID = TDT.TODO_ID )  </if>
+            <if test='memoConts != null and memoConts != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_memo T0 where T0.MEMO_CONTS LIKE CONCAT('%', #{memoConts}, '%') AND T0.TODO_ID = TDT.TODO_ID ) </if>
+            <if test='todoId != null and todoId != "" '> OR tdt.TODO_ID LIKE CONCAT(#{todoId}, '%') </if>
+            )</if>
+        <if test='isViewCompleteYn != "Y" '> AND TDT.TODO_STATUS not in ('F')</if>
+        <if test='searchOrder == "RATIO" '>ORDER BY COMPLETE_RATIO DESC</if>
+        <if test='searchOrder != "RATIO" '>ORDER BY JOB_END_DT</if>
+        <if test='startIndex != null '> LIMIT  ${startIndex},  ${pagePerCnt}</if>
+    </select>
+
+    <!-- AWP_TODO 목록 조회  -->
+    <select id="selectTodoListCnt" parameterType="com.gsbizple.wiz.todo.dto.TodoSearchDto" resultType="int">
+        SELECT COUNT(*) AS TODO_CNT
+        FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+        left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+        WHERE 1 = 1
+        AND ( 1 <![CDATA[ <> ]]> 1 <if test='reqUserKey != null'> OR  REQ_USER_KEY = #{reqUserKey} </if>
+        <if test='repUserKey != null'> OR TODO_ID IN ( SELECT TODO_ID FROM dwp.tbl_dwp_todo_rep WHERE rep_user_key = #{repUserKey} AND REP_STATUS != 'C' ) </if> )
+        <if test='todoStatus != null and !"".equals(todoStatus)'> AND TODO_STATUS = #{todoStatus} </if>
+        <if test='workToDt != null and !"".equals(workToDt)'> AND TDT.JOB_START_DT <![CDATA[ <= ]]> date_add(STR_TO_DATE(#{workToDt}, '%Y-%m-%d'), interval 1 day)  </if>
+        <if test='workFromDt != null and !"".equals(workFromDt)'> AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d') </if>
+        AND TDT.TODO_STATUS in ('S', 'P', 'F', 'R')
+        AND TDT.DELETE_YN = '0'
+        <if test='searchType != null and searchType != "" '>
+            AND ( 1 <![CDATA[ <> ]]> 1
+            <if test='todoReqConts != null and todoReqConts != "" '> OR tdt.TODO_REQ_CONTS LIKE CONCAT('%', #{todoReqConts}, '%')  </if>
+            <if test='fileNm != null and fileNm != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_file t0 inner join dwp.tbl_com_file t1 on t0.FILE_ID = t1.FILE_ID where T1.FILE_NM LIKE CONCAT('%', #{fileNm}, '%') AND T0.TODO_ID = TDT.TODO_ID and t0.USE_FLAG = 1  ) </if>
+            <if test='reqUserNm != null and reqUserNm != "" '> OR tcu.USER_NM LIKE CONCAT('%', #{reqUserNm}, '%')    </if>
+            <if test='repUserNm != null and repUserNm != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_rep T0 inner join dwp.tbl_com_user T1 on T0.rep_user_key = T1.user_key where T1.USER_NM LIKE CONCAT('%', #{repUserNm}, '%') AND T0.TODO_ID = TDT.TODO_ID )  </if>
+            <if test='memoConts != null and memoConts != "" '> OR EXISTS ( SELECT 1 from dwp.tbl_dwp_todo_memo T0 where T0.MEMO_CONTS LIKE CONCAT('%', #{memoConts}, '%') AND T0.TODO_ID = TDT.TODO_ID ) </if>
+            <if test='todoId != null and todoId != "" '> OR tdt.TODO_ID LIKE CONCAT(#{todoId}, '%') </if>
+            )</if>
+        <if test='isViewCompleteYn != "Y" '> AND TDT.TODO_STATUS not in ('F')</if>
+    </select>
+
+    <!-- 내(담당) AWP_TODO 목록 조회  -->
+    <select id="selectResponseTodoList" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+        left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+                inner join dwp.tbl_dwp_todo_rep as rep on tdt.TODO_ID = rep.TODO_ID  and rep.REP_STATUS != 'C'
+        WHERE 1 = 1
+          and rep.rep_user_key in <foreach collection="repUserKeyList" item="item" index="index" separator="," open="(" close=")" >${item}</foreach>
+        <if test='reqUserKey != null'> AND REQ_USER_KEY = #{reqUserKey} </if>
+        <if test='todoStatus != null and !"".equals(todoStatus)'> AND TODO_STATUS = #{todoStatus} </if>
+        <if test='todoStatus !=null'> AND TODO_STATUS = #{todoStatus} </if>
+    </select>
+
+    <!-- 요청한 AWP_TODO 목록 조회  -->
+    <select id="selectRequestTodoList" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+                left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+        WHERE 1 = 1
+        <if test='reqUserKey != null'> AND REQ_USER_KEY = #{reqUserKey} </if>
+        <if test='todoStatus != null and !"".equals(todoStatus)'> AND TODO_STATUS = #{todoStatus} </if>
+        <if test='todoStatus !=null'> AND TODO_STATUS = #{todoStatus} </if>
+    </select>
+    
+    <!-- AWP_TODO 등록. -->
+    <insert id="insertTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" useGeneratedKeys="true"
+        keyProperty="todoId" keyColumn="TODO_ID">
+        <selectKey keyProperty="todoId" resultType="string" order="BEFORE" >
+            select ifnull(max(TODO_ID), DATE_FORMAT(NOW(), '%Y%m%d') * 1000)  + 1 AS TODO_ID
+            from dwp.tbl_dwp_todo where TODO_ID like concat(DATE_FORMAT(NOW(), '%Y%m%d') , '%')
+        </selectKey>
+        INSERT INTO dwp.tbl_dwp_todo
+        ( TODO_ID, REQ_USER_KEY, REQ_DT, JOB_START_DT, JOB_END_DT, COMPLETE_DT, TODO_STATUS
+        , IMPORTANT_YN, PRIVATE_YN, COMPLETE_RATIO, TODO_REQ_CONTS, TODO_FLAG, REF_TODO_ID
+        , DELETE_YN, CREATE_USER_KEY, CREATE_DT)
+        values( #{todoId},
+            #{reqUserKey}, IFNULL(#{reqDt}, NOW()), #{jobStartDt}, #{jobEndDt}, #{completeDt}, #{todoStatus}
+            , #{importantYn}, #{privateYn}, #{completeRatio}, #{todoReqConts}, #{todoFlag}, #{refTodoId}
+            , 0, #{createUserKey}, current_timestamp() )
+    </insert>
+
+    <!-- AWP_TODO 수정. -->
+    <update id="updateTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        UPDATE dwp.tbl_dwp_todo
+            SET TODO_STATUS = #{todoStatus}
+              , TODO_REQ_CONTS = #{todoReqConts}
+              , COMPLETE_RATIO = ${completeRatio}
+              , JOB_START_DT=#{jobStartDt}, JOB_END_DT=#{jobEndDt}
+                <if test='"F".equals(todoStatus)'> , COMPLETE_DT=current_timestamp() </if>
+              , IMPORTANT_YN=#{importantYn}, PRIVATE_YN=#{privateYn}
+              , UPDATE_DT=current_timestamp()
+              , UPDATE_USER_KEY=#{updateUserKey}
+        WHERE 1 = 1
+          AND TODO_ID = #{todoId}
+    </update>
+
+    <!-- AWP_TODO 삭제. -->
+    <update id="deleteTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        UPDATE dwp.tbl_dwp_todo
+            SET TODO_STATUS = 'C', DELETE_YN = 1, DELETE_DT = current_timestamp()
+            , UPDATE_USER_KEY=#{updateUserKey}
+        WHERE 1 = 1
+        AND TODO_ID = #{todoId}
+    </update>
+
+    <!-- AWP_TODO 완료 처리. -->
+    <update id="completeTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        UPDATE dwp.tbl_dwp_todo
+            SET REP_STATUS = 'F', COMPLETE_DT = current_timestamp()
+        WHERE 1 = 1
+        AND TODO_ID = #{todoId}
+    </update>
+
+    <!-- 담당자 저장  -->
+    <insert id="insertTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" >
+        INSERT INTO dwp.tbl_dwp_todo_rep
+        (TODO_ID, REP_USER_KEY, REP_STATUS, REP_ORDER, REQ_DT, CREATE_DT)
+        VALUES
+        <foreach collection="repUserList" item="item" index="idx" separator=",">
+        ( #{todoId}, #{item.repUserKey}, 'S', #{item.repOrder}, current_timestamp(), current_timestamp() )
+        </foreach>
+        ON DUPLICATE KEY UPDATE REP_STATUS = case when REP_STATUS = 'C' then VALUES(REP_STATUS) else REP_STATUS end , REP_ORDER = VALUES(REP_ORDER), UPDATE_DT = current_timestamp(), DELETE_DT = NULL
+    </insert>
+
+    <!-- 담당자 삭제 ( 수정 할 때 담당자 수정 된 경우 ) -->
+    <insert id="deleteTodoRepUser" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" >
+        UPDATE dwp.tbl_dwp_todo_rep
+        SET REP_STATUS = 'C', DELETE_DT = current_timestamp()
+        WHERE TODO_ID = #{todoId}
+          AND REP_STATUS NOT IN ('C', 'R')
+        <foreach collection="repUserList" item="item" index="idx"
+                 open="AND REP_USER_KEY NOT IN (" separator="," close=")" > #{item.repUserKey} </foreach>
+    </insert>
+
+    <!-- 담당자 삭제 ( 수정 할 때 담당자 수정 된 경우 ) -->
+    <insert id="deleteTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" >
+        UPDATE dwp.tbl_dwp_todo_rep
+            SET REP_STATUS = 'C', DELETE_DT = current_timestamp()
+        WHERE TODO_ID = #{todoId}
+    </insert>
+
+    <!-- AWP_TODO 진행 처리. -->
+    <update id="confirmTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo
+        SET TODO_STATUS = 'P', UPDATE_DT = current_timestamp()
+        WHERE 1 = 1
+        AND TODO_ID = #{todoId}
+    </update>
+
+    <!-- AWP_TODO 담당자 확인 -->
+    <update id="confirmTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo_rep
+            SET REP_STATUS = 'P', CONFIRM_DT = current_timestamp()
+        WHERE TODO_ID = #{todoId} AND REP_USER_KEY = #{repUserKey}
+    </update>
+
+    <!-- AWP_TODO 거절 처리. -->
+    <update id="rejectTodo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo
+        SET TODO_STATUS = 'R', UPDATE_DT = current_timestamp()
+        WHERE 1 = 1
+        AND TODO_ID = #{todoId}
+    </update>
+
+    <!-- AWP_TODO 담당자 거절 -->
+    <update id="rejectTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo_rep
+            SET REP_STATUS = 'R', REJECT_DT = current_timestamp()
+        WHERE TODO_ID = #{todoId} AND REP_USER_KEY = #{repUserKey}
+    </update>
+
+    <!-- AWP_TODO 담당자 완료 -->
+    <update id="completeTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo_rep
+            SET REP_STATUS = 'F', TASK_CONTS=#{taskConts}, COMPLETE_DT = current_timestamp()
+              , COMPLETE_RATIO = 100
+        WHERE TODO_ID = #{todoId} AND REP_USER_KEY = #{repUserKey}
+    </update>
+
+    <!-- AWP_TODO 담당자 진척률 등록 -->
+    <update id="updateRatioTodoRep" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto">
+        UPDATE dwp.tbl_dwp_todo_rep
+          SET REP_STATUS = 'P', TASK_CONTS=#{taskConts}, UPDATE_DT = current_timestamp()
+            , COMPLETE_RATIO = #{completeRatio}
+        WHERE TODO_ID = #{todoId} AND REP_USER_KEY = #{repUserKey}
+    </update>
+
+    <!-- AWP_TODO 요청자 완료 -->
+    <update id="completeTodoReq" parameterType="java.util.Map">
+        UPDATE dwp.tbl_dwp_todo_rep
+        SET REP_STATUS = 'F', COMPLETE_DT = current_timestamp()
+        , COMPLETE_RATIO = 100
+        WHERE TODO_ID = #{todoId}
+    </update>
+
+    <!-- AWP_TODO 메모 저장  -->
+    <insert id="insertTodoMemo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoMemoDto"  >
+        INSERT INTO dwp.tbl_dwp_todo_memo
+        (TODO_ID, MEMO_TYPE, USE_FLAG, MEMO_CONTS, CREATE_DT, CREATE_USER_KEY)
+        VALUES
+        ( #{todoId}, #{memoType}, 1, #{memoConts}, current_timestamp(), #{createUserKey} )
+    </insert>
+
+    <!-- AWP_TODO 메모 삭제 ( 미사용 처리)   -->
+    <update id="deleteTodoMemo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoMemoDto" >
+        UPDATE dwp.tbl_dwp_todo_memo
+        SET USE_FLAG = 0, UPDATE_DT = current_timestamp(), UPDATE_USER_KEY = #{updateUserKey}
+        WHERE TODO_ID = #{todoId}
+        <foreach collection="todoMemoList" item="item" index="idx" open="AND MEMO_ID NOT IN (" close=")" separator=",">IFNULL(#{item.memoId}, -1)</foreach>
+    </update>
+
+    <!-- AWP_TODO 파일 저장  -->
+    <insert id="insertTodoFile" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto"  >
+        INSERT INTO dwp.tbl_dwp_todo_file
+        (TODO_ID, FILE_ID, USE_FLAG, CREATE_DT, CREATE_USER_KEY)
+        VALUES
+        <foreach collection="todoFileList" item="item" index="idx" separator=",">
+            ( #{todoId}, #{item.fileId}, 1, current_timestamp(), #{createUserKey} )
+        </foreach>
+    </insert>
+
+    <!-- AWP_TODO 파일 삭제 ( 미사용 처리)   -->
+    <update id="deleteTodoFile" parameterType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto" >
+        UPDATE dwp.tbl_dwp_todo_file
+          SET USE_FLAG = 0, UPDATE_DT = current_timestamp(), UPDATE_USER_KEY = #{updateUserKey}
+         WHERE TODO_ID = #{todoId}
+        <foreach collection="todoFileList" item="item" index="idx" open="AND FILE_ID NOT IN (" close=")" separator=",">IFNULL(#{item.fileId}, -1)</foreach>
+    </update>
+
+    <!-- AWP_AI_TODO 전송용 데이터 조회 -->
+    <select id="selectAISendWkReportInfo" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" resultType="map">
+        SELECT tb2.todo_id AS todoId
+             , tb2.todo_req_conts AS title
+             , DATE_FORMAT(tb2.JOB_START_DT, '%Y.%m.%d') AS startDate
+             , DATE_FORMAT(tb2.JOB_END_DT, '%Y.%m.%d') AS endDate
+             , tb2.COMPLETE_RATIO AS progressRate
+             , IFNULL(( SELECT CONCAT(  '[', group_concat( JSON_OBJECT("text", tb3.memo_conts, "date", DATE_FORMAT(tb3.create_dt, '%Y.%m.%d')) ), ']')
+                   FROM dwp.tbl_dwp_todo_memo tb3
+                  WHERE tb3.todo_id = tb1.todo_id
+                    AND tb3.use_flag = 1
+                    AND tb3.create_dt BETWEEN STR_TO_DATE(CONCAT(#{workFromDt}, ' 00:00:00.000'), '%Y-%m-%d %H:%i:%s.%f') AND STR_TO_DATE(CONCAT(#{nextWorkToDt}, ' 23:59:59.000'), '%Y-%m-%d %H:%i:%s.%f')
+               ), '[]') memoList
+          FROM dwp.tbl_dwp_todo_rep tb1
+         INNER JOIN dwp.tbl_dwp_todo tb2
+            ON tb1.todo_id = tb2.todo_id
+         WHERE tb1.rep_user_key = #{reportUserKey}
+           AND tb2.delete_yn = 0
+           AND tb2.private_yn = 0
+           AND tb2.todo_status IN ('P','F')
+           AND (tb2.job_start_dt <![CDATA[ <= ]]> STR_TO_DATE(CONCAT(#{nextWorkToDt}, ' 23:59:59.000'), '%Y-%m-%d %H:%i:%s.%f') AND tb2.job_end_dt <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{workFromDt}, ' 00:00:00.000'), '%Y-%m-%d %H:%i:%s.%f'))
+    </select>
+
+    <!-- AI연동용 데이터 조회 -->
+    <select id="selectAiSendGeneralReportInfo" parameterType="com.gsbizple.wiz.todo.dto.TblDwpReportDto" resultType="map">
+        SELECT tb2.todo_id AS todoId
+             , tb2.todo_req_conts AS title
+             , DATE_FORMAT(tb2.JOB_START_DT, '%Y.%m.%d') AS startDate
+             , DATE_FORMAT(tb2.JOB_END_DT, '%Y.%m.%d') AS endDate
+             , tb2.COMPLETE_RATIO AS progressRate
+             , IFNULL(( SELECT CONCAT(  '[', group_concat( JSON_OBJECT("text", tb3.memo_conts, "date", DATE_FORMAT(tb3.create_dt, '%Y.%m.%d')) ), ']')
+                 FROM dwp.tbl_dwp_todo_memo tb3
+                 WHERE tb3.todo_id = tb1.todo_id
+                   AND tb3.use_flag = 1
+                   AND tb3.create_dt BETWEEN STR_TO_DATE(CONCAT(#{workFromDt}, ' 00:00:00.000'), '%Y-%m-%d %H:%i:%s.%f') AND STR_TO_DATE(CONCAT(#{workToDt}, ' 23:59:59.000'), '%Y-%m-%d %H:%i:%s.%f')
+        ), '[]') AS memoList
+        FROM dwp.tbl_dwp_todo_rep tb1
+                 INNER JOIN dwp.tbl_dwp_todo tb2
+                            ON tb1.todo_id = tb2.todo_id
+        WHERE tb1.rep_user_key = #{reportUserKey}
+          AND tb2.delete_yn = 0
+          AND (tb2.job_start_dt <![CDATA[ <= ]]> STR_TO_DATE(CONCAT(#{workToDt}, ' 23:59:59.000'), '%Y-%m-%d %H:%i:%s.%f') AND tb2.job_end_dt <![CDATA[ >= ]]> STR_TO_DATE(CONCAT(#{workFromDt}, ' 00:00:00.000'), '%Y-%m-%d %H:%i:%s.%f'))
+    </select>
+
+
+</mapper>

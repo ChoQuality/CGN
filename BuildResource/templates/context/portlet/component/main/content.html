@@ -1,0 +1,19 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="portletList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+<!--/*@thymesVar id="loginInfo" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+
+<th:block th:if="${not #lists.isEmpty(portletList.getData())}">
+    <th:block th:each='portlet : ${portletList.getData()}'>
+        <div th:replace="~{${portlet.getPgmPath()}}" th:with="portlet=${portlet}" ></div>
+
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'CALENDAR' }" ><div th:replace="~{context/portlet/component/main/calendar}" th:with="portlet=${portlet}" ></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'TODO' }"     ><div th:replace="~{context/portlet/component/main/todo}" th:with="portlet=${portlet}" ></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'GROUPWARE' }"><div th:replace="~{context/portlet/component/main/groupware}" th:with="portlet=${portlet}"></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'RESOURCE' }" ><div th:replace="~{context/portlet/component/main/resource}" th:with="portlet=${portlet}"></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'BOARD' }"    ><div th:replace="~{context/portlet/component/main/board}" th:with="portlet=${portlet}"></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == 'MyLink' }"   ><div th:replace="~{context/portlet/component/main/mylink}" th:with="portlet=${portlet}"></div> </th:block> */-->
+<!--/*        <th:block th:if="${portlet.getPgmNm() == '연차현황' }"   ><div th:replace="~{context/portlet/component/main/vacationStatus}" th:with="portlet=${portlet}"></div> </th:block> */-->
+    </th:block>
+</th:block>

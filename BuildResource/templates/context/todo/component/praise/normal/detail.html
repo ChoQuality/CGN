@@ -1,0 +1,90 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="yyyyMMdd" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="praiseSendList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="praiseReceiveList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="sendTotalCnt" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="receiveTotalCnt" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="praise" type="com.gsbizple.wiz.todo.dto.PraiseMonthlyStatusDto"*/-->
+
+<div class="d-flex flex-direction-column gap-30">
+    <div class="contentsCard pt-40 prl-50 pb-60" style="width: 100%;">
+        <div class="contentsCard__top is-border">
+            <h4 class="title d-flex align-items-center gap-5">내가 받은 칭찬 <i class="icon is-28 is-compliment-blue"></i></h4>
+
+            <div class="d-flex align-items-end justify-content-between mt-20">
+                <div class="fs-18">총 <span class="fw-500" th:text="${receiveTotalCnt.getData()}"></span>건</div>
+                <span th:text="${yyyyMMdd.getData()}"></span>
+            </div>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(praiseReceiveList.getData())}">
+            <ul class="complimentList is-get">
+                <li class="complimentList__empty">
+                    칭찬 받은 이력이 없습니다.
+                </li>
+            </ul>
+        </th:block>
+
+        <th:block th:if="${not #lists.isEmpty(praiseReceiveList.getData())}">
+            <ul class="complimentList is-get">
+                <th:block th:each="month : ${#numbers.sequence(1, 12)}">
+                    <li class="complimentList__item">
+                        <div class="complimentList__month"><span class="fw-500" th:text="${month}"></span>월</div>
+                        <th:block th:each="praise : ${praiseReceiveList.getData()}">
+                            <th:block th:if="${#strings.equals(#numbers.formatInteger(month,2), praise.getPraiseMonth())}">
+                                <div class="complimentList__bubble">
+                                    <div class="round">
+                                        <i class="icon is-20 is-compliment-blue-20"></i>
+                                        <span th:text="${praise.getPraiseCount()}"></span>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </li>
+                </th:block>
+            </ul>
+        </th:block>
+    </div>
+
+    <div class="contentsCard pt-40 prl-50 pb-60" style="width: 100%;">
+        <div class="contentsCard__top is-border">
+            <h4 class="title d-flex align-items-center gap-5">내가 보낸 칭찬 <i class="icon is-28 is-compliment-green"></i></h4>
+
+            <div class="d-flex align-items-end justify-content-between mt-20">
+                <div class="fs-18">총 <span class="fw-500" th:text="${sendTotalCnt.getData()}"></span>건</div>
+                <span th:text="${yyyyMMdd.getData()}"></span>
+            </div>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(praiseSendList.getData())}">
+            <ul class="complimentList is-get">
+                <li class="complimentList__empty">
+                    보낸 칭찬 이력이 없습니다.
+                </li>
+            </ul>
+        </th:block>
+
+        <th:block th:if="${not #lists.isEmpty(praiseSendList.getData())}">
+            <ul class="complimentList is-post">
+                <th:block th:each="month : ${#numbers.sequence(1, 12)}">
+                    <li class="complimentList__item">
+                        <div class="complimentList__month"><span class="fw-500" th:text="${month}"></span>월</div>
+                        <th:block th:each="praise : ${praiseSendList.getData()}">
+                            <!--/*@thymesVar id="getPraiseMonth" type="java.lang.String"*/-->
+                            <th:block th:if="${#strings.equals(#numbers.formatInteger(month,2), praise.getPraiseMonth())}">
+                                <div class="complimentList__bubble">
+                                    <div class="round">
+                                        <i class="icon is-20 is-compliment-blue-20"></i>
+                                        <!--/*@thymesVar id="getPraiseCount" type="java.lang.Integer"*/-->
+                                        <span th:text="${praise.getPraiseCount()}"></span>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </li>
+                </th:block>
+            </ul>
+        </th:block>
+    </div>
+</div>

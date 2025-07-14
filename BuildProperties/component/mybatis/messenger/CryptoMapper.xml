@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CryptoMapper">
+    <select id="fetchPublicKey" parameterType="com.gsbizple.wiz.common.dto.LoginInfoDto" resultType="String">
+        SELECT
+            dwpcompany.public_cert_key as publicKey
+        FROM
+            dwp.tbl_com_corporate_info dwpcompany
+        WHERE
+            dwpcompany.corporate_id = #{corpId}
+    </select>
+    <select id="fetchPrivateKey" parameterType="com.gsbizple.wiz.common.dto.LoginInfoDto" resultType="String">
+        SELECT
+            dwpcompany.private_cert_key as publicKey
+        FROM
+            dwp.tbl_com_corporate_info dwpcompany
+        WHERE
+            dwpcompany.corporate_id = #{corpId}
+    </select>
+</mapper>

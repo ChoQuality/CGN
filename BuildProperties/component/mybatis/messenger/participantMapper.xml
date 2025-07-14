@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ParticipantMapper">
+
+    <!-- 채팅방 참가 정보 확인 -->
+    <select id="getParticipantInfo" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto" resultType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*ParticipantMapper.getParticipantInfo*/
+        SELECT room_id
+             , user_key
+             , present_yn
+             , deleted_yn
+             , public_yn
+             , enter_dt
+             , read_message_id
+          FROM messenger.tbl_participant
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </select>
+
+    <!-- 채팅방 참가자 정보 저장 -->
+    <insert id="saveParticipant" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*ParticipantMapper.saveParticipant*/
+        INSERT INTO messenger.tbl_participant (room_id, user_key, public_yn, enter_dt, create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES (#{roomId}, #{userKey}, #{publicYn}, NOW(), #{createUserKey}, NOW(), #{modifyUserKey}, NOW())
+    </insert>
+
+    <!-- 채팅방 참가자 정보 수정(참가여부) -->
+    <update id="updateParticipant" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*ParticipantMapper.updateParticipant*/
+        UPDATE messenger.tbl_participant
+           SET modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+             , enter_dt = NOW()
+             <if test="presentYn != null and presentYn != ''">
+             , present_yn = #{presentYn}
+             </if>
+             <if test="deletedYn != null and deletedYn != ''">
+             , deleted_yn = #{deletedYn}
+             </if>
+             <if test="publicYn != null and publicYn != ''">
+             , public_yn = #{publicYn}
+             </if>
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </update>
+
+    <!-- 채팅방 참가자 리스트 조회 -->
+    <select id="getRoomParticipantList" parameterType="Map" resultType="com.gsbizple.wiz.messenger.dto.ParticipantListDto">
+        /*ParticipantMapper.getRoomParticipantList*/
+        WITH RECURSIVE groupInfo AS (SELECT org_key
+                                          , org_cd
+                                          , org_nm
+                                          , org_path
+                                          , corporate_id
+	                                   FROM dwp.tbl_com_org
+	                                  WHERE use_flag = 1
+	                                    AND upper_org_cd IS NULL
+  	                                  UNION ALL
+ 	                                 SELECT tb1.org_key
+ 	                                      , tb1.org_cd
+ 	                                      , CONCAT(tb2.org_nm, '>', tb1.org_nm) AS org_nm
+ 	                                      , tb1.org_path
+ 	                                      , tb1.corporate_id
+ 	                                   FROM dwp.tbl_com_org tb1
+ 	                                  INNER JOIN groupInfo tb2
+ 	                                     ON tb1.upper_org_cd = tb2.org_cd
+ 	                                    AND tb1.corporate_id = tb2.corporate_id
+ 	                                    AND tb1.use_flag = 1)
+        SELECT participant.room_id
+             , participant.user_key
+             , user.user_nm
+             , orgInfo.corporate_id
+             , orgInfo.org_path
+             , orgInfo.org_nm AS org_path_nm
+             , user.login_status
+             , user.thumb_img_path
+          FROM messenger.tbl_participant participant
+         INNER JOIN dwp.tbl_com_user user
+            ON participant.user_key = user.user_key
+         INNER JOIN groupInfo orgInfo
+            ON user.org_key = orgInfo.org_key
+         WHERE participant.room_id = #{roomId}
+           <if test="presentYn != null and presentYn != ''">
+           AND participant.present_yn = #{presentYn}
+           </if>
+           <if test="deletedYn != null and deletedYn != ''">
+           AND participant.deleted_yn = #{deletedYn}
+           </if>
+    </select>
+
+    <!-- 채팅방 참가중인 유저 수 조회(개인) -->
+    <select id="participantCnt" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto" resultType="Integer">
+        /*ParticipantMapper.participantCnt*/
+        SELECT IF(room.room_type = 'PRIVATE', COUNT(CASE WHEN participant.deleted_yn = 'N' THEN 1 END), COUNT(CASE WHEN participant.present_yn = 'Y' THEN 1 END)) AS cnt
+          FROM messenger.tbl_room room
+         INNER JOIN messenger.tbl_participant participant
+            ON room.room_id = participant.room_id
+         WHERE room.room_id = #{roomId}
+           AND participant.user_key != #{userKey}
+    </select>
+
+    <!-- 채팅방 참가자 리스트 조회 -->
+    <select id="getParticipantList" parameterType="Map" resultType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*ParticipantMapper.getParticipantList*/
+        SELECT room_id
+             , user_key
+             , present_yn
+             , deleted_yn
+             , public_yn
+             , enter_dt
+             , read_message_id
+          FROM messenger.tbl_participant
+         WHERE room_id = #{roomId}
+           <if test="presentYn != null and presentYn != ''">
+           AND present_yn = #{presentYn}
+           </if>
+           <if test="deletedYn != null and deletedYn != ''">
+            AND deleted_yn = #{deletedYn}
+           </if>
+    </select>
+
+
+    <!-- 채팅방 참가자 User Key 조회 -->
+    <select id="getUserKeyListOfRoom" parameterType="java.util.List"  resultType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*ParticipantMapper.getUserKeyListOfRoom*/
+        select user_key, room_id
+        FROM messenger.tbl_participant participant
+        WHERE participant.room_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.roomId}
+        </foreach>
+          AND participant.present_yn = 'Y'
+          AND participant.deleted_yn = 'N'
+
+    </select>
+</mapper>

@@ -1,0 +1,181 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<div class="contents__title">
+    <h3 class="title">대시보드</h3>
+</div>
+
+<div class="contents__inner dashboard">
+    <div class="d-flex align-items-center justify-content-between">
+        <div id class="flex-center gap-15">
+            <button type="button" class="btn has-icon" id="prevMonthBtn"><i class="icon is-30 is-prev-30"></i></button>
+            <div class="fs-22 fw-500" id="searchYyyymm">2025년 2월</div>
+            <button type="button" class="btn has-icon" id="nextMonthBtn"><i class="icon is-30 is-next-30"></i></button>
+        </div>
+
+        <div class="searchGroup">
+            <div class="formSelect" id="_viewDashSelect1" style="width: 16.6rem;">
+                <div class="dashSelect-1"></div>
+            </div>
+            <div class="formSelect" id="_viewDashSelect2" style="width: 16.6rem;">
+                <div class="dashSelect-2"></div>
+            </div>
+            <div class="formSelect" id="_viewDashSelect3" style="width: 16.6rem;">
+                <div class="dashSelect-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="has-scrollbars-x is-small">
+        <div class="d-flex gap-30 mt-20">
+            <div class="contentsCard flex-grow-1">
+                <div class="contentsCard__top">
+                    <h4 class="title">진행현황</h4>
+                </div>
+
+                <div class="d-flex gap-10 progressCard">
+                    <div class="progressCard__item">
+                        <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>TOTAL</div>
+                        <p class="progressCare__value" id="progress_totalCnt">
+                            0
+                        </p>
+                    </div>
+                    <div class="progressCard__item">
+                        <div class="progressCard__title"><i class="icon is-18 is-dashboard-rate"></i>COMPLETE RATE</div>
+                        <p class="progressCare__value" id="progress_completeRate">
+                            0.0%
+                        </p>
+                    </div>
+                    <div class="progressCard__item">
+                        <div class="progressCard__title"><i class="icon is-18 is-dashboard-ongoing"></i>ONGOING</div>
+                        <p class="progressCare__value" id="progress_ongoingCnt">
+                            0
+                        </p>
+                    </div>
+                    <div class="progressCard__item">
+                        <div class="progressCard__title"><i class="icon is-18 is-dashboard-complete"></i>COMPLETE</div>
+                        <p class="progressCare__value" id="progress_completeCnt">
+                            0
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contentsCard p-20">
+                <div id="wordCloud" style=" width: 55rem; height: 24rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailGraph" class="mt-60">
+        <div class="d-flex align-items-center justify-content-between">
+            <h4 class="title">세부 진행현황</h4>
+            <div class="fs-13 text-blue-600">조회기준 <span class="text-blue-500" id="detailSearchPeriod">2024.12.01 ~ 2024.12.15</span></div>
+        </div>
+
+        <div class="chart has-scrollbars-x is-small mt-40">
+            <div id="detailColumnChart" style="width: 100%"></div>
+        </div>
+    </div>
+
+    <div id="todoToggleList" class="slideToggle">
+        <div class="mt-60" id="test">
+            <div class="d-flex align-items-center justify-content-between">
+                <h4 class="title">TO DO 상세내용</h4>
+                <div class="fs-13 text-blue-600">조회기준 <span class="text-blue-500" id="detailSearchPeriod2">2024.12.01 ~ 2024.12.15</span></div>
+            </div>
+
+            <div class="todoList divider mt-10">
+                <div class="todoList__body">
+                    <div class="todoList__item">
+                        <div class="todoList__group">
+                            <div class="todoList__date">
+                                <div class="dDay is-today">오늘</div>
+                                <div class="date">2024.12.28 10:00</div>
+                            </div>
+                            <div class="tag bg-skyBlue-400">ID 20241114001</div>
+                        </div>
+                        <div class="todoList__group is-full">
+                            <div class="todoList__title">
+                                <h4 class="title">U.STRA TICKET 취소수수료 개발 테스트</h4>
+                                <i class="icon is-24 is-system-important"></i>
+                            </div>
+                            <ul class="todoList__info">
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-people-18"></i>담당자</span>
+                                    <div class="tag is-user">
+                                        <span class="status is-gradient is-leftSeat"></span> 이예진 <span class="team">프론트개발3팀</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-people-18"></i>요청자</span>
+                                    <div class="tag is-user">
+                                        <span class="status is-gradient is-online"></span> 김민헌 <span class="team">개발2팀</span>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-file-18"></i>파일</span>
+                                    <div class="todoList__breadcrumbs">
+                                        <a href="javascript:void(0);">GS칼텍스 ERP 장애 보고서_20241119.doc</a>
+                                    </div>
+                                </li>
+
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-memo-18"></i>메모</span>
+                                    <div class="todoList__breadcrumbs">
+                                        <div class="todoMemo">
+                                            <p>QA 담당자 변경으로 인하여, 해당 TO-DO 진행이 불가</p>
+                                            <div class="writer">이주환 QA팀 2024.12.18 09:24</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="todoList__group is-center">
+                            <div class="count">78%</div>
+                        </div>
+                        <div class="todoList__group is-center">
+                            <button type="button" class="btn has-icon"><i class="icon is-42 is-edit-42"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="todoList__item">
+                        <div class="todoList__group">
+                            <div class="todoList__date">
+                                <div class="dDay">D-13</div>
+                                <div class="date">2024.12.28 10:00</div>
+                            </div>
+                            <div class="tag bg-skyBlue-400">ID 20241114001</div>
+                        </div>
+                        <div class="todoList__group is-full">
+                            <div class="todoList__title">
+                                <h4 class="title">U.STRA TICKET 취소수수료 개발 테스트</h4>
+                                <span class="badge is-reject">거절</span>
+                            </div>
+                            <ul class="todoList__info">
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-people-18"></i>담당자</span>
+                                    <div class="tag is-user">
+                                        <span class="status is-gradient is-leftSeat"></span> 이예진 <span class="team">프론트개발3팀</span>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="label"><i class="icon is-18 is-people-18"></i>요청자</span>
+                                    <div class="tag is-user">
+                                        <span class="status is-gradient is-online"></span> 김민헌 <span class="team">개발2팀</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="todoList__group is-center">
+                            <div class="count">78%</div>
+                        </div>
+                        <div class="todoList__group is-center">
+                            <button type="button" class="btn has-icon"><i class="icon is-42 is-edit-42"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

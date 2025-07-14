@@ -1,0 +1,110 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+static def setProfile(){
+    def profile = "dev"
+    println profile
+    return String.valueOf(profile)
+}
+
+def setResource(String profile){
+    def component = "../BuildProperties/component"
+    def properties = "../BuildProperties/wizPortal/".concat(profile)
+    def resource = "../BuildResource"
+    sourceSets {
+        main {
+            resources {
+                srcDirs(component,properties,resource)
+            }
+        }
+    }
+}
+
+buildscript {
+    project.ext.lombok = "../BuildGradle/build-lombok.gradle"
+    project.ext.spring_3 = "../BuildGradle/build-spring3.4-default.gradle"
+    project.ext.jwt = "../BuildGradle/build-jwt.gradle"
+    project.ext.maria = "../BuildGradle/build-maria.gradle"
+    project.ext.redis = "../BuildGradle/build-redis.gradle"
+    project.ext.crypto = "../BuildGradle/build-crypto.gradle"
+    project.ext.apache = "../BuildGradle/build-apache.gradle"
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+apply from : lombok
+apply from : spring_3
+apply from : jwt
+apply from : maria
+apply from : redis
+apply from : crypto
+apply from : apache
+
+
+setResource(setProfile())
+
+group = 'com.gsbiz.wiz.wizportal'
+version = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd"))
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(":common"))
+    implementation(project(":ai"))
+    implementation(project(":messenger"))
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('compileJava') {
+    dependsOn ':common:jar'
+    dependsOn ':ai:jar'
+    dependsOn ':messenger:jar'
+}
+tasks.named("bootJar") {
+    dependsOn(tasks.named('compileJava'))
+}
+
+
+tasks.named("jar") {
+    enabled = false
+}
+
+tasks.register("delBuildLibs", Delete) {
+    def libs = ["libs"]
+    libs.each { lib ->
+        delete(libs)
+    }
+}
+
+tasks.named("clean") {
+    dependsOn(tasks.named("delBuildLibs"))
+}

@@ -1,0 +1,81 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="allPortLetList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="userPortLetList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="emptyCount" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="portletDto" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+
+<header class="header">
+    <h1 class="fs-28 fw-600">메인관리</h1>
+
+    <div class="btnGroup gap-5">
+        <button type="button" class="btn is-secondary" id="cancel" >취소</button>
+        <button type="button" class="btn is-primary" id="save">저장</button>
+    </div>
+</header>
+<div class="container is-main is-portlet">
+    <div class="sidebarWrap">
+        <div class="sidebar">
+            <div class="has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                <ul id="draggable" class="sidebar__menu">
+
+                    <th:block th:each="portletDto:${allPortLetList.getData()}">
+                        <li th:data-col="${portletDto.getPortletSize()}" th:data-title="${portletDto.getPortletNm()}" th:data-image="${portletDto.getThumbnailImage()}" th:data-portletId="${portletDto.getPortletId()}" th:class="${portletDto.getSelected()}">
+                            <a class="sidebar__menuItem">
+                                <div class="portletItem">[[${portletDto.getPortletNm()}]]<span>[[${portletDto.getPortletSize()}]] X 1</span></div>
+                            </a>
+                        </li>
+                    </th:block>
+
+                </ul>
+            </div><div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable os-scrollbar-auto-hide-hidden" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-handle-interactive os-scrollbar-visible os-scrollbar-cornerless os-scrollbar-auto-hide-hidden" style="--os-viewport-percent: 0.7461; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+        </div>
+    </div>
+    <main>
+        <div class="portlet__info"><i class="icon is-24 is-portlet-add"></i>왼쪽 메뉴를 DRAG&amp;DROP으로 공간에 이동시켜주세요.</div>
+        <div id="portlet" class="portlet is-edit">
+
+            <th:block th:each="portletDto:${userPortLetList.getData()}">
+                <th:block th:if="${portletDto.getPortletSize() == 2}">
+                    <div class="portlet__group is-col-2" th:data-content="${portletDto.getPortletNm()}" th:data-portletId="${portletDto.getPortletId()}">
+                        <img th:src="${portletDto.getThumbnailImage()}" alt="">
+                    </div>
+                </th:block>
+                <th:block th:unless="${portletDto.getPortletSize() == 2}">
+                    <div class="portlet__group" th:data-content="${portletDto.getPortletNm()}" th:data-portletId="${portletDto.getPortletId()}">
+                        <img th:src="${portletDto.getThumbnailImage()}" alt="">
+                    </div>
+                </th:block>
+            </th:block>
+
+            <th:block th:each="num : ${#numbers.sequence(1, emptyCount.getData())}">
+                <div class="portlet__group is-empty">
+                    <div class="inner">
+                        <img src="data:image/png;base64,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" alt="">
+                    </div>
+                </div>
+            </th:block>
+
+        </div>
+    </main>
+</div>
+<!-- 알럿모달 추가 -->
+<div id="confirmModal" class="modal is-alert">
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top"><h2 class="title">알림</h2></div>
+        </div>
+        <!--여기다가 문구를 넣어주시면 되요 -->
+        <div class="modal__contents"></div>
+
+        <div class="modal__footer">
+            <button type="button" class="btn is-secondary is-small" data-value="cancel" id="cancelBtn" >취소</button>
+            <button type="button" class="btn is-primary is-small" data-value="ok" id="confirmBtn">확인</button>
+        </div>
+    </div>
+
+    <div class="modal__mask"></div>
+    <!-- <div class="modal__mask" data-function="modalClose"></div> -->
+</div>

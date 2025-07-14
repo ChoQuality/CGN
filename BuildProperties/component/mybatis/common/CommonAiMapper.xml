@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommonAiMapper">
+
+    <!-- AI API연동 URL정보 조회 -->
+    <select id="getAiUrl" parameterType="java.lang.String" resultType="java.lang.String">
+        /* CommonAiMapper.getAiUrl */
+        SELECT ai_service_url AS aiServiceUrl
+          FROM batch.tbl_ai_service
+         WHERE ai_service_id = #{serviceId}
+           AND use_flag = 1
+    </select>
+
+    <!-- AI연동 실시간 이력 저장 -->
+    <insert id="setStartInterfaceInfo" parameterType="com.gsbizple.wiz.common.dto.AiRealTimeDto" useGeneratedKeys="true" keyProperty="jobId" keyColumn="JOB_ID">
+        /*CommonAiMapper.setStartInterfaceInfo*/
+        INSERT INTO batch.tbl_ai_job_real (ai_service_cd, job_exec_user_key, job_exec_status, job_start_dt, job_result, ai_service_param, create_dt, create_user_key)
+        VALUES (#{aiServiceCd}, #{jobExecUserKey}, #{jobExecStatus}, NOW(), #{jobResult}, #{aiServiceParam}, NOW(), #{createUserKey})
+    </insert>
+
+    <!-- AI연동 결과 저장처리 -->
+    <update id="setUpdateInterfaceInfo" parameterType="com.gsbizple.wiz.todo.dto.TblAIJobRealDto">
+        /*CommonAiMapper.setUpdateInterfaceInfo*/
+        UPDATE batch.tbl_ai_job_real
+           SET job_exec_status = #{jobExecStatus}
+             , job_end_dt = NOW()
+             , ai_service_result = #{aiServiceResult}
+             , job_result = #{jobResult}
+         WHERE job_id = #{jobId}
+    </update>
+
+    <!-- AI 연동 정보 조회 -->
+    <select id="getAiInterfaceInfo" parameterType="map" resultType="map">
+        /*CommonAiMapper.getAiInterfaceInfo*/
+        SELECT ai_service_url                                                    AS aiServiceUrl
+             , ai_service_key                                                    AS aiServiceKey
+             , (SELECT emp_no FROM dwp.tbl_com_user WHERE user_key = ${userKey}) AS empNo
+             , (SELECT email FROM dwp.tbl_com_user WHERE user_key = ${userKey})  AS email
+          FROM batch.tbl_ai_service
+         WHERE ai_service_cd = #{serviceCd}
+           AND use_flag = 1
+    </select>
+
+</mapper>

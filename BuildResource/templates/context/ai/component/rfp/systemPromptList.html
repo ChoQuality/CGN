@@ -1,0 +1,24 @@
+<!--/*@thymesVar id="SystemPromptList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="layoutUtilService" type="com.gsbizple.wiz.common.service.view.LayoutUtilService"*/-->
+
+<th:block th:each="SystemPrompts: ${SystemPromptList.getData()}">
+    <th:block th:with="SystemPrompt=${SystemPrompts}">
+
+        <li class="mt-10" th:data-id="${SystemPrompt.getId()}">
+            <div class="badgeGroup">
+
+                <label class="check__label">
+                    <input class="check__input has-value" type="checkbox">
+                    <span class="check__style"></span>
+                </label>
+
+                <div class="badge is-approval" th:text="|${SystemPrompt.getId()}번 템플릿|"></div>
+
+                <div class="badge is-finish" style="cursor: pointer;"
+                     th:data-context="${SystemPrompt.getPrompt()}"
+                >상세보기</div>
+
+            </div>
+        </li>
+    </th:block>
+</th:block>

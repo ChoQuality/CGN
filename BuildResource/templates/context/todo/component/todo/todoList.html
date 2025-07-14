@@ -1,0 +1,119 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="todoList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="todoListCnt" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="nextPageNo" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="totalPageNo" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="loginInfo" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="todo" type="com.gsbizple.wiz.todo.dto.TblDwpTodoDto"*/-->
+<!--/*@thymesVar id="todoRep" type="com.gsbizple.wiz.todo.dto.TblDwpTodoRepDto"*/-->
+<!--/*@thymesVar id="todoFile" type="com.gsbizple.wiz.todo.dto.TblComFileDto"*/-->
+<!--/*@thymesVar id="todoMemo" type="com.gsbizple.wiz.todo.dto.TblDwpTodoMemoDto"*/-->
+
+<th:block th:if="${not #lists.isEmpty(todoList.getData())}">
+    <th:block th:each="todo : ${todoList.getData()}">
+        <div class="todoList__item" th:attr="data-todo-id=${todo.getTodoId()}">
+            <div class="todoList__group">
+                <div class="todoList__date">
+                    <th:block th:if="${todo.getJobEndDay() == 0}"><div class="dDay is-today">오늘</div></th:block>
+                    <th:block th:if="${todo.getJobEndDay() > 0}"><div class="dDay is-delay" th:text="'D+'+${todo.getJobEndDay()}"></div></th:block>
+                    <th:block th:if="${todo.getJobEndDay() < 0}"><div class="dDay" th:text="'D'+${todo.getJobEndDay()}"></div></th:block>
+                    <div class="date" th:text="${todo.getJobEndDt()}"></div>
+                </div>
+                <div class="tag bg-skyBlue-400" >ID <span th:text="${todo.getTodoId()}"></span></div>
+            </div>
+            <div class="todoList__group is-full">
+                <div class="todoList__title">
+                    <h4 class="title" th:text="${todo.getTodoReqConts()}"></h4>
+                    <th:block th:if="${todo.getPrivateYn() == '1'}"><span class="badge">비공개</span></th:block>
+                    <th:block th:if="${todo.getImportantYn() == '1'}"><i class="icon is-24 is-system-important"></i></th:block>
+                    <th:block th:if="${todo.getTodoStatus() == 'R'}"><span class="badge is-reject">거절</span></th:block>
+                </div>
+                <ul class="todoList__info">
+                    <li>
+                        <span class="label"><i class="icon is-18 is-people-18"></i>담당자</span>
+                        <th:block th:if="${not #lists.isEmpty(todo.getRepUserList())}">
+                            <th:block th:each="todoRep : ${todo.getRepUserList()}">
+                                <div class="tag is-user">
+                                    <th:block th:switch="${todoRep.getLoginStatus()}">
+                                        <th:block th:case="'LOGIN'"><span class="status is-gradient is-online" th:user-key="${todoRep.getRepUserKey()}"></span></th:block>
+                                        <th:block th:case="'LOGOFF'"><span class="status is-gradient is-offline" th:user-key="${todoRep.getRepUserKey()}"></span></th:block>
+                                        <th:block th:case="'AWAY'"><span class="status is-gradient is-leftSeat" th:user-key="${todoRep.getRepUserKey()}"></span></th:block>
+                                        <th:block th:case="*"><span class="status is-gradient is-offline" th:user-key="${todoRep.getRepUserKey()}"></span></th:block>
+                                    </th:block> <span th:text="${todoRep.getRepUserNm()}"></span> <span class="team" th:text="${todoRep.getRepOrgNm()}"></span>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </li>
+                    <li>
+                        <span class="label"><i class="icon is-18 is-people-18"></i>요청자</span>
+                        <div class="tag is-user">
+                    <th:block th:switch="${todo.getReqUserLoginStatus()}">
+                        <th:block th:case="'LOGIN'"><span class="status is-gradient is-online" th:user-key="${todo.getReqUserKey()}"></span></th:block>
+                        <th:block th:case="'LOGOFF'"><span class="status is-gradient is-offline" th:user-key="${todo.getReqUserKey()}"></span></th:block>
+                        <th:block th:case="'AWAY'"><span class="status is-gradient is-leftSeat" th:user-key="${todo.getReqUserKey()}"></span></th:block>
+                        <th:block th:case="*"><span class="status is-gradient is-offline" th:user-key="${todo.getReqUserKey()}"></span></th:block>
+                    </th:block>
+                            <span th:text="${todo.getReqUserNm()}"></span> <span class="team" th:text="${todo.getReqOrgNm()}"></span>
+                        </div>
+                    </li>
+                    <th:block th:if="${not #lists.isEmpty(todo.getTodoFileList())}">
+                    <li>
+                        <span class="label"><i class="icon is-18 is-file-18"></i>파일</span>
+                        <div class="todoList__breadcrumbs">
+                        <th:block th:each="todoFile : ${todo.getTodoFileList()}">
+                            <a th:href="'/api/todo/download/' + ${todoFile.getFileId()}" th:text="${todoFile.getFileNm()}" ></a>
+                        </th:block>
+                        </div>
+                    </li>
+                    </th:block>
+                    <th:block th:if="${not #lists.isEmpty(todo.getTodoMemoList())}">
+                        <li  style="width:100%;">
+                            <span class="label"><i class="icon is-18 is-memo-18"></i>메모</span>
+                            <div class="todoList__breadcrumbs" style="width:100%;">
+                        <th:block th:each="todoMemo : ${todo.getTodoMemoList()}">
+                            <div class="todoMemo" style="width:100%;">
+                                <p th:text="${todoMemo.getMemoConts()}" style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal; width: calc(100%);"></p>
+                                <div class="writer" th:text="${todoMemo.getCreateUserNm()}+' '+${todoMemo.getCreateUserOrgNm()}+' '+${todoMemo.getCreateDt()}"></div>
+                            </div>
+                        </th:block>
+                            </div>
+                        </li>
+                    </th:block>
+                </ul>
+
+                <th:block th:if="${not #lists.isEmpty(todo.getRepUserList())}">
+                    <th:block th:each="todoRep : ${todo.getRepUserList()}">
+                        <th:block th:if="${todo.getTodoStatus() == 'S' and todoRep.getRepUserKey() == loginInfo.getData().getUserKey()}">
+                            <div class="btnGroup gap-5 confirmBtnGroup">
+                                <button type="button" class="btn is-primary is-small" name="confirmBtn">수락</button>
+                                <button type="button" class="btn is-secondary is-small" name="rejectBtn">거절</button>
+                            </div>
+                        </th:block>
+                    </th:block>
+                </th:block>
+            </div>
+            <div class="todoList__group is-center">
+                <div class="count" th:text="${todo.getCompleteRatio()} + '%'"></div>
+            </div>
+            <div class="todoList__group is-center" >
+                <th:block th:if="${todo.getTodoStatus() == 'S' or todo.getTodoStatus() == 'P' or todo.getTodoStatus() == 'R'}">
+                    <button type="button" class="btn has-icon" name="todoDetailBtn"><i class="icon is-42 is-edit-42"></i></button>
+                </th:block>
+            </div>
+        </div>
+    </th:block>
+</th:block>
+
+<th:block th:if="${#lists.isEmpty(todoList.getData())}">
+    <div class="chatList is-empty">
+        <span class="fw-600">< 조회되는 TO-DO가 없습니다. ></span>
+    </div>
+</th:block>
+
+<div class="todoList__more">
+    <input type="hidden" id="totalTodoCnt" th:value="${todoListCnt.getData()}" >
+    <th:block th:if="${nextPageNo.getData() > 0}">
+    <button id="btn_todoList__more" type="button" class="btn is-more" th:attr="data-next-index=${nextPageNo.getData()}"><span class="fw-500" th:text="'더보기 ' + ${nextPageNo.getData()}"></span>/<p th:text="${totalPageNo.getData()}"></p></button>
+    </th:block>
+</div>

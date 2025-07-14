@@ -1,0 +1,1081 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AWP | 로그인</title>
+    <!-- favicon -->
+    <style type="text/css">svg:not(:root).svg-inline--fa {
+        overflow: visible;
+    }
+
+    .svg-inline--fa {
+        display: inline-block;
+        font-size: inherit;
+        height: 1em;
+        overflow: visible;
+        vertical-align: -0.125em;
+    }
+    .svg-inline--fa.fa-lg {
+        vertical-align: -0.225em;
+    }
+    .svg-inline--fa.fa-w-1 {
+        width: 0.0625em;
+    }
+    .svg-inline--fa.fa-w-2 {
+        width: 0.125em;
+    }
+    .svg-inline--fa.fa-w-3 {
+        width: 0.1875em;
+    }
+    .svg-inline--fa.fa-w-4 {
+        width: 0.25em;
+    }
+    .svg-inline--fa.fa-w-5 {
+        width: 0.3125em;
+    }
+    .svg-inline--fa.fa-w-6 {
+        width: 0.375em;
+    }
+    .svg-inline--fa.fa-w-7 {
+        width: 0.4375em;
+    }
+    .svg-inline--fa.fa-w-8 {
+        width: 0.5em;
+    }
+    .svg-inline--fa.fa-w-9 {
+        width: 0.5625em;
+    }
+    .svg-inline--fa.fa-w-10 {
+        width: 0.625em;
+    }
+    .svg-inline--fa.fa-w-11 {
+        width: 0.6875em;
+    }
+    .svg-inline--fa.fa-w-12 {
+        width: 0.75em;
+    }
+    .svg-inline--fa.fa-w-13 {
+        width: 0.8125em;
+    }
+    .svg-inline--fa.fa-w-14 {
+        width: 0.875em;
+    }
+    .svg-inline--fa.fa-w-15 {
+        width: 0.9375em;
+    }
+    .svg-inline--fa.fa-w-16 {
+        width: 1em;
+    }
+    .svg-inline--fa.fa-w-17 {
+        width: 1.0625em;
+    }
+    .svg-inline--fa.fa-w-18 {
+        width: 1.125em;
+    }
+    .svg-inline--fa.fa-w-19 {
+        width: 1.1875em;
+    }
+    .svg-inline--fa.fa-w-20 {
+        width: 1.25em;
+    }
+    .svg-inline--fa.fa-pull-left {
+        margin-right: 0.3em;
+        width: auto;
+    }
+    .svg-inline--fa.fa-pull-right {
+        margin-left: 0.3em;
+        width: auto;
+    }
+    .svg-inline--fa.fa-border {
+        height: 1.5em;
+    }
+    .svg-inline--fa.fa-li {
+        width: 2em;
+    }
+    .svg-inline--fa.fa-fw {
+        width: 1.25em;
+    }
+
+    .fa-layers svg.svg-inline--fa {
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .fa-layers {
+        display: inline-block;
+        height: 1em;
+        position: relative;
+        text-align: center;
+        vertical-align: -0.125em;
+        width: 1em;
+    }
+    .fa-layers svg.svg-inline--fa {
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+    }
+
+    .fa-layers-counter, .fa-layers-text {
+        display: inline-block;
+        position: absolute;
+        text-align: center;
+    }
+
+    .fa-layers-text {
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+    }
+
+    .fa-layers-counter {
+        background-color: #ff253a;
+        border-radius: 1em;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        color: #fff;
+        height: 1.5em;
+        line-height: 1;
+        max-width: 5em;
+        min-width: 1.5em;
+        overflow: hidden;
+        padding: 0.25em;
+        right: 0;
+        text-overflow: ellipsis;
+        top: 0;
+        -webkit-transform: scale(0.25);
+        transform: scale(0.25);
+        -webkit-transform-origin: top right;
+        transform-origin: top right;
+    }
+
+    .fa-layers-bottom-right {
+        bottom: 0;
+        right: 0;
+        top: auto;
+        -webkit-transform: scale(0.25);
+        transform: scale(0.25);
+        -webkit-transform-origin: bottom right;
+        transform-origin: bottom right;
+    }
+
+    .fa-layers-bottom-left {
+        bottom: 0;
+        left: 0;
+        right: auto;
+        top: auto;
+        -webkit-transform: scale(0.25);
+        transform: scale(0.25);
+        -webkit-transform-origin: bottom left;
+        transform-origin: bottom left;
+    }
+
+    .fa-layers-top-right {
+        right: 0;
+        top: 0;
+        -webkit-transform: scale(0.25);
+        transform: scale(0.25);
+        -webkit-transform-origin: top right;
+        transform-origin: top right;
+    }
+
+    .fa-layers-top-left {
+        left: 0;
+        right: auto;
+        top: 0;
+        -webkit-transform: scale(0.25);
+        transform: scale(0.25);
+        -webkit-transform-origin: top left;
+        transform-origin: top left;
+    }
+
+    .fa-lg {
+        font-size: 1.3333333333em;
+        line-height: 0.75em;
+        vertical-align: -0.0667em;
+    }
+
+    .fa-xs {
+        font-size: 0.75em;
+    }
+
+    .fa-sm {
+        font-size: 0.875em;
+    }
+
+    .fa-1x {
+        font-size: 1em;
+    }
+
+    .fa-2x {
+        font-size: 2em;
+    }
+
+    .fa-3x {
+        font-size: 3em;
+    }
+
+    .fa-4x {
+        font-size: 4em;
+    }
+
+    .fa-5x {
+        font-size: 5em;
+    }
+
+    .fa-6x {
+        font-size: 6em;
+    }
+
+    .fa-7x {
+        font-size: 7em;
+    }
+
+    .fa-8x {
+        font-size: 8em;
+    }
+
+    .fa-9x {
+        font-size: 9em;
+    }
+
+    .fa-10x {
+        font-size: 10em;
+    }
+
+    .fa-fw {
+        text-align: center;
+        width: 1.25em;
+    }
+
+    .fa-ul {
+        list-style-type: none;
+        margin-left: 2.5em;
+        padding-left: 0;
+    }
+    .fa-ul > li {
+        position: relative;
+    }
+
+    .fa-li {
+        left: -2em;
+        position: absolute;
+        text-align: center;
+        width: 2em;
+        line-height: inherit;
+    }
+
+    .fa-border {
+        border: solid 0.08em #eee;
+        border-radius: 0.1em;
+        padding: 0.2em 0.25em 0.15em;
+    }
+
+    .fa-pull-left {
+        float: left;
+    }
+
+    .fa-pull-right {
+        float: right;
+    }
+
+    .fa.fa-pull-left,
+    .fas.fa-pull-left,
+    .far.fa-pull-left,
+    .fal.fa-pull-left,
+    .fab.fa-pull-left {
+        margin-right: 0.3em;
+    }
+    .fa.fa-pull-right,
+    .fas.fa-pull-right,
+    .far.fa-pull-right,
+    .fal.fa-pull-right,
+    .fab.fa-pull-right {
+        margin-left: 0.3em;
+    }
+
+    .fa-spin {
+        -webkit-animation: fa-spin 2s infinite linear;
+        animation: fa-spin 2s infinite linear;
+    }
+
+    .fa-pulse {
+        -webkit-animation: fa-spin 1s infinite steps(8);
+        animation: fa-spin 1s infinite steps(8);
+    }
+
+    @-webkit-keyframes fa-spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes fa-spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+        }
+    }
+    .fa-rotate-90 {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+
+    .fa-rotate-180 {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    .fa-rotate-270 {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+    }
+
+    .fa-flip-horizontal {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
+        -webkit-transform: scale(-1, 1);
+        transform: scale(-1, 1);
+    }
+
+    .fa-flip-vertical {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+        -webkit-transform: scale(1, -1);
+        transform: scale(1, -1);
+    }
+
+    .fa-flip-both, .fa-flip-horizontal.fa-flip-vertical {
+        -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
+        -webkit-transform: scale(-1, -1);
+        transform: scale(-1, -1);
+    }
+
+    :root .fa-rotate-90,
+    :root .fa-rotate-180,
+    :root .fa-rotate-270,
+    :root .fa-flip-horizontal,
+    :root .fa-flip-vertical,
+    :root .fa-flip-both {
+        -webkit-filter: none;
+        filter: none;
+    }
+
+    .fa-stack {
+        display: inline-block;
+        height: 2em;
+        position: relative;
+        width: 2.5em;
+    }
+
+    .fa-stack-1x,
+    .fa-stack-2x {
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .svg-inline--fa.fa-stack-1x {
+        height: 1em;
+        width: 1.25em;
+    }
+    .svg-inline--fa.fa-stack-2x {
+        height: 2em;
+        width: 2.5em;
+    }
+
+    .fa-inverse {
+        color: #fff;
+    }
+
+    .sr-only {
+        border: 0;
+        clip: rect(0, 0, 0, 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+
+    .sr-only-focusable:active, .sr-only-focusable:focus {
+        clip: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        position: static;
+        width: auto;
+    }
+
+    .svg-inline--fa .fa-primary {
+        fill: var(--fa-primary-color, currentColor);
+        opacity: 1;
+        opacity: var(--fa-primary-opacity, 1);
+    }
+
+    .svg-inline--fa .fa-secondary {
+        fill: var(--fa-secondary-color, currentColor);
+        opacity: 0.4;
+        opacity: var(--fa-secondary-opacity, 0.4);
+    }
+
+    .svg-inline--fa.fa-swap-opacity .fa-primary {
+        opacity: 0.4;
+        opacity: var(--fa-secondary-opacity, 0.4);
+    }
+
+    .svg-inline--fa.fa-swap-opacity .fa-secondary {
+        opacity: 1;
+        opacity: var(--fa-primary-opacity, 1);
+    }
+
+    .svg-inline--fa mask .fa-primary,
+    .svg-inline--fa mask .fa-secondary {
+        fill: black;
+    }
+
+    .fad.fa-inverse {
+        color: #fff;
+    }</style><link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAQAAADZc7J/AAABtklEQVR42qWTvUtbURyGn0rhJm2UUmi5tlOFdKtgQTq5uRW6tRo6l+4duougIG6CH1H/AScndwe/gmIgTm4qoomgg4mYiL7m3ovhfhzCkTzP9nLve+/5nXMw0kOORQpUaDStUCDPKN1Y8ZllashgjSWytCXNNHeojQ2mSIGZLCVk4Ra9GBiggiw9oT/59eB1+wqXECmK6JnukqbFNKLlH3UJG8daGxedvLSrQZuCa1x8llFYjzNh4yxAD7VkwbmwsUo35JCxwM4RWLQp+Kbhpo6IuwAFm4J9eXwwnUouOiooQ72jgtuOCwxLuJdUiWVFefQalmAY4pGkB70NJV268LO0cYj5eLgmj3+h5Lc8SiLpPIzGwx/yuFFO+H7XpTz+iqQ/IUM1Gr7QugKKWtGOAg6U0lfNaCh6lDMASyjqe+0pyqE+CZXi+5PHJ0sDRX2l/zpXwJXG9cZPVyVtiCfr9EHAFEr6UgMa1mDoBjga0mvx5CQtUmyhZ7qJQwiXY4S9p3wkRj8nyNJjvmDgHeuWP++CGYcxqqiNdSZwaIvLLOaSKgv0YUWGEebZpky9aZlt5vhFxvToIzYpflkJkjiFAAAAAElFTkSuQmCC">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAA1ElEQVR42m2QO0oDYRRGj6BRkHQ2aS3NWNm7GAVxF9paJGZIiLoSCx+bmBFdhZCHVUaOwZ8LyfDf01y4h++DCzGnlNQs19SMKNiafab84gYNEzoQ53fM8BbKA2Ivp4z/u1P4rc/SpqEPJSZhmcsYwkdbOPfJgxAqWLSFa7Ubwhzmab3xJyfMiIor9VjEqTN3NipGaT3y29oL71x5bxEZAyhoknLmp7ry0V2/vBRpOAGYYNDzUMRuKikBoMMrZnhhD0IZ07R+WMY5ps+QisWaikHqBvgDlbLejai5KhQAAAAASUVORK5CYII=">
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICAgIm5hbWUiOiAiIiwKICAgICJzaG9ydF9uYW1lIjogIiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogIi9hbmRyb2lkLWNocm9tZS0xOTJ4MTkyLnBuZyIsCiAgICAgICAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogIi9hbmRyb2lkLWNocm9tZS01MTJ4NTEyLnBuZyIsCiAgICAgICAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgICAgIH0KICAgIF0sCiAgICAidGhlbWVfY29sb3IiOiAiI2ZmZmZmZiIsCiAgICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAgICJkaXNwbGF5IjogInN0YW5kYWxvbmUiCn0K">
+    <link rel="mask-icon" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDIwMDEwOTA0Ly9FTiIKICJodHRwOi8vd3d3LnczLm9yZy9UUi8yMDAxL1JFQy1TVkctMjAwMTA5MDQvRFREL3N2ZzEwLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4wIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiB3aWR0aD0iNzAwLjAwMDAwMHB0IiBoZWlnaHQ9IjcwMC4wMDAwMDBwdCIgdmlld0JveD0iMCAwIDcwMC4wMDAwMDAgNzAwLjAwMDAwMCIKIHByZXNlcnZlQXNwZWN0UmF0aW89InhNaWRZTWlkIG1lZXQiPgo8bWV0YWRhdGE+CkNyZWF0ZWQgYnkgcG90cmFjZSAxLjE0LCB3cml0dGVuIGJ5IFBldGVyIFNlbGluZ2VyIDIwMDEtMjAxNwo8L21ldGFkYXRhPgo8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjAwMDAwMCw3MDAuMDAwMDAwKSBzY2FsZSgwLjEwMDAwMCwtMC4xMDAwMDApIgpmaWxsPSIjMDAwMDAwIiBzdHJva2U9Im5vbmUiPgo8cGF0aCBkPSJNMzI3OCA2OTk1IGMtMSAtMSAtNDIgLTUgLTg5IC05IC00NyAtNCAtOTUgLTggLTEwNSAtMTAgLTEwIC0yIC00MQotNyAtNjkgLTEwIC0zMzUgLTQ0IC03MTUgLTE1OCAtMTAzMCAtMzEyIC0xODAgLTg3IC00NDggLTI0NyAtNTU1IC0zMzEgLTggLTYKLTUxIC00MCAtOTUgLTc0IC0zNDIgLTI2NiAtNjUwIC02MjMgLTg3NSAtMTAxNCAtNDcgLTgzIC0xNzAgLTMyNyAtMTcwIC0zNDAKMCAtMyAtOSAtMjQgLTIwIC00OCAtNTcgLTEyMyAtMTU3IC00MzUgLTE4NiAtNTgyIC0yIC0xMSAtMTAgLTU0IC0xOSAtOTUgLTI5Ci0xNDcgLTM2IC0yMDAgLTUyIC0zNzAgLTE1IC0xNjUgLTggLTU5MiAxMiAtNzExIDIgLTEzIDYgLTQ2IDkgLTc0IDkgLTc4IDIyCi0xNTIgNTEgLTI4NSAyMSAtOTYgOTEgLTMzOSAxMTQgLTM5NSA1IC0xMSAyNSAtNjUgNDYgLTEyMCA2NCAtMTcwIDIxMyAtNDYxCjMxNCAtNjE1IDIxMyAtMzIzIDQ2OSAtNjAzIDc3MSAtODQ1IDkyIC03NCAzNzAgLTI2NSAzODYgLTI2NSA0IDAgMTUgLTYgMjMKLTE0IDQ3IC00MSA0MTMgLTIxMiA1NzYgLTI3MCA3OSAtMjcgMjYxIC04NCAyOTEgLTkwIDEwIC0yIDU3IC0xMyAxMDQgLTI1CjEwOSAtMjYgMjAwIC00MyAyOTkgLTU3IDI1IC0zIDU3IC04IDcxIC0xMCAxNjIgLTI1IDY4MyAtMjUgODQxIDEgMTMgMiA0NyA3Cjc0IDEwIDcxIDEwIDg3IDEzIDExNSAxOCAxNCAzIDQzIDggNjUgMTIgMTE1IDIxIDMxNCA3NCA0NTUgMTIyIDE4OCA2NCA0NzMKMTkyIDYxNCAyNzggMzIgMTkgNjIgMzUgNjcgMzUgNSAwIDkgNSA5IDEwIDAgNiA1IDEwIDEwIDEwIDE1IDAgMjIwIDE0MSAzMzAKMjI3IDE1MiAxMTggMzI0IDI4MCA0NTAgNDIyIDM2IDQxIDcwIDc5IDc2IDg1IDYgNiA0OCA2MSA5NCAxMjEgMTUwIDE5NyAyNzcKNDA1IDM4MyA2MjggMjYgNTMgNDcgOTkgNDcgMTAyIDAgMiAxMSAyOCAyNCA1NyA1NyAxMjcgMTUxIDQyMSAxODIgNTczIDE3IDgxCjU0IDMwMSA1OSAzNTAgNCAzMyA5IDcxIDExIDg1IDkgNDcgMTEgNTI1IDQgNjA1IC0xNSAxNTcgLTIxIDIxMCAtMjUgMjI1IC0yCjggLTcgMzUgLTEwIDYwIC0xNyAxMjkgLTgwIDM4NCAtMTM2IDU1MiAtMzQ4IDEwMzYgLTExNjggMTg1NyAtMjIwNCAyMjA2Ci0xNjggNTcgLTQyMCAxMTkgLTU1NSAxMzcgLTE5IDMgLTQ2IDcgLTYwIDEwIC0xMyAyIC01MiA3IC04NiAxMSAtMzMgMyAtNzQgOAotOTAgMTAgLTMzIDUgLTU0MCAxNCAtNTQ2IDl6Ii8+CjwvZz4KPC9zdmc+Cg==" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <!-- /favicon -->
+
+    <link rel="stylesheet" href="/assets/css/uid.css">
+    <!--<script src="/assets/js/base.js"></script>-->
+    <style type="text/css">@keyframes show {
+                                                                              0% {
+                                                                                  opacity: 0;
+                                                                                  transform: scale3d(0.8, 0.8, 0.8);
+                                                                              }
+
+                                                                              50% {
+                                                                                  transform: scale3d(1.05, 1.05, 1.05);
+                                                                              }
+
+                                                                              100% {
+                                                                                  transform: scale3d(1, 1, 1);
+                                                                              }
+                                                                          }
+
+@keyframes hide {
+    0% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale3d(0.8, 0.8, 0.8);
+    }
+}
+
+@keyframes grow {
+    0% {
+        opacity: 0;
+        transform: scale3d(0.8, 0.8, 0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes shrink {
+    0% {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale3d(0.8, 0.8, 0.8);
+    }
+}
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.emoji-picker {
+    --animation-duration: 0.2s;
+    --animation-easing: ease-in-out;
+
+    --emoji-size: 1.8em;
+    --emoji-size-multiplier: 1.5;
+    --emoji-preview-size: 2em;
+    --emoji-per-row: 8;
+    --row-count: 6;
+
+    --content-height: calc((var(--emoji-size) * var(--emoji-size-multiplier)) * var(--row-count) + var(--category-name-size) + var(--category-button-height) + 0.5em);
+
+    --category-name-size: 0.85em;
+
+    --category-button-height: 2em;
+    --category-button-size: 1.1em;
+    --category-border-bottom-size: 4px;
+
+    --focus-indicator-color: #999999;
+
+    --search-height: 2em;
+
+    --blue-color: #4F81E5;
+
+    --border-color: #CCCCCC;
+    --background-color: #FFFFFF;
+    --text-color: #000000;
+    --secondary-text-color: #666666;
+    --hover-color: #E8F4F9;
+    --search-focus-border-color: var(--blue-color);
+    --search-icon-color: #CCCCCC;
+    --overlay-background-color: rgba(0, 0, 0, 0.8);
+    --popup-background-color: #FFFFFF;
+    --category-button-color: #666666;
+    --category-button-active-color: var(--blue-color);
+
+    --dark-border-color: #666666;
+    --dark-background-color: #333333;
+    --dark-text-color: #FFFFFF;
+    --dark-secondary-text-color: #999999;
+    --dark-hover-color: #666666;
+    --dark-search-background-color: #666666;
+    --dark-search-border-color: #999999;
+    --dark-search-placeholder-color: #999999;
+    --dark-search-focus-border-color: #DBE5F9;
+    --dark-popup-background-color: #333333;
+    --dark-category-button-color: #FFFFFF;
+
+    --font: Arial, Helvetica, sans-serif;
+    --font-size: 16px;
+}
+
+.emoji-picker {
+    font-size: var(--font-size);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--background-color);
+    width: calc(var(--emoji-per-row) * var(--emoji-size) * var(--emoji-size-multiplier) + 1em + 1.5rem);
+    font-family: var(--font);
+    overflow: hidden;
+    animation: show var(--animation-duration) var(--animation-easing);
+}
+
+.emoji-picker * {
+    font-family: var(--font);
+    box-sizing: content-box;
+}
+
+.emoji-picker__overlay {
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.emoji-picker.hiding {
+    animation: hide var(--animation-duration) var(--animation-easing);
+}
+
+.emoji-picker.dark {
+    background: var(--dark-background-color);
+    color: var(--dark-text-color);
+    border-color: var(--dark-border-color);
+}
+
+.emoji-picker__content {
+    padding: 0.5em;
+    height: var(--content-height);
+    position: relative;
+}
+
+.emoji-picker__preview {
+    height: var(--emoji-preview-size);
+    padding: 0.5em;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.emoji-picker.dark .emoji-picker__preview {
+    border-top-color: var(--dark-border-color);
+}
+
+.emoji-picker__preview-emoji {
+    font-size: var(--emoji-preview-size);
+    margin-right: 0.25em;
+    font-family: "Segoe UI Emoji", "Segoe UI Symbol", "Segoe UI", "Apple Color Emoji", "Twemoji Mozilla", "Noto Color Emoji", "EmojiOne Color", "Android Emoji";
+}
+
+.emoji-picker__preview-emoji img.emoji {
+    height: 1em;
+    width: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+}
+
+.emoji-picker__preview-name {
+    color: var(--text-color);
+    font-size: 0.85em;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+.emoji-picker.dark .emoji-picker__preview-name {
+    color: var(--dark-text-color);
+}
+
+.emoji-picker__container {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(var(--emoji-per-row), calc(var(--emoji-size) * var(--emoji-size-multiplier)));
+    grid-auto-rows: calc(var(--emoji-size) * var(--emoji-size-multiplier));
+}
+
+.emoji-picker__container.search-results {
+    height: var(--content-height);
+    overflow-y: auto;
+}
+
+.emoji-picker__custom-emoji {
+    width: 1em;
+    height: 1em;
+}
+
+.emoji-picker__emoji {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    font-size: var(--emoji-size);
+    width: 1.5em;
+    height: 1.5em;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    font-family: "Segoe UI Emoji", "Segoe UI Symbol", "Segoe UI", "Apple Color Emoji", "Twemoji Mozilla", "Noto Color Emoji", "EmojiOne Color", "Android Emoji";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-picker__emoji img.emoji {
+    height: 1em;
+    width: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+}
+
+.emoji-picker__emoji:focus, .emoji-picker__emoji:hover {
+    background: var(--hover-color);
+}
+
+.emoji-picker__emoji:focus {
+    outline: 1px dotted var(--focus-indicator-color);
+}
+
+.emoji-picker.dark .emoji-picker__emoji:focus, .emoji-picker.dark .emoji-picker__emoji:hover {
+    background: var(--dark-hover-color);
+}
+
+.emoji-picker__plugin-container {
+    margin: 0.5em;
+    display: flex;
+    flex-direction: row;
+}
+
+.emoji-picker__search-container {
+    margin: 0.5em;
+    position: relative;
+    height: var(--search-height);
+    display: flex;
+}
+
+.emoji-picker__search {
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid var(--border-color);
+    padding-right: 2em;
+    padding: 0.5em 2.25em 0.5em 0.5em;
+    font-size: 0.85em;
+    outline: none;
+}
+
+.emoji-picker.dark .emoji-picker__search {
+    background: var(--dark-search-background-color);
+    color: var(--dark-text-color);
+    border-color: var(--dark-search-border-color);
+}
+
+.emoji-picker.dark .emoji-picker__search::placeholder {
+    color: var(--dark-search-placeholder-color);
+}
+
+.emoji-picker__search:focus {
+    border: 1px solid var(--search-focus-border-color);
+}
+
+.emoji-picker.dark .emoji-picker__search:focus {
+    border-color: var(--dark-search-focus-border-color);
+}
+
+.emoji-picker__search-icon {
+    position: absolute;
+    color: var(--search-icon-color);
+    width: 1em;
+    height: 1em;
+    right: 0.75em;
+    top: calc(50% - 0.5em);
+}
+
+.emoji-picker__search-icon img {
+    width: 1em;
+    height: 1em;
+}
+
+.emoji-picker__search-not-found {
+    color: var(--secondary-text-color);
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.emoji-picker__search-not-found h2 {
+    color: var(--secondary-text-color);
+}
+
+.emoji-picker.dark .emoji-picker__search-not-found {
+    color: var(--dark-secondary-text-color);
+}
+
+.emoji-picker.dark .emoji-picker__search-not-found h2 {
+    color: var(--dark-secondary-text-color);
+}
+
+.emoji-picker__search-not-found-icon {
+    font-size: 3em;
+}
+
+.emoji-picker__search-not-found-icon img {
+    width: 1em;
+    height: 1em;
+}
+
+.emoji-picker__search-not-found h2 {
+    margin: 0.5em 0;
+    font-size: 1em;
+}
+
+.emoji-picker__variant-overlay {
+    background: var(--overlay-background-color);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    animation: fade-in var(--animation-duration) var(--animation-easing);
+}
+
+.emoji-picker__variant-overlay.hiding {
+    animation: fade-out var(--animation-duration) var(--animation-easing);
+}
+
+.emoji-picker__variant-popup {
+    background: var(--popup-background-color);
+    margin: 0.5em;
+    padding: 0.5em;
+    text-align: center;
+    border-radius: 5px;
+    animation: grow var(--animation-duration) var(--animation-easing);
+    user-select: none;
+}
+
+.emoji-picker__variant-overlay.hiding .emoji-picker__variant-popup {
+    animation: shrink var(--animation-duration) var(--animation-easing);
+}
+
+.emoji-picker.dark .emoji-picker__variant-popup {
+    background: var(--dark-popup-background-color);
+}
+
+.emoji-picker__emojis {
+    overflow-y: auto;
+    position: relative;
+    height: calc((var(--emoji-size) * var(--emoji-size-multiplier)) * var(--row-count) + var(--category-name-size));
+}
+
+.emoji-picker__emojis.hiding {
+    animation: fade-out 0.05s var(--animation-easing);
+}
+
+.emoji-picker__emojis h2.emoji-picker__category-name {
+    font-size: 0.85em;
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
+    margin: 0.25em 0;
+    text-align: left;
+}
+
+.emoji-picker.dark h2.emoji-picker__category-name {
+    color: var(--dark-secondary-text-color);
+}
+
+.emoji-picker__category-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    height: var(--category-button-height);
+    margin-bottom: 0.5em;
+}
+
+button.emoji-picker__category-button {
+    flex-grow: 1;
+    background: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    font-size: var(--category-button-size);
+    vertical-align: middle;
+    color: var(--category-button-color);
+    border-bottom: var(--category-border-bottom-size) solid transparent;
+    outline: none;
+}
+
+button.emoji-picker__category-button img {
+    width: var(--category-button-size);
+    height: var(--category-button-size);
+}
+
+.emoji-picker.keyboard button.emoji-picker__category-button:focus {
+    outline: 1px dotted var(--focus-indicator-color);
+}
+
+.emoji-picker.dark button.emoji-picker__category-button.active {
+    color: var(--category-button-active-color);
+}
+
+.emoji-picker.dark button.emoji-picker__category-button {
+    color: var(--dark-category-button-color);
+}
+
+button.emoji-picker__category-button.active {
+    color: var(--category-button-active-color);
+    border-bottom: var(--category-border-bottom-size) solid var(--category-button-active-color);
+}
+
+@media (prefers-color-scheme: dark) {
+    .emoji-picker.auto {
+        background: var(--dark-background-color);
+        color: var(--dark-text-color);
+        border-color: var(--dark-border-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__preview {
+        border-top-color: var(--dark-border-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__preview-name {
+        color: var(--dark-text-color);
+    }
+
+    .emoji-picker.auto button.emoji-picker__category-button {
+        color: var(--dark-category-button-color);
+    }
+
+    .emoji-picker.auto button.emoji-picker__category-button.active {
+        color: var(--category-button-active-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__emoji:focus, .emoji-picker.auto .emoji-picker__emoji:hover {
+        background: var(--dark-hover-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__search {
+        background: var(--dark-search-background-color);
+        color: var(--dark-text-color);
+        border-color: var(--dark-search-border-color);
+    }
+
+    .emoji-picker.auto h2.emoji-picker__category-name {
+        color: var(--dark-secondary-text-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__search::placeholder {
+        color: var(--dark-search-placeholder-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__search:focus {
+        border-color: var(--dark-search-focus-border-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__search-not-found {
+        color: var(--dark-secondary-text-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__search-not-found h2 {
+        color: var(--dark-secondary-text-color);
+    }
+
+    .emoji-picker.auto .emoji-picker__variant-popup {
+        background: var(--dark-popup-background-color);
+    }
+}</style><style type="text/css" id="tui-grid-theme-style">.tui-grid-border-line-top{border-top:1px solid #aaa}.tui-grid-no-scroll-x .tui-grid-border-line-bottom{border-bottom:1px solid #aaa}.tui-grid-frozen-border{background-color:#aaa}.tui-grid-container ::-webkit-scrollbar{background-color:#fff}.tui-grid-container ::-webkit-scrollbar-thumb{background-color:#ddd}.tui-grid-container ::-webkit-scrollbar-thumb:hover{background-color:#ddd}.tui-grid-container{scrollbar-3dlight-color:#fff;scrollbar-darkshadow-color:#fff;scrollbar-track-color:#fff;scrollbar-shadow-color:#fff;scrollbar-face-color:#ddd;scrollbar-highlight-color:#ddd;scrollbar-arrow-color:#ddd}.tui-grid-border-line-bottom{border-bottom:1px solid #eee}.tui-grid-content-area{border-color:#eee}.tui-grid-scrollbar-y-inner-border{background-color:#eee}.tui-grid-scrollbar-y-outer-border{background-color:#eee}.tui-grid-scrollbar-right-top{background-color:#f9f9f9;border-color:#eee}.tui-grid-scrollbar-right-bottom{background-color:#f9f9f9;border-color:#eee}.tui-grid-scrollbar-left-bottom{background-color:#f9f9f9;border-color:#eee}.tui-grid-scrollbar-frozen-border{background-color:#f9f9f9;border-color:#eee}.tui-grid-height-resize-handle{background-color:#fff;border-color:#fff}.tui-grid-pagination{background-color:transparent;border-color:transparent}.tui-grid-layer-selection{background-color:#F5D663;border-color:#00a9ff}.tui-grid-header-area{background-color:#fff;border-color:#ccc}.tui-grid-body-area{background-color:#fff}.tui-grid-summary-area{background-color:#fff;border-color:#eee}.tui-grid-has-summary-top .tui-grid-body-area{border-color:#eee}.tui-grid-cell{background-color:#fff;border-color:#F0EFEF;border-left-width:1px;border-right-width:1px;border-top-width:1px;border-bottom-width:1px;color:#32363D}.tui-grid-cell-editable{background-color:#fff}.tui-grid-show-lside-area .tui-grid-lside-area .tui-grid-header-area .tui-grid-table{border-right-style:solid}.tui-grid-cell-header{background-color:#F8F8F8;border-color:#F0EFEF;border-left-width:1px;border-right-width:1px;border-top-width:1px;border-bottom-width:1px;color:#5D646C}.tui-grid-show-lside-area .tui-grid-lside-area .tui-grid-body-area .tui-grid-table{border-right-style:solid}.tui-grid-cell-row-header{background-color:#F8F8F8;border-color:#F0EFEF;border-left-width:1px;border-right-width:1px;border-top-width:1px;border-bottom-width:1px;color:#5D646C}.tui-grid-show-lside-area .tui-grid-lside-area .tui-grid-summary-area .tui-grid-table{border-right-style:hidden}.tui-grid-cell-summary{background-color:#fff;border-color:#eee;border-left-width:0;border-right-width:0;color:#333}.tui-grid-cell-required{background-color:#fffdeb}.tui-grid-cell-disabled{background-color:#f9f9f9;color:#c1c1c1}.tui-grid-cell-invalid.tui-grid-cell{background-color:#ffe5e5}.tui-grid-cell-header.tui-grid-cell-selected{background-color:#F8F8F8}.tui-grid-cell-row-header.tui-grid-cell-selected{background-color:#e5f6ff}.tui-grid-layer-focus-border{background-color:#405AE3}.tui-grid-layer-editing{border-color:#405AE3}.tui-grid-layer-focus-deactive .tui-grid-layer-focus-border{background-color:#aaa}.tui-grid-cell-dummy{background-color:#fff}.tui-grid-row-hover>.tui-grid-cell{background-color:rgba(238, 247, 254, 0.5)}</style>
+    <script src="/assets/js/uid.js"></script>
+<!--    <script src="/assets/js/messenger.js"></script>-->
+
+
+    <!-- vendors -->
+<!--    <script src="/assets/vendors/multiupload/multiupload.js"></script>-->
+    <!-- /vendors -->
+</head>
+<body class="">
+    <div class="wrapper">
+        <div class="login">
+            <div class="login__title">
+                <div class="logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ1IiBoZWlnaHQ9IjQxIiB2aWV3Qm94PSIwIDAgMTQ1IDQxIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBjbGlwLXBhdGg9InVybCgjY2xpcDBfMTIzXzkwNDEpIj4KPHBhdGggZD0iTTQuMzcyMDQgMTAuOTE3NUwyLjg3MzY0IDkuMzAxMDNDMS4wNDI3MiAxMi4zNzMyIDAgMTUuOTI3OSAwIDE5LjU0N0gxLjAzMDQxQzEuMDM0NTEgMTYuMTYxMiAyLjIzNzM0IDEzLjA4NSA0LjM3MjA0IDEwLjkxNzVaIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMTIzXzkwNDEpIi8+CjxwYXRoIGQ9Ik00LjEwNTIxIDI2Ljc5M0MyLjIzMzIzIDI1LjA1NTkgMS4wMzA0MSAyMi43MDM1IDEuMDMwNDEgMTkuNTYzVjE5LjU0NjlIMEMwIDIzLjIyNjMgMC42NjkxNDkgMjYuNjQ0MyAxLjk5NTEzIDI5LjYyOEw0LjEwNTIxIDI2Ljc5M1oiIGZpbGw9InVybCgjcGFpbnQxX2xpbmVhcl8xMjNfOTA0MSkiLz4KPHBhdGggZD0iTTM2LjkzMDMgMTYuOTM3M0wzNS4wMTMyIDE4Ljg3NTVDMzcuNjY1MSAxOC45MTE3IDM5LjI5NDkgMjAuOTE4MiAzOS4yNDE1IDIzLjQ3OTdINDAuMjcyQzQwLjI3MiAyMC45NTQ0IDM5LjA2MDkgMTguNjU4MyAzNi45MzAzIDE2LjkzNzNaIiBmaWxsPSJ1cmwoI3BhaW50Ml9saW5lYXJfMTIzXzkwNDEpIi8+CjxwYXRoIGQ9Ik00MC4yNzIxIDIzLjQ3OTdIMzkuMjQxN0MzOS4xOTI0IDI1LjU4NjggMzguMDQzIDI3LjM1MjEgMzUuNDkzNyAyOC42NjcxTDM4LjE4MjYgMzIuMjk4MkMzOS40OTYyIDI5LjkyMTcgNDAuMjcyMSAyNy4wMTAzIDQwLjI3MjEgMjMuNDc5N1oiIGZpbGw9InVybCgjcGFpbnQzX2xpbmVhcl8xMjNfOTA0MSkiLz4KPHBhdGggZD0iTTUuNDQ3NzEgMTYuNTk5NEM1LjM3MzgyIDE2Ljk4NTUgNS4zMzI3NiAxNy4zOTE2IDUuMzMyNzYgMTcuODA1OEM1LjMzMjc2IDIzLjgzNzYgOS45MjIzOSAyNy42ODk5IDE1LjcxODkgMjcuNjg5OUMyNi43MzMyIDI3LjY4OTkgMzAuMDA1MSAxOC44NzE0IDM0LjkzNTQgMTguODcxNEMzNC45NiAxOC44NzE0IDM0Ljk4ODggMTguODcxNCAzNS4wMTM0IDE4Ljg3MTRMMzYuOTMwNSAxNi45MzMyQzM0LjU1MzYgMTUuMDE1MSAzMS4wMTkgMTMuODEyNyAyNi43MzczIDEzLjgxMjdDMTguMDE3OSAxMy44MTI3IDEzLjM3MDggMjAuOTQ2MyA5LjQxMzM0IDIwLjk0NjNDNy42ODkxNSAyMC45NDYzIDYuMzcxMzggMTkuMDkyNiA2LjM3MTM4IDE3LjI5NTFDNi4zNzEzOCAxNy4xMTAxIDYuMzgzNyAxNi45MjkyIDYuNDA0MjIgMTYuNzUyMkw1LjQ1MTgxIDE2LjU5NTRMNS40NDc3MSAxNi41OTk0WiIgZmlsbD0idXJsKCNwYWludDRfbGluZWFyXzEyM185MDQxKSIvPgo8cGF0aCBkPSJNMTIuMjc4NiA3Ljc0ODgyQzE4LjY0NTggNy43NDg4MiAyMy4wNjMgMTIuNDY1NyAyOC43NDQ2IDEyLjQ2NTdDMzUuNTU1MSAxMi40NjU3IDM5LjMyNzggOS4yMTY1NiA0MC4yNzYxIDIuODYzMDhMMzkuMjQ1NyAyLjY5NDE5QzM4Ljk1ODMgNC4zNzUwNSAzNy44Mzc2IDYuMzk3NzEgMzUuODMwMiA2LjM5NzcxQzMzLjkzNzcgNi4zOTc3MSAzMS45MzAyIDQuNzY5MTIgMjkuMDA3MyAzLjE5Njg0QzI2LjA3MjEgMS41NzIyOCAyMi43MTgyIDAgMTguNTI2NyAwQzExLjc5NDIgMCA2LjEwODQ4IDMuODg4NDkgMi44Nzc2OSA5LjMwMUw0LjM3NjA5IDEwLjkxNzVDNi4zMDk2NCA4Ljk1NTE4IDkuMDA2NzYgNy43NDg4MiAxMi4yNzg2IDcuNzQ4ODJaIiBmaWxsPSJ1cmwoI3BhaW50NV9saW5lYXJfMTIzXzkwNDEpIi8+CjxwYXRoIGQ9Ik0xOC45MzMyIDMxLjIyODZDMTQuMDAyOSAzMS4yMjg2IDcuNzY3MDggMzAuMTgzMSA0LjEwOTM0IDI2Ljc5MzJMMS45OTkyNyAyOS42MjgxQzUuMDM3MTIgMzYuNDc2MiAxMS41MTkyIDQxLjAwMDEgMjEuMjI4MSA0MS4wMDAxQzI3LjY0ODYgNDEuMDAwMSAzNC43NTA2IDM4LjUxMDkgMzguMTg2NyAzMi4yOTQyTDM1LjQ5NzcgMjguNjYzMUMzMi4zMzI2IDMwLjI5NTcgMjcuMDA4MiAzMS4yMjQ2IDE4LjkzNzMgMzEuMjI0NkwxOC45MzMyIDMxLjIyODZaIiBmaWxsPSJ1cmwoI3BhaW50Nl9saW5lYXJfMTIzXzkwNDEpIi8+CjxwYXRoIGQ9Ik01Ny4xOTM4IDMwLjY3NzZDNTAuODE4NCAzMC42Nzc2IDQ3LjI5NjEgMjYuNTcyIDQ3LjI5NjEgMjAuNUM0Ny4yOTYxIDE0LjQyOCA1MS4xMDk5IDEwLjI1ODEgNTcuMzEyOCAxMC4yNTgxQzU5Ljc4ODMgMTAuMjU4MSA2MS44NTMyIDEwLjgyOTEgNjMuNDU4MyAxMS43MTM3TDYyLjc4OTIgMTUuOTY0MUM2MS4yNzQ0IDE1LjAyMzIgNTkuNDk2OCAxNC4yODczIDU3LjQyNzggMTQuMjg3M0M1My45NjMgMTQuMjg3MyA1Mi4yNzk5IDE2Ljc5MjUgNTIuMjc5OSAyMC40NzE5QzUyLjI3OTkgMjQuMTUxMyA1NC4wMjQ2IDI2Ljc3NzEgNTcuNDg5NCAyNi43NzcxQzU4LjU5NzggMjYuNzc3MSA1OS4zODYgMjYuNTc2IDYwLjE5ODggMjYuMTQ5OFYyMi42NDMzSDU2LjcwNTNMNTYuMTIyMyAxOS4wMjAySDY0LjUzOFYyOC42MDI3QzYyLjQ0MDMgMjkuOTQ1OCA1OS45Njg5IDMwLjY4NTcgNTcuMjAyIDMwLjY4NTciIGZpbGw9IiMwMDY5QjQiLz4KPHBhdGggZD0iTTc0LjA4MjYgMzAuNTM2OEM3MS4zNzMyIDMwLjUzNjggNjkuMTAzIDI5Ljk2OTggNjcuMDYyNyAyOS4wNTdMNjcuNzg5NCAyNC44OTFDNjkuODU0MyAyNS45NzY4IDcyLjE1NzMgMjYuNzE2NyA3NC4xNjg5IDI2LjcxNjdDNzUuNTkzNCAyNi43MTY3IDc2LjU4NjggMjYuMTE3NSA3Ni41ODY4IDI0Ljk0NzNDNzYuNTg2OCAyMy43NzcyIDc2LjAwMzkgMjMuMzE4NyA3My4xNzk1IDIyLjI2NTJDNjkuMTY0NiAyMC43NTMyIDY3LjQxNTggMTkuNDcwNSA2Ny40MTU4IDE2LjIxNzNDNjcuNDE1OCAxMi40MjU0IDcwLjQ0MTMgMTAuMzk4NyA3NC4yODM4IDEwLjM5ODdDNzYuOTExMSAxMC4zOTg3IDc4LjU5ODQgMTAuODg1MiA4MC4zNDMxIDExLjcwOTZMNzkuNTg3NyAxNS44MTUyQzc3Ljc4NTUgMTQuNzg1OCA3NS44ODg5IDE0LjIxODggNzQuMzQ1NCAxNC4yMTg4QzcyLjgwMTggMTQuMjE4OCA3Mi4xMDM5IDE0Ljg0NjEgNzIuMTAzOSAxNS43NTg5QzcyLjEwMzkgMTYuNzU2MiA3Mi42NTgxIDE3LjI0MjcgNzUuMTYyMyAxOC4xODM3Qzc5LjUzNDQgMTkuNzUyIDgxLjI3OTEgMjEuMjMxOCA4MS4yNzkxIDI0LjM3MjNDODEuMjc5MSAyOC42NTA4IDc4LjA3NyAzMC41MzI4IDc0LjA4NjggMzAuNTMyOCIgZmlsbD0iIzAwNjlCNCIvPgo8cGF0aCBkPSJNMTA3Ljc5NCAyMC43NDE0TDEwOC43NDcgMjIuNDE4MkMxMTEuNjA4IDIxLjkyNzYgMTE0LjM1OSAyMC4yOTUgMTE2LjA5MSAxNy43NDU2QzExNy44MjggMjAuMjk1IDEyMC41NzggMjEuOTI3NiAxMjMuNDM5IDIyLjQxODJMMTI0LjM5MiAyMC43NDE0QzEyMC41NTggMjAuMDYxOCAxMTcuMjIgMTcuNTU2NiAxMTcuMjIgMTMuMzE0MlYxMi43NTkzSDEyMy4zN1YxMC44NDUySDEwOC44MTdWMTIuNzU5M0gxMTQuOTY2VjEzLjMxNDJDMTE0Ljk2NiAxNy41NTY2IDExMS42MjkgMjAuMDYxOCAxMDcuNzk0IDIwLjc0MTRaIiBmaWxsPSIjODc4Nzg3Ii8+CjxwYXRoIGQ9Ik0xMjQuOTc5IDI2LjM0MjhIMTA3LjIwOFYyOC4yNTY5SDEyNC45NzlWMjYuMzQyOFoiIGZpbGw9IiM4Nzg3ODciLz4KPHBhdGggZD0iTTEwMy42OTcgMTAuNzYwN0gxMDEuNTQyVjMwLjA5ODZIMTAzLjY5N1YxMC43NjA3WiIgZmlsbD0iIzg3ODc4NyIvPgo8cGF0aCBkPSJNOTcuMjM5OSAxNy4zNjc0SDkwLjYwNTlWMTAuNzU2Nkg4OC40NTA3VjI0LjYzNzdDODguNDUwNyAyNS4xOTI2IDg4LjkzOTIgMjUuNjc5MiA4OS41MjYyIDI1LjY3OTJIOTkuMzk1MlYxMC43NjA2SDk3LjIzOTlWMTcuMzcxNFYxNy4zNjc0Wk05Ny4yMzk5IDIzLjc3NzJIOTAuNjA1OVYxOS4xNDg4SDk3LjIzOTlWMjMuNzc3MloiIGZpbGw9IiM4Nzg3ODciLz4KPHBhdGggZD0iTTE0NSAxOS40MjYzSDEyNy4yMjlWMjEuMzQwNEgxNDVWMTkuNDI2M1oiIGZpbGw9IiM4Nzg3ODciLz4KPHBhdGggZD0iTTEzMS4zNzUgMjcuMDM4NUgxNDMuMDIxVjIyLjM0MThIMTI5LjEwMVYyNC4xOTE1SDE0MC44NVYyNS4zMDE0SDEyOS4yMDdWMjkuMTA5NEMxMjkuMjA3IDI5LjY4MDUgMTI5LjcwNCAzMC4xNzEgMTMwLjI5MSAzMC4xNzFIMTQzLjEyOFYyOC4zMjEzSDEzMS4zNzVWMjcuMDM4NVoiIGZpbGw9IiM4Nzg3ODciLz4KPHBhdGggZD0iTTE0NC40NDYgMTYuMjY5N0gxNDEuNTI3QzE0MS40NTMgMTUuODQ3NCAxNDEuNDA4IDE1LjQwOTEgMTQxLjQwOCAxNC45NDI3VjEyLjc1NTFIMTQzLjM5MVYxMC44NDExSDEyOC44MzhWMTIuNzU1MUgxMzAuODIxVjE0Ljk0MjdDMTMwLjgyMSAxNS40MDUxIDEzMC43OCAxNS44NDc0IDEzMC43MDIgMTYuMjY5N0gxMjcuNzgzVjE4LjE4MzdIMTQ0LjQ0MlYxNi4yNjk3SDE0NC40NDZaTTEzMy4xODkgMTYuMjY5N0MxMzMuMTE1IDE1Ljg0NzQgMTMzLjA3IDE1LjQwOTEgMTMzLjA3IDE0Ljk0MjdWMTIuNzU1MUgxMzkuMTU0VjE0Ljk0MjdDMTM5LjE1NCAxNS40MDUxIDEzOS4xMTMgMTUuODQ3NCAxMzkuMDM1IDE2LjI2OTdIMTMzLjE4OVoiIGZpbGw9IiM4Nzg3ODciLz4KPC9nPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzEyM185MDQxIiB4MT0iNS4xNDAxMyIgeTE9IjExLjQ3ODgiIHgyPSItMC44MzkzNDkiIHkyPSIxNy41ODQ4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiNGQkJBMDAiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQ0FDMDAwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQxX2xpbmVhcl8xMjNfOTA0MSIgeDE9Ii0xLjE0MDM0IiB5MT0iMjEuODIwNSIgeDI9IjMuOTg1MTciIHkyPSIyNy4wNTMxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiNDQUMwMDAiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODZCQzI1Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQyX2xpbmVhcl8xMjNfOTA0MSIgeDE9IjM1Ljk5OTUiIHkxPSIxOC4wMDM2IiB4Mj0iNDAuMzU4MSIgeTI9IjIyLjQ1MzMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzgzRDBGNSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMEIzQzQiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDNfbGluZWFyXzEyM185MDQxIiB4MT0iNDEuMzQ1NyIgeTE9IjI1LjQzMTUiIHgyPSIzNi45Mzk3IiB5Mj0iMjkuOTI3OSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMDBCM0M0Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzAwOUE5MyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50NF9saW5lYXJfMTIzXzkwNDEiIHgxPSI3LjcwOTUxIiB5MT0iMjAuNzU1NiIgeDI9IjM1LjA2ODQiIHkyPSIyMC43NTU2IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiMwMDY5QjQiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODNEMEY1Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQ1X2xpbmVhcl8xMjNfOTA0MSIgeDE9IjMuMDQ2NTciIHkxPSI2LjI1MTMzIiB4Mj0iNDAuNDAxOCIgeTI9IjYuMjUxMzMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0ZCQkEwMCIvPgo8c3RvcCBvZmZzZXQ9IjAuNjQiIHN0b3AtY29sb3I9IiNFRjdBMDgiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRUE1QjBDIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQ2X2xpbmVhcl8xMjNfOTA0MSIgeDE9IjQuMjY5NjkiIHkxPSIzMy44ODYyIiB4Mj0iMzUuNjIyMSIgeTI9IjMzLjg4NjIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzg2QkMyNSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMDlBOTMiLz4KPC9saW5lYXJHcmFkaWVudD4KPGNsaXBQYXRoIGlkPSJjbGlwMF8xMjNfOTA0MSI+CjxyZWN0IHdpZHRoPSIxNDUiIGhlaWdodD0iNDEiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==" width="184" alt=""></div>
+                <h1 class="title">로그인</h1>
+            </div>
+
+
+            <th:block th:if="${status == @StatusTypeDefault}">
+                <div class="login__form">
+                    <form id="loginForm">
+                        <div class="formWrap">
+                            <div class="loginForm">
+                                <label for="loginId" class="label">아이디</label>
+                                <div class="formControl">
+                                    <input type="text" id="loginId" placeholder="이메일 주소를 입력해주세요.">
+                                    <button type="button" data-function="inputClear" class="btn has-icon form__clear">
+                                        <i class="icon is-24 is-close-24"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="loginForm">
+                                <label for="loginPw" class="label">비밀번호</label>
+                                <div class="formControl">
+                                    <input type="password" id="loginPw" placeholder="8자~12자, 영문/숫자/특수문자 포함">
+                                    <button type="button" data-function="inputShow" class="btn has-icon form__show">
+                                        <i class="icon is-24 is-show-24"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="btnGroup mt-40">
+                                <button type="submit" class="btn is-primary is-xlarge flex-grow-1">로그인</button>
+                            </div>
+
+                            <!--<div class="loginForm">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="check__label">
+                                        <input type="checkbox" class="check__input has-value">
+                                        <span class="check__style"></span>
+                                        <span class="check__text">아이디저장</span>
+                                    </label>
+
+                                    <a href="" class="btn is-text fs-15">비밀번호 찾기</a>
+                                </div>
+                            </div>-->
+
+                        </div>
+                    </form>
+                </div>
+            </th:block>
+
+            <th:block th:if="${status == @StatusTypeERRLOGIN}">
+                <div class="login__form">
+                    <form id="loginForm">
+                        <div class="formWrap">
+                            <div class="loginForm">
+                                <label for="loginId" class="label">아이디</label>
+                                <div class="formControl">
+                                    <input type="text" class="is-error" id="loginId" placeholder="이메일 주소를 입력해주세요.">
+                                    <button type="button" data-function="inputClear" class="btn has-icon form__clear">
+                                        <i class="icon is-24 is-close-24"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="loginForm">
+                                <label for="loginPw" class="label">비밀번호</label>
+                                <div class="formControl">
+                                    <input type="password" class="is-error" id="loginPw" placeholder="8자~12자, 영문/숫자/특수문자 포함">
+                                    <button type="button" data-function="inputShow" class="btn has-icon form__show">
+                                        <i class="icon is-24 is-show-24"></i>
+                                    </button>
+                                </div>
+                                <span class="hintText is-error"><i class="icon is-24 is-system-danger"></i> 아이디 혹은 비밀번호를 잘못 입력하였습니다.</span>
+                            </div>
+
+                            <div class="btnGroup mt-40">
+                                <button type="submit" class="btn is-primary is-xlarge flex-grow-1">로그인</button>
+                            </div>
+
+                            <!--<div class="loginForm">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="check__label">
+                                        <input type="checkbox" class="check__input has-value">
+                                        <span class="check__style"></span>
+                                        <span class="check__text">아이디저장</span>
+                                    </label>
+
+                                    <a href="" class="btn is-text fs-15">비밀번호 찾기</a>
+                                </div>
+                            </div>-->
+
+                        </div>
+                    </form>
+                </div>
+            </th:block>
+
+
+        </div>
+        </div>
+    </body>
+    <script src="/static/js/login/standalone.js"></script>
+    <!--<script src="/static/js/login/totallogin.js"></script>-->
+<!--    <script src="/static/js/login/standalone.js"></script>
+    <script src="/static/js/login/login.js"></script>-->
+</html>

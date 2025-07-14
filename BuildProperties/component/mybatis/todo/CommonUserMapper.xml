@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommonUserMapper">
+
+    <!-- 사용자  조회  -->
+    <select id="findComUser" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto" resultType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        /* CommonUserMapper.findComUser */
+        with recursive TEMP_ORG as (
+            select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+                , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG
+            where ifnull(UPPER_ORG_CD, '') = ''
+            union all
+            select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+                , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , ' > ', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , ' > ', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG P
+            inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        )
+        SELECT USER_KEY, USER_ID, USER_PASSWORD, USER_NM, THUMB_IMG_TYPE, THUMB_IMG_PATH
+            , EMAIL, POSITION_CD, RESPONSIBILITY_CD, EMP_NO, AUTH_CD
+            , USE_FLAG, CREATE_DT, CREATE_USER_KEY, LOGIN_STATUS, LOGIN_DT
+            , tco.ORG_KEY, tco.ORG_CD, tco.ORG_NM_PATH, tco.ORG_CD_PATH, tco.ORG_NM
+            , ( select MAX(LVL) from TEMP_ORG where ORG_CD_PATH like CONCAT(tco.ORG_CD_PATH, '%') ) - tco.LVL as CHILD_ORG_DEPTH
+            , DATE_FORMAT(tcu.HIRE_DATE, '%Y.%m.%d') AS HIRE_DATE
+            , (SELECT POSITION_NM FROM DWP.tbl_com_job_pos tcjp WHERE tcjp.CORPORATE_ID = tco.CORPORATE_ID AND tcjp.POSITION_CD = tcu.POSITION_CD AND USE_FLAG =  1 LIMIT 1) AS jobPosition
+            , (SELECT RESPONSIBILITY_NM FROM DWP.tbl_com_job_resp tcjp WHERE tcjp.CORPORATE_ID = tco.CORPORATE_ID AND tcjp.RESPONSIBILITY_CD = tcu.RESPONSIBILITY_CD AND USE_FLAG =  1 LIMIT 1) AS jobResponsibility
+            , tcu.EMPLOYMENT_TYPE
+            , tcu.MOBILE_PHONE_NO
+            , tcu.OFFICE_PHONE_NO
+            , tcu.USER_TYPE
+            , ( select COUNT(*) from dwp.tbl_com_plural_job where USER_KEY = tcu.USER_KEY ) as PLURAL_JOB_CNT
+        FROM dwp.tbl_com_user tcu left join TEMP_ORG tco on tcu.ORG_KEY = tco.ORG_KEY
+        WHERE 1 = 1
+        <if test='userKey !=null'> AND USER_KEY = #{userKey} </if>
+        <if test='userId !=null'> AND USER_ID = #{userId} </if>
+        <if test='email !=null'> AND EMAIL = #{email} </if>
+    </select>
+
+    <!-- 겸직정보 조회  -->
+    <select id="getPluralJobList" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto" resultType="com.gsbizple.wiz.common.dto.TblComPluralJobDto">
+        /* CommonUserMapper.findComUser */
+        with recursive TEMP_ORG as (
+        select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+        , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+        , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+        from dwp.TBL_COM_ORG
+        where ifnull(UPPER_ORG_CD, '') = ''
+        union all
+        select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+        , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , ' > ', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+        , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , ' > ', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+        from dwp.TBL_COM_ORG P
+        inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        )
+        SELECT tcpj.JOB_PLURAL_ID, tcpj.USER_KEY, tcpj.CORPORATE_ID, tcpj.ORG_CD, tcpj.JOB_POSITION
+            , tcpj.JOB_RESPONSIBILITY, tcpj.DUTY_INFO, tcpj.USE_FLAG, tcpj.CREATE_DT, tcpj.CREATE_USER_KEY, tcpj.UPDATE_DT
+            , tco.ORG_KEY, tco.ORG_NM_PATH, tco.ORG_CD_PATH, tco.ORG_NM
+        from dwp.tbl_com_plural_job tcpj left join TEMP_ORG tco on tcpj.ORG_CD = tco.ORG_CD
+        WHERE 1 = 1
+          AND tcpj.USER_KEY = #{userKey}
+    </select>
+
+    <!-- 사용자 목록 조회  -->
+    <select id="getComUserList" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto" resultType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        /* CommonUserMapper.getComUserList */
+        with recursive TEMP_ORG as (
+            select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+                , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG
+            where ifnull(UPPER_ORG_CD, '') = ''
+            union all
+            select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+                , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , ' > ', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , ' > ', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG P
+            inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        )
+        SELECT tcu.USER_KEY, tcu.USER_ID, tcu.USER_PASSWORD, tcu.USER_NM, tcu.THUMB_IMG_TYPE, tcu.THUMB_IMG_PATH
+            , tcu.EMAIL, tcu.POSITION_CD, tcjp.POSITION_NM AS JOB_POSITION, tcu.RESPONSIBILITY_CD, tcjr.RESPONSIBILITY_NM AS JOB_RESPONSIBILITY, tcu.EMP_NO, tcu.AUTH_CD
+            , tcu.MOBILE_PHONE_NO, tcu.OFFICE_PHONE_NO
+            , tcu.USE_FLAG, tcu.CREATE_DT, tcu.CREATE_USER_KEY, tcu.LOGIN_STATUS, tcu.LOGIN_DT
+            , tco.ORG_KEY, tco.ORG_CD, tco.ORG_NM_PATH, tco.ORG_CD_PATH, tco.ORG_NM
+        FROM dwp.tbl_com_user tcu left join TEMP_ORG tco on tcu.ORG_KEY = tco.ORG_KEY
+            left join dwp.tbl_com_job_pos tcjp on tcu.POSITION_CD = tcjp.POSITION_CD
+            left join dwp.tbl_com_job_resp tcjr on tcu.RESPONSIBILITY_CD = tcjr.RESPONSIBILITY_CD
+        WHERE 1 = 1
+        <if test='useFlag != null '> AND tcu.USE_FLAG = #{useFlag} </if>
+        <if test='userNm != null and userNm != "" '> AND tcu.USER_NM LIKE CONCAT('%', #{userNm}, '%')  </if>
+        <if test='empNo != null and empNo != "" '> AND tcu.EMP_NO LIKE CONCAT('%', #{empNo}, '%')  </if>
+        <if test='orgKey != null and orgKey != "" '> AND tcu.ORG_KEY = #{orgKey} </if>
+        <if test='mobilePhoneNo != null and mobilePhoneNo != "" '> AND tcu.MOBILE_PHONE_NO LIKE CONCAT('%', #{mobilePhoneNo}, '%') </if>
+        <if test='orgNm != null and orgNm != "" '> AND tco.ORG_NM LIKE CONCAT('%', #{orgNm}, '%') </if>
+        ORDER BY tco.ORG_NM_PATH ASc, tcu.RESPONSIBILITY_CD, tcu.USER_NM ASC
+    </select>
+
+    <insert id="insertComUser" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        INSERT INTO dwp.tbl_com_user
+        ( USER_ID, USER_PASSWORD, USER_NM, THUMB_IMG_TYPE, THUMB_IMG_PATH,
+          EMAIL, POSITION_CD, RESPONSIBILITY_CD, EMP_NO, ORG_KEY,
+          AUTH_CD, USE_FLAG, CREATE_DT, CREATE_USER_KEY)
+        VALUES(#{userId}, #{userPassword}, #{userNm}, #{thumbImgType}, #{thumbImgPath},
+          #{email}, #{jobPosition}, #{jobResponsibility}, #{empNo}, #{orgKey},
+          #{authCd}, #{useFlag}, current_timestamp(), #{createUserKey})
+    </insert>
+
+    <update id="updateMyInfo" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+           SET UPDATE_DT=NOW()
+             , UPDATE_USER_KEY=#{userKey}
+             , MOBILE_PHONE_NO=#{mobilePhoneNo}
+             , OFFICE_PHONE_NO=#{officePhoneNo}
+            <if test='thumbImgType != null and thumbImgPath != null '>
+             , THUMB_IMG_TYPE=#{thumbImgType}
+             , THUMB_IMG_PATH=#{thumbImgPath}
+            </if>
+         WHERE USER_KEY=#{userKey}
+    </update>
+
+    <update id="updateComUser" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+        SET USER_ID=#{userId}, USER_NM=#{userNm}, THUMB_IMG_TYPE=#{thumbImgType}, THUMB_IMG_PATH=#{thumbImgPath},
+        EMAIL=#{email}, POSITION_CD=#{jobPosition}, RESPONSIBILITY_CD=#{jobResponsibility},
+        EMP_NO=#{empNo}, ORG_KEY=#{orgKey}, AUTH_CD=#{authCd}, USE_FLAG=#{useFlag}
+        WHERE USER_KEY=#{userKey}
+    </update>
+
+    <update id="updateUserPassword" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+          SET USER_PASSWORD=#{userPassword}
+        WHERE USER_KEY=#{userKey}
+    </update>
+
+    <update id="updateLogin" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+        SET LOGIN_STATUS=#{loginStatus}, LOGIN_DT=current_timestamp()
+        WHERE USER_KEY=#{userKey}
+    </update>
+
+    <update id="updateLogoff" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+        SET LOGIN_STATUS=#{loginStatus}
+        WHERE USER_KEY=#{userKey}
+    </update>
+
+    <update id="updateLoginStatus" parameterType="com.gsbizple.wiz.common.dto.TblComUserDto">
+        UPDATE dwp.tbl_com_user
+        SET LOGIN_STATUS=#{loginStatus}
+        WHERE USER_KEY=#{userKey}
+    </update>
+
+</mapper>

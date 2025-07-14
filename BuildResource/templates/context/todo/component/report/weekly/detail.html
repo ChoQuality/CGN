@@ -1,0 +1,73 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="targetMonth" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="targetMonthView" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="weekList" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+
+<div class="listSearch">
+    <div class="listSearch__count">총 <span class="fw-500" id="totalCount"></span>건</div>
+
+    <div class="d-flex align-items-center gap-10">
+        <div class="formGroup gap-10">
+            <span class="label">업무기간</span>
+            <div class="dateRange">
+                <div class="datePicker">
+                    <input type="text" id="search__start" class="datePicker__input" style="width: 14rem;">
+                    <div id="search__start_container" class="datePicker__calendar"></div>
+                </div>
+                <div class="datePicker__mid">~</div>
+                <div class="datePicker">
+                    <input type="text" id="search__end" class="datePicker__input" style="width: 14rem;">
+                    <div id="search__end_container" class="datePicker__calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="searchGroup">
+            <div class="formSelect" style="width: 11rem;">
+                <div class="listSearchSelect"></div>
+            </div>
+            <div class="formSearch is-square">
+                <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요.">
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-20">
+    <div class="flex-center gap-30">
+        <div class="flex-center gap-15">
+            <button type="button" class="btn has-icon" id="prevMonthBtn"><i class="icon is-30 is-prev-30"></i></button>
+            <div class="fs-22 fw-500" id="viewReportYyyymm" th:text="${targetMonthView.getData()}"></div>
+            <input type="hidden" id="reportYyyymm" th:value="${targetMonth.getData()}" />
+            <button type="button" class="btn has-icon" id="nextMonthBtn"><i class="icon is-30 is-next-30"></i></button>
+        </div>
+        <div class="toggleRadio">
+            <label class="toggleRadio__label">
+                <input type="radio" name="reportYyyymmWeek" class="toggleRadio__input has-value" value="all" checked="">
+                <span class="toggleRadio__text">전체</span>
+            </label>
+            <th:block th:if="${not #lists.isEmpty(weekList.getData())}">
+                <th:block th:each="week : ${weekList.getData()}">
+                    <label class="toggleRadio__label">
+                        <input type="radio" name="reportYyyymmWeek" class="toggleRadio__input has-value" th:value="${week.weekValue}">
+                        <span class="toggleRadio__text" th:text="${week.weekNm}"></span>
+                    </label>
+                </th:block>
+            </th:block>
+        </div>
+    </div>
+
+    <div class="btnGroup gap-5">
+        <button type="button" class="btn is-primary" data-function="modal" data-target="#writeReportModal-1" id="writeReport">주간보고 작성하기</button>
+        <button type="button" class="btn is-primary" data-function="modal" data-target="#writeReportModal-2" id="mergeReport">보고서 합하기</button>
+    </div>
+</div>
+
+<div class="mt-20">
+    <div class="tui-grid-container-wrap">
+        <div id="grid" class="grid" style="width: 100%;"></div>
+        <div class="tui-pagination tui-grid-pagination" style="margin-top: 20px;"></div>
+    </div>
+</div>

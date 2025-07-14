@@ -1,0 +1,101 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!-- [S] 멤버 추가 팝업 -->
+<div id="addMemberChat" data-modal="modal" class="modal">
+    <div class="modal__inner pb-0" style="width: 100rem;">
+        <div class="modal__header">
+            <div class="modal__title">멤버초대</div>
+            <button data-modal-close="close" class="modal__close">닫기</button>
+        </div>
+        <div class="modal__content m-0">
+            <!-- [S] 검색 영역 -->
+            <div class="modal__search pl-30 pr-30">
+                <div class="formSelect" style="width: 12rem;">
+                    <div class="addMemberSelect-1"><div class="tui-select-box"><div class="tui-select-box-input" tabindex="0"><p class="tui-select-box-placeholder">이름</p></div><ul class="tui-select-box-dropdown tui-select-box-hidden"><li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="name" data-index="0">이름</li><li class="tui-select-box-item" tabindex="-1" data-value="organization" data-index="1">조직도</li><li class="tui-select-box-item" tabindex="-1" data-value="contact" data-index="2">연락처</li></ul><select class="tui-select-box-hidden" tabindex="-1"><option value="name" label="이름"></option><option value="organization" label="조직도"></option><option value="contact" label="연락처"></option></select></div></div>
+                </div>
+                <div class="formControl" style="width: 34rem;">
+                    <div class="formSearch">
+                        <input type="text" class="form__input" placeholder="검색어를 입력하세요." id="addMemberSearchKeyword">
+                        <button class="btn__search" onclick="addMemberSearch.search()">검색</button>
+                        <div class="resultList is-multiple" id="dynamicSearchResults2" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- [E] 검색 영역 -->
+
+            <div class="newChat">
+                <!-- [S] 조직도 영역 -->
+                <div class="newChat__tree">
+                    <div class="has-scrollbars">
+                        <div id="treeWrap" class="tui-tree-wrap is-treeTheme"><ul class="tui-tree tui-tree-root"><li id="tui-tree-node-18" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">DWP</span></div></div></li><li id="tui-tree-node-19" class="tui-tree-node tui-tree-closed"><div class="tui-tree-content-wrapper"><button type="button" class="tui-tree-toggle-btn tui-js-tree-toggle-btn"><span class="tui-ico-tree"></span>+</button><div class="tui-tree-text tui-js-tree-text is-parents is-depth-23"><span class="check__text">사업관리</span></div></div><ul class="tui-tree-subtree tui-js-tree-subtree" style="display: none;"><li id="tui-tree-node-20" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">사업관리</span></div></div></li><li id="tui-tree-node-21" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">그룹웨어</span></div></div></li></ul></li><li id="tui-tree-node-22" class="tui-tree-node tui-tree-closed"><div class="tui-tree-content-wrapper"><button type="button" class="tui-tree-toggle-btn tui-js-tree-toggle-btn"><span class="tui-ico-tree"></span>+</button><div class="tui-tree-text tui-js-tree-text is-parents is-depth-23"><span class="check__text">소방안전시스템</span></div></div><ul class="tui-tree-subtree tui-js-tree-subtree" style="display: none;"><li id="tui-tree-node-23" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">교육/교수관리</span></div></div></li><li id="tui-tree-node-24" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">점검진단</span></div></div></li><li id="tui-tree-node-25" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">고객관리</span></div></div></li><li id="tui-tree-node-26" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">사이버교육관리/소방안전24</span></div></div></li><li id="tui-tree-node-27" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">홈페이지/소방행정지원시스템</span></div></div></li><li id="tui-tree-node-28" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">소방안전공통</span></div></div></li></ul></li><li id="tui-tree-node-29" class="tui-tree-node tui-tree-closed"><div class="tui-tree-content-wrapper"><button type="button" class="tui-tree-toggle-btn tui-js-tree-toggle-btn"><span class="tui-ico-tree"></span>+</button><div class="tui-tree-text tui-js-tree-text is-parents is-depth-23"><span class="check__text">경영정보시스템/연계</span></div></div><ul class="tui-tree-subtree tui-js-tree-subtree" style="display: none;"><li id="tui-tree-node-30" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">인사/급여</span></div></div></li><li id="tui-tree-node-31" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">예산/회계</span></div></div></li><li id="tui-tree-node-32" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">연계</span></div></div></li></ul></li><li id="tui-tree-node-33" class="tui-tree-node tui-tree-leaf"><div class="tui-tree-content-wrapper"><div class="tui-tree-text tui-js-tree-text"><span class="tui-tree-ico tui-ico-line"></span><span class="check__text">그룹웨어</span></div></div></li></ul></div>
+                    </div>
+                </div>
+                <!-- [E] 조직도 영역 -->
+
+                <!-- [S] 선택 부서&사용자 영역 -->
+                <div class="newChat__list" style="height: 68.8rem;">
+                    <ul class="userList has-scrollbars" style="height: 100%;" id="addGroupUserList"></ul>
+                </div>
+                <!-- [E] 선택 부서&사용자 영역 -->
+
+                <!-- [S] 대화방 설정영역 -->
+                <div class="newChat__set">
+                    <div class="chatSetting">
+                        <div class="chatSetting__item">
+                            <h4>초대멤버 <span id="addedUserListCount"></span></h4>
+                            <div class="has-scrollbars" style="height: 53rem;">
+                                <ul class="memberList" id="addedUserList"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="newChat__btn">
+                        <div class="btnGroup justify-content-end">
+                            <div class="btnGroup gap-5">
+                                <a class="btn is-default is-outline-black is-sm" id="closeAddMemberPopup">취소</a>
+                                <a data-modalopen="open" class="btn is-default is-fill-black is-sm" id="goToAddMember-2">확인</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- [E] 대화방 설정영역 -->
+            </div>
+        </div>
+    </div>
+    <div class="modal__mask"></div>
+</div>
+<!-- [E] 멤버 추가 팝업 -->
+
+
+<div id="publicYnPopup" data-modal="modal" class="modal">
+    <div class="modal__inner is-alert">
+        <div class="modal__header addMemCancel">
+            <button data-modal-close="close" class="modal__close">닫기</button>
+        </div>
+        <div class="modal__content">
+            <p class="alertText">
+                초대된 멤버에게 대화 내용을 공개 하시겠습니까?
+            </p>
+            <div class="formGroup gap-30 justify-content-center mt-30" id="publicYnRadio">
+                <label class="radio__label">
+                    <input type="radio" class="radio__input" name="radio1" value="Y" checked="">
+                    <span class="radio__style"></span>
+                    <span class="radio__text">이전 대화 공개</span>
+                </label>
+
+                <label class="radio__label">
+                    <input type="radio" class="radio__input" name="radio1" value="N">
+                    <span class="radio__style"></span>
+                    <span class="radio__text">이전 대화 비공개</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button type="button" data-modal-close="close" class="btn is-default is-outline-black is-sm addMemCancel">취소</button>
+            <button type="button" data-modal-close="close" class="btn is-default is-fill-black is-sm" id="addMemBtn">확인</button>
+        </div>
+    </div>
+    <div class="modal__mask"></div>
+</div>
+
+

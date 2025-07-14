@@ -1,0 +1,13 @@
+rootProject.name = 'wiz'
+include 'wizportal'
+
+def rootProjectDescriptor = settings.rootProject
+
+def common = file('./BuildComponent/0000/common')
+settings.createProjectDescriptor(rootProjectDescriptor, 'common', common)
+
+def messenger = file('./BuildComponent/0000/messenger')
+settings.createProjectDescriptor(rootProjectDescriptor, 'messenger', messenger)
+
+def ai = file('./BuildComponent/0000/ai')
+settings.createProjectDescriptor(rootProjectDescriptor, 'ai', ai)

@@ -1,0 +1,7 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<footer>
+    <th:block th:replace="~{layout/footer/info/loginInfo}" th:with="layoutService=${layoutService}"></th:block>
+</footer>
+

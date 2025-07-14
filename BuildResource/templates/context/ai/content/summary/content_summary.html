@@ -1,0 +1,193 @@
+<div class="contents">
+    <div class="messenger">
+        <div class="messenger__header">
+            <div class="messenger__headerTop">
+                <div class="messenger__title">
+                    <div class="userThumb is-dorothy">
+                        <div class="userThumb__img">
+                        </div>
+                    </div>
+                    <div class="title">
+                        <h3>문서 요약</h3>
+                        <p class="description"> 문서 요약 입니다. </p>
+                    </div>
+                </div>
+            </div>
+            <div class="btnGroup mb-10" style=display:none>
+                <button type="button" id="btn_get_prompt" class="btn is-primary gap-15" style="
+                margin-left: auto;
+                margin-right: 0;
+                ">등록된 Prompt 보기 <i class="icon is-20 is-system-info"></i></button>
+            </div>
+
+            <div id="sys_prompt_content" class="contentsCard mb-10" style="width: 100%; display: none">
+                <div class="d-flex gap-30 mt-10">
+                    <div class="contentsCard p-20">
+                        <div class="card__body">
+                            <ul class="board">
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="contentsCard flex-grow-1">
+                        <span id="sys_prompt_content_span">
+
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="messenger__body mt-10">
+            <div id="tab01" class="tab__contents" style="display: block;">
+                <div class="chatBox" data-function="dropZone">
+                    <div class="dragGuide"><span>여기에 파일을 끌어 놓으세요.</span></div>
+                    <div class="chatBox__scroll has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                        <div class="chatBox__body">
+
+                        </div>
+                    </div>
+                        <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+
+                    <div class="chatBox__footer">
+                        <div class="chatBox__writeField">
+                            <textarea id="rfpRequest" class="textarea" placeholder="AI 기능을 시작하세요." maxlength="10000"></textarea>
+                            <span id="attachmentInfo" style="display: none; text-align: left; font-size: 13px; color: #666; margin-top: 6px; margin-left: 30px; line-height: 1.4;">
+                        파일개수: <span style="font-weight: bold;" class="current-count"></span> / 1개 <span class="bar"></span> 총용량: <span style="font-weight: bold;" class="current-size"></span> / 20MB
+                    </span>
+                            <div class="attachmentList" id="attachmentList" data-function="attachmentList"></div>
+                        </div>
+
+                        <div class="chatBox__writeButton">
+                            <div class="btnGroup gap-10">
+                                <button type="button" class="btn is-icon" id="file_button" ><i class="icon is-24 is-chat-file"></i></button>
+                                <input type="file" id="file_input" multiple hidden accept=".pdf"/>
+
+                                <!--                        <input type="file" id="file_input" style="display: none;" accept=".hwp, .doc, .docx, .ppt, .pptx, .xls, .xlsx, .jpg, .jpeg, .gif, .bmp, .png, .txt, .zip, .pdf, .tif, .mp4, .pdf">-->
+                            </div>
+
+                            <button type="button" class="btn chatSendBtn">전송<i class="icon is-18 is-chat-send"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messenger__side is-search" data-function="sideBox" id="msgSearch">
+                <div class="sideBox">
+                    <div class="sideBox__top">
+                        <div class="title">
+                            <h3>대화방 채팅 검색</h3>
+                            <button type="button" data-function="sideBoxClose" class="btn has-icon">
+                                <i class="icon is-24 is-close-24"></i>
+                            </button>
+                        </div>
+                        <div class="sideBox__search">
+                            <div id="msgSearchForm" class="formSearch is-round is-background">
+                                <input type="text" class="form__search" placeholder="검색어를 입력하세요.">
+                                <button class="btn has-icon form__searchBtn">
+                                    <i class="icon is-24 is-search-24"></i>
+                                    <span class="visually-hidden">검색</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sideBox__body">
+                        <div class="searchList">
+                            <span class="searchList__count">검색결과: <span></span>건</span>
+                            <div class="searchList__list">
+                                <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                                    <div class="os-size-observer">
+                                        <div class="os-size-observer-listener">
+                                        </div>
+                                    </div>
+                                    <div id="msgSearchList" class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+
+                                    </div>
+                                    <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                        <div class="os-scrollbar-track">
+                                            <div class="os-scrollbar-handle"></div>
+                                        </div>
+                                    </div>
+                                    <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-visible os-scrollbar-cornerless" style="--os-viewport-percent: 0.3852; --os-scroll-direction: 0;">
+                                        <div class="os-scrollbar-track">
+                                            <div class="os-scrollbar-handle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="messenger__side is-setting" data-function="sideBox" id="setting">
+                <div class="sideBox">
+                    <div class="sideBox__top">
+                        <div class="title">
+                            <h3>대화방 설정</h3>
+                            <button type="button" data-function="sideBoxClose" class="btn has-icon"><i class="icon is-24 is-close-24"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="sideBox__body">
+                        <div class="settingList">
+                            <div class="settingList__item">
+                                <div class="label">대화방 이름</div>
+                                <div class="formGroup">
+                                    <input type="text" class="form__input" placeholder="대화방 이름을 입력하세요." id="roomName">
+                                    <button type="button" class="btn has-btn" id="roomNameButton"><i class="icon is-24 is-edit-24"></i></button>
+                                </div>
+                            </div>
+                            <div class="settingList__item">
+                                <div class="label">설명</div>
+                                <div class="formGroup">
+                                    <input type="text" class="form__input" placeholder="대화방 설명을 입력하세요." id="description">
+                                    <button type="button" class="btn has-btn" id="descriptionButton"><i class="icon is-24 is-edit-24"></i></button>
+                                </div>
+                            </div>
+                            <div class="settingList__item gap-20">
+                                <div class="label">멤버 <span class="bold" id="participantCnt"></span>명</div>
+                                <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                                    <div class="os-size-observer"><div class="os-size-observer-listener"></div></div>
+                                    <div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                        <ul class="memberList" id="participantList">
+                                            <li class="memberList__item">
+                                                <button type="button" class="btn memberList__add" id="addChatModalOpenBtn">
+                                                    <i class="icon is-28 is-chat-addMember"></i>
+                                                    <p>멤버 추가</p>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                        <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                                    </div>
+                                    <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                        <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="tempServerChatData" style="display: none;">
+
+
+        </div>
+
+    </div>
+
+    <div id="__contents__loading" class="contents__loading" style="width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: none;">
+        <div class="loading">
+            <div class="spinner">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        현재 도로시 대기중 입니다.
+    </div>
+</div>

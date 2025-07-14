@@ -1,0 +1,242 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<div class="contents__title">
+    <h3 class="title">MY TO DO</h3>
+</div>
+
+<div class="listSearch">
+    <div class="listSearch__count">총 <span id="viewTodoTotalCnt" class="fw-500"></span>건</div>
+
+    <div class="d-flex align-items-center gap-10">
+        <div class="formGroup gap-10">
+            <span class="label">업무기간</span>
+            <div class="dateRange">
+                <div class="datePicker">
+                    <input type="text" id="search__startInput" class="datePicker__input" style="width: 14rem;" autocomplete="off">
+                    <div id="search__startCal" class="datePicker__calendar"></div>
+                </div>
+                <div class="datePicker__mid">~</div>
+                <div class="datePicker">
+                    <input type="text" id="search__endInput" class="datePicker__input" style="width: 14rem;" autocomplete="off">
+                    <div id="search__endCal" class="datePicker__calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="searchGroup">
+            <div class="formSelect" style="width: 11rem;">
+                <div class="listSearchSelect"></div>
+            </div>
+            <div class="formSearch is-square">
+                <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요">
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-end mt-20">
+    <label class="check__label">
+        <input id="isNotViewCompleteYn" type="checkbox" class="check__input has-value" checked="">
+        <span class="check__style"></span>
+        <span class="check__text">완료된 TO DO 보지 않기</span>
+    </label>
+
+    <div class="btnGroup">
+        <button type="button" id="btnRegistTodo" class="btn is-primary gap-15" >TO DO 등록하기 <i class="icon is-20 is-system-complete"></i></button>
+    </div>
+</div>
+
+<div id="todoDetailDiv" class="modal is-xlarge" >
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">TO DO 등록하기</h2>
+                <button type="button" class="btn has-icon" data-function="modalClose"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <div class="todoWrite">
+                    <table class="formTable">
+                        <colgroup>
+                            <col style="width: 15rem;">
+                            <col style="width: auto;">
+                            <col style="width: 15rem;">
+                            <col style="width: 26.7rem;">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th>
+                                <div class="formGroup gap-10">
+                                    <label class="check__label">
+                                        <input id="__privateYn" type="checkbox" class="check__input">
+                                        <span class="check__style"></span>
+                                        <span class="check__text">비공개</span>
+                                    </label>
+
+                                    <label class="check__label">
+                                        <input id="__importantYn" type="checkbox" class="check__input" checked>
+                                        <span class="check__style"></span>
+                                        <span class="check__text">중요</span>
+                                    </label>
+                                </div>
+                            </th>
+                            <td colspan="3">
+                                <div class="formTable__item">
+                                    <div class="formGroup gap-10">
+                                        <div class="formControl flex-grow-1">
+                                            <input type="hidden" id="__reqUserKey" >
+                                            <input type="hidden" id="__todoId" >
+                                            <input type="hidden" id="__todoStatus" >
+                                            <input type="text" id="__todoReqConts" class="form__input is-borderBottom" placeholder="최대 50자까지 작성 가능(입력 필수)"  autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th><div class="label is-required"><span>업무기간</span></div></th>
+                            <td>
+                                <div class="formTable__item">
+                                    <div class="dateRange">
+                                        <div class="datePicker">
+                                            <input type="text" id="__jobStartDt" class="datePicker__input is-borderBottom" placeholder="선택하세요" style="width: 18rem;"  autocomplete="off"/>
+                                            <div id="__jobStartDt_Cal" class="datePicker__calendar"></div>
+                                        </div>
+                                        <div class="datePicker__mid">~</div>
+                                        <div class="datePicker">
+                                            <input type="text" id="__jobEndDt" class="datePicker__input is-borderBottom" placeholder="선택하세요" style="width: 18rem;"  autocomplete="off"/>
+                                            <div id="__jobEndDt_Cal" class="datePicker__calendar"></div>
+                                        </div>
+                                        <span class="fs-12 text-system-danger">* 종료일 필수 입력</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <th><div class="label"><span>진척율</span></div></th>
+                            <td>
+                                <div class="formTable__item">
+                                    <div class="formGroup gap-4">
+                                        <div class="formControl">
+                                            <input type="number" id="__completeRatio" class="form__input is-borderBottom" style="width: 9.4rem;" min="0" max="100">
+                                        </div>
+                                        <span class="form__unit">%</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <div class="label is-required has-tooltip">
+                                    <span>담당자</span>
+                                    <div class="tooltip" data-function="posTarget">
+                                        <button type="button" class="btn has-icon"><i class="icon is-24 is-system-info"></i></button>
+                                        <div class="tooltip__text" style="width: 12.4rem;"> 본인을 삭제 후, <br> 다른 사람을 담당자로<br> 지정할 수 있습니다. </div>
+                                    </div>
+                                </div>
+                            </th>
+                            <td colspan="3">
+                                <div class="formTable__item">
+                                    <div class="inputSearch is-borderBottom">
+                                        <div class="formGroup gap-10" id="__repUser">
+                                            <div class="inputSearch__value" >
+                                                <input type="hidden" id="__repUserKey">
+                                                <p> <span class="text-blue-600"></span></p>
+                                                <button type="button" class="btn has-icon"><i class="icon is-20 is-clear-20"></i></button>
+                                            </div>
+                                            <div class="formControl" data-function="searchList" style="width: 20rem;">
+                                                <input id="__searchUserList" type="text" class="inputSearch__input" placeholder="담당자를 이름으로 검색하세요." value=""  autocomplete="off">
+                                                <div class="formSearch__list"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="is-baseline"><div class="label"><span>메모</span></div></th>
+                            <td colspan="3">
+                                <div class="formTable__item">
+                                    <div class="formControl">
+                                        <textarea id="__memoText" class="form__textarea is-borderBottom" data-function="autoHeight" placeholder="작성된 메모 내용은 보고서 작성 시 활용됩니다."></textarea>
+                                    </div>
+
+                                    <ul class="memoList">
+                                        <li class="memoList__item">
+                                            <div class="todoMemo">
+                                                <p></p>
+                                                <div class="writer">
+                                                    <button type="button" class="btn has-icon"><i class="icon is-18 is-delete-16"></i></button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="is-baseline"><div class="label"><span>첨부파일</span></div></th>
+                            <td colspan="3">
+                                <div class="fileUploadMultiple" id="multipleUploader"></div>
+                                <div class="uploadList">
+                                    <div class="fileUploadMultiple__box">
+                                        <ul class="fileUploadMultiple__list">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button id="__deleteTodo" type="button" class="btn is-secondary">삭제</button>
+                <button id="__cancelTodo"  type="button" class="btn is-secondary">취소</button>
+                <button id="__saveTodo" type="button" class="btn is-primary">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask" data-function="modalClose"></div>
+</div>
+
+
+<div class="todoList divider">
+    <div class="todoList__top">
+        <div class="toggleRadio">
+            <label class="toggleRadio__label">
+                <input type="radio" name="searchOrder" class="toggleRadio__input has-value" checked="" value="DATE">
+                <span class="toggleRadio__text">마감일순</span>
+            </label>
+            <label class="toggleRadio__label">
+                <input type="radio" name="searchOrder" class="toggleRadio__input has-value" value="RATIO">
+                <span class="toggleRadio__text">진척율순</span>
+            </label>
+        </div>
+
+        <div class="formGroup gap-20">
+            <label class="check__label">
+                <input id="isMyTodoYn" type="checkbox" class="check__input has-value" checked="">
+                <span class="check__style"></span>
+                <span class="check__text">내 To DO</span>
+            </label>
+
+            <label class="check__label">
+                <input id="isRequestTodoYn" type="checkbox" class="check__input has-value" checked="">
+                <span class="check__style"></span>
+                <span class="check__text">요청한 To DO</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="todoList__body">
+    </div>
+</div>

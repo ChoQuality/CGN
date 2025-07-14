@@ -1,0 +1,61 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group" th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="portlet__top">
+        <h2 class="title"  th:text="${portlet.portletNm}">자원</h2>
+
+        <div class="btnGroup">
+            <button type="button" class="btn has-icon" onclick=""
+                    th:attr="onClick='redirectToWorksWithParam(\'' + ${portlet.getLinkUrl()} + '\', \'resource\')'"
+            >
+                <i class="icon is-30 is-link-30"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="card bg-skyBlue-100">
+        <div class="card__body">
+            <ul class="board is-reservation">
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-meetingRoom">대회의실 (5F)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-car">카니발(7799)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-car">대회의실 (5F)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-meetingRoom">보헌빌딩 C룸 (3F)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-car">카니발(7799)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title is-car">카니발(7799)</h3>
+                        <div class="date">2024.12.25 10:30</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

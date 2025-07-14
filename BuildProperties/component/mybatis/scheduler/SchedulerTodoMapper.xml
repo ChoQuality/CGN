@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SchedulerTodoMapper">
+
+    <sql id="selectTodoItems">
+        SELECT tdt.TODO_ID, tdt.REQ_DT, DATE_FORMAT(tdt.JOB_START_DT, '%Y.%m.%d') JOB_START_DT, DATE_FORMAT(tdt.JOB_END_DT, '%Y.%m.%d') JOB_END_DT
+            , tdt.TODO_STATUS, tdt.TODO_REQ_CONTS
+            , tdt.REQ_USER_KEY, tcu.USER_NM as REQ_USER_NM, tcu.LOGIN_STATUS as REQ_USER_LOGIN_STATUS, tco.ORG_NM as REQ_ORG_NM
+            , tdtr.REP_USER_KEY, tcu2.USER_NM as REP_USER_NM, tco2.ORG_NM as REP_ORG_NM
+            , tdt.COMPLETE_RATIO, tdt.TODO_FLAG, tdt.REF_TODO_ID, tdt.CREATE_USER_KEY
+            , DATEDIFF(CURRENT_DATE(), STR_TO_DATE( date_format(tdt.JOB_END_DT, '%Y-%m-%d' ), '%Y-%m-%d' )) AS JOB_END_DAY
+    </sql>
+
+    <!-- 키워드 추출용 AwpTODO 목록  -->
+    <select id="selectDeadlineTodoList" parameterType="com.gsbizple.wiz.scheduler.dto.todo.SchedulerTodoDto" resultType="com.gsbizple.wiz.scheduler.dto.todo.SchedulerTodoDto">
+        /** SchedulerTodoMapper.selectDeadlineTodoList */
+        <include refid="selectTodoItems"/>
+        FROM dwp.tbl_dwp_todo tdt inner join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+            inner join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+            inner join dwp.tbl_dwp_todo_rep tdtr on tdt.TODO_ID = tdtr.TODO_ID
+            inner join dwp.tbl_com_user tcu2 on tdtr.REP_USER_KEY = tcu2.USER_KEY
+            inner join dwp.tbl_com_org tco2 on tcu2.ORG_KEY = tco2.ORG_KEY
+        where 1 = 1  AND tdt.TODO_STATUS IN ('S', 'P', 'F') AND TDT.DELETE_YN = 0
+        and (  ( tdt.JOB_END_DT >= STR_TO_DATE( date_format(CURDATE(), '%Y-%m-%d' ), '%Y-%m-%d' )
+                and tdt.JOB_END_DT <![CDATA[ < ]]> STR_TO_DATE( date_format(CURDATE() + INTERVAL 1 DAY, '%Y-%m-%d' ), '%Y-%m-%d' ) )
+            or ( tdt.JOB_END_DT >= STR_TO_DATE( date_format(CURDATE() + INTERVAL 3 DAY, '%Y-%m-%d' ), '%Y-%m-%d' )
+                and tdt.JOB_END_DT <![CDATA[ < ]]> STR_TO_DATE( date_format(CURDATE() + INTERVAL 4 DAY, '%Y-%m-%d' ), '%Y-%m-%d' ) ) )
+        ORDER BY JOB_END_DAY
+    </select>
+
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMapper">
+
+    <!-- 유저정보 조회 -->
+    <select id="getUserInfo" resultType="com.gsbizple.wiz.messenger.dto.UserDto" parameterType="Integer">
+        /*UserMapper.getUserInfo*/
+        SELECT user.user_key
+             , user.org_key
+             , org.org_nm
+             , org.corporate_id
+             , user.user_id
+             , user.user_nm
+             , user.thumb_img_type
+             , user.thumb_img_path
+             , user.login_status
+             , user.login_dt
+             , user.email
+             , user.POSITION_CD
+             , user.RESPONSIBILITY_CD
+             , user.mobile_phone_no
+             , user.office_phone_no
+             , user.emp_no
+             , user.auth_cd
+             , user.use_flag
+        FROM dwp.tbl_com_user user
+                 INNER JOIN dwp.tbl_com_org org
+                            ON user.org_key = org.org_key
+        WHERE user_key = #{userKey}
+    </select>
+
+    <!-- 사용자 조회(사용자명, 전화번호) -->
+    <select id="getSearchUserList" parameterType="com.gsbizple.wiz.messenger.dto.UserDto" resultType="com.gsbizple.wiz.messenger.dto.UserDto">
+        /*UserMapper.getSearchUserList*/
+        WITH RECURSIVE groupInfo AS (SELECT org_key
+                                          , org_cd
+                                          , org_nm
+                                          , org_path
+                                          , corporate_id
+                                       FROM dwp.tbl_com_org
+                                      WHERE use_flag = 1
+                                        AND upper_org_cd IS NULL
+                                      UNION ALL
+                                     SELECT tb1.org_key
+                                          , tb1.org_cd
+                                          , CONCAT(tb2.org_nm, '|', tb1.org_nm) AS org_nm
+                                          , tb1.org_path
+                                          , tb1.corporate_id
+                                       FROM dwp.tbl_com_org tb1
+                                      INNER JOIN groupInfo tb2
+                                         ON tb1.upper_org_cd = tb2.org_cd
+                                        AND tb1.corporate_id = tb2.corporate_id
+                                        AND tb1.use_flag = 1)
+        SELECT User.user_key
+             , user.org_key
+             , org.org_nm
+             , org.corporate_id
+             , user.user_id
+             , user.user_nm
+             , user.thumb_img_type
+             , user.thumb_img_path
+             , user.login_status
+             , user.login_dt
+             , user.email
+             , user.POSITION_CD
+             , user.RESPONSIBILITY_CD
+             , user.mobile_phone_no
+             , user.office_phone_no
+             , user.emp_no
+             , user.auth_cd
+             , user.use_flag
+             , groupinfo.org_path
+             , groupinfo.org_nm AS org_path_nm
+          FROM dwp.tbl_com_user user
+         INNER JOIN dwp.tbl_com_org org
+            ON user.org_key = org.org_key
+         INNER JOIN groupInfo groupInfo
+            ON user.org_key = groupInfo.org_key
+         WHERE user.use_flag = 1
+           <if test="userNm != null and userNm != ''">
+           AND user.USER_NM LIKE CONCAT('%', #{userNm},'%')
+           </if>
+           <if test="mobilePhoneNo != null and mobilePhoneNo != ''">
+           AND user.MOBILE_PHONE_NO LIKE CONCAT('%', #{mobilePhoneNo},'%')
+           </if>
+    </select>
+
+    <select id="getUserKeyList"  resultType="Integer">
+        /*UserMapper.getUserKeyList*/
+        select user_key
+        from dwp.tbl_com_user
+    </select>
+</mapper>

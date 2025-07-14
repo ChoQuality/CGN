@@ -1,0 +1,73 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="loginMenuInfoList" type="java.util.List"*/-->
+<!--/*@thymesVar id="loginMenuInfo" type="com.gsbizple.wiz.common.dto.LoginMenuInfoDto"*/-->
+<th:block th:with="loginMenuInfoList=${layoutService.getLoginInfo().getMenuList(1)}">
+    <nav>
+        <ul class="sidebar__menu">
+            <th:block th:each=" loginMenuInfo : ${loginMenuInfoList} ">
+                <li th:switch="${loginMenuInfo.serviceCode()}">
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).TODO}" th:with="isActive=${layoutService.getContextType() == @ContextTypeTodo}">
+                        <a th:href="@{${loginMenuInfo.getMenuExecutePath()}}" class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'">
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).MESSENGER}" th:with="isActive=${layoutService.getContextType() == @ContextTypeMessenger}">
+                        <a th:href="@{${loginMenuInfo.getMenuExecutePath()}}" class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'">
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).AI}"
+                              th:with="isActive=${layoutService.getContextType() == @ContextTypeAI
+                                       || layoutService.getContextType() == @ContextTypeAIMain}">
+                        <a th:href="@{${loginMenuInfo.getMenuExecutePath()}}" class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'">
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).ERP}"
+                              th:with="isActive=${layoutService.getContextType() == @ContextTypeERP}">
+                        <a class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'"
+                           href="javascript:void(0);"
+                           >
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+                        <script>
+                            function redirectToERP(executePath) {
+                                window.open(executePath, '_blank'); // 새 창에서 열기
+                            }
+                        </script>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).WORKS}" th:with="isActive=${layoutService.getContextType() == @ContextTypeWorks}">
+                        <a class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'"
+                           href="javascript:void(0);"
+                           th:attr="onClick='redirectToWorks(\'' + ${loginMenuInfo.getMenuExecutePath()} + '\')'">
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.dto.LoginMenuInfoDto.MenuServiceCode).HR}"  th:with="isActive=${layoutService.getContextType() == @ContextTypeHr}">
+                        <a class="sidebar__menuItem" th:classappend="${isActive} ? 'is-active'"
+                           href="javascript:void(0);"
+                           th:attr="onClick='redirectToHR(\'' + ${loginMenuInfo.getMenuExecutePath()} + '\')'">
+                            <i class="icon is-36" th:classappend="${loginMenuInfo.getMenuIcoPath()}"></i>
+                            <span th:text="${loginMenuInfo.getMenuName()}"></span>
+                        </a>
+                        <script>
+                            function redirectToHR(executePath) {
+                                window.open(executePath, '_blank'); // 새 창에서 열기
+                            }
+                        </script>
+                    </th:block>
+                    <th:block th:case="*">
+                    </th:block>
+                </li>
+            </th:block>
+        </ul>
+    </nav>
+</th:block>

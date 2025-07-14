@@ -1,0 +1,85 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    project.ext.lombok = "../../../BuildGradle/build-lombok.gradle"
+    project.ext.spring_3 = "../../../BuildGradle/build-spring3.4-default.gradle"
+    project.ext.jwt = "../../../BuildGradle/build-jwt.gradle"
+    project.ext.maria = "../../../BuildGradle/build-maria.gradle"
+    project.ext.redis = "../../../BuildGradle/build-redis.gradle"
+    project.ext.crypto = "../../../BuildGradle/build-crypto.gradle"
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+apply from : lombok
+apply from : spring_3
+apply from : jwt
+apply from : maria
+apply from : redis
+apply from : crypto
+
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(":common"))
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+tasks.named('compileJava') {
+    dependsOn ':common:jar'
+}
+project.ext.archivesBaseName = 'com.gsbizple.wiz.messenger'
+
+tasks.named("jar") {
+    def libs = file("../Jars/messenger") // 절대 경로를 생성
+    dependsOn(tasks.named('compileJava'))
+    enabled = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def yyMMddHH= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHH"))
+    def major=yyMMddHH.substring(0,2);
+    def miner=yyMMddHH.substring(2,6);
+    def fix=yyMMddHH.substring(6,8);
+    archiveFileName.set("${project.ext.archivesBaseName}.${major}.${miner}.${fix}.jar")
+    exclude '*.yml'
+    exclude 'mybatis/**'
+    exclude 'static/**'
+    exclude 'templates/**'
+    exclude 'company/**'
+    exclude 'dev/**'
+    exclude 'local/**'
+    destinationDirectory.set(libs)
+}
+
+tasks.named("bootJar") {
+    enabled = false
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

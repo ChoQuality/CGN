@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PortletMapper">
+
+    <!-- 개인 포틀릿 여부 확인 -->
+    <select id="getUserPortletCnt" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto" resultType="int">
+        /*PortletMapper.getUserPortletCnt*/
+        SELECT COUNT(0) AS cnt
+          FROM dwp.tbl_dwp_portlet_user
+         WHERE user_key = #{userKey}
+           <if test="portletId != null">
+           AND portlet_id = #{portletId}
+           </if>
+    </select>
+
+    <!-- 개인화 포틀릿 목록 조회 -->
+    <select id="getUserPortletList" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto" resultType="com.gsbizple.wiz.portlet.dto.PortletDto">
+        /*PortletMapper.getUserPortletList*/
+        SELECT portlet.portlet_id
+             , portlet.corporate_id
+             , portlet.portlet_nm
+             , portlet.portlet_type
+             , portlet.portlet_size
+             , portlet.pgm_id
+             , pgm.pgm_path
+             , pgm.PGM_NM
+             , portlet.link_api_url
+             , portlet.link_url
+             , userPortLet.sort_order
+             , portlet.thumbnail_image
+          FROM dwp.tbl_dwp_portlet_user userPortLet
+         INNER JOIN dwp.tbl_dwp_portlet portlet
+            ON userPortLet.portlet_id = portlet.portlet_id
+         INNER JOIN dwp.tbl_com_pgm pgm
+            ON portlet.pgm_id = pgm.pgm_id
+         WHERE userPortLet.user_key= #{userKey}
+           AND userPortLet.use_flag = 1
+           AND portlet.use_flag = 1
+         ORDER BY userPortLet.sort_order ASC
+    </select>
+
+    <!-- 디폴트 포틀릿 목록 조회 -->
+    <select id="getDefaultPortletList" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto" resultType="com.gsbizple.wiz.portlet.dto.PortletDto">
+        /*PortletMapper.getDefaultPortletList*/
+        SELECT portlet.portlet_id
+             , portlet.corporate_id
+             , portlet.portlet_nm
+             , portlet.portlet_type
+             , portlet.portlet_size
+             , portlet.pgm_id
+             , pgm.pgm_path
+             , pgm.PGM_NM
+             , portlet.link_api_url
+             , portlet.link_url
+             , portlet.sort_order
+             , portlet.thumbnail_image
+          FROM dwp.tbl_dwp_portlet portlet
+         INNER JOIN dwp.tbl_com_pgm pgm
+            ON portlet.pgm_id = pgm.pgm_id
+         WHERE portlet.corporate_id = #{corporateId}
+           AND portlet.use_flag = 1
+           AND portlet.default_display_flag = 1
+         ORDER BY portlet.sort_order ASC
+    </select>
+
+    <!-- 전체 포틀릿 목록 조회 -->
+    <select id="getAllPortletList" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto" resultType="com.gsbizple.wiz.portlet.dto.PortletDto">
+        /*PortletMapper.getAllPortletList*/
+        SELECT portlet.portlet_id
+             , portlet.corporate_id
+             , portlet.portlet_nm
+             , portlet.portlet_type
+             , portlet.portlet_size
+             , portlet.pgm_id
+             , pgm.pgm_path
+             , pgm.PGM_NM
+             , portlet.link_api_url
+             , portlet.link_url
+             , portlet.sort_order
+             , portlet.thumbnail_image
+          FROM dwp.tbl_dwp_portlet portlet
+         INNER JOIN dwp.tbl_com_pgm pgm
+            ON portlet.pgm_id = pgm.pgm_id
+         WHERE portlet.corporate_id = #{corporateId}
+           AND portlet.use_flag = 1
+         ORDER BY portlet.sort_order ASC
+    </select>
+
+    <!-- 개인 포틀릿 사용여부 업데이트 -->
+    <update id="updatePortletFlagInfo" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto">
+        /*PortletMapper.updatePortletFlagInfo*/
+        UPDATE dwp.tbl_dwp_portlet_user
+           SET use_flag = #{useFlag}
+             <if test="sortOrder != null">
+             , sort_order = #{sortOrder}
+             </if>
+         WHERE user_key = #{userKey}
+           <if test="portletId != null">
+           AND portlet_id = #{portletId}
+           </if>
+    </update>
+
+    <!-- 개인 포틀릿 정보 저장 -->
+    <insert id="setUserPortletInfo" parameterType="com.gsbizple.wiz.portlet.dto.PortletDto">
+        /*PortletMapper.setUserPortletInfo*/
+        INSERT INTO dwp.tbl_dwp_portlet_user (user_key, portlet_id, sort_order, use_flag, create_dt, create_user_key)
+        VALUES (#{userKey}, #{portletId}, #{sortOrder}, #{useFlag}, NOW(), #{createUserKey})
+    </insert>
+
+    <!-- 개인 TO-DO 목록 조회 -->
+    <select id="getTodoList" parameterType="Integer" resultType="com.gsbizple.wiz.portlet.dto.PortletTodoDto">
+        /*PortletMapper.getTodoList*/
+        SELECT todo.todo_id
+             , todo.todo_req_conts
+             , todo.IMPORTANT_YN
+             , todo.PRIVATE_YN
+             , CASE WHEN todo.job_end_dt IS NULL THEN '-'
+                    ELSE CONCAT('D', IF(DATEDIFF(NOW(), todo.job_end_dt) <![CDATA[<]]> 0, '', '+'), DATEDIFF(NOW(), todo.job_end_dt))
+                END AS date_range
+          FROM dwp.tbl_dwp_todo_rep todoRep
+         INNER JOIN dwp.tbl_dwp_todo todo
+            ON todorep.todo_id = todo.todo_id
+         WHERE todoRep.rep_user_key = #{userKey}
+           AND todo.todo_status in ('P', 'S')
+           AND (todo.job_start_dt  IS NULL OR todo.job_start_dt <![CDATA[<]]> DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 DAY), '%Y-%m-%d 00:00:00'))
+         ORDER BY IF(todo.job_end_dt IS NULL, 1, 0) ASC, todo.job_end_dt ASC, IF(todo.job_start_dt IS NULL, 1, 0) ASC
+         LIMIT 6
+    </select>
+
+</mapper>

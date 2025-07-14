@@ -1,0 +1,41 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div id="systemPromptModal" class="modal is-xlarge" style="opacity: 1; display: none; visibility: visible;" data-id>
+    <!-- 일반보고서 작성하기 모달 -->
+
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">세부 내용</h2>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <h3 class="title" id="promptId"></h3>
+                <div class="formControl divider">
+                            <textarea
+                                    id="systemPromptModal_input"
+                                    class="form__textarea is-borderBottom border-gray-400 has-value"
+                                    style="height: 27.2rem;"
+                                    placeholder="내용을 입력해주세요."
+                                    readonly>
+                            </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button type="button" class="btn is-secondary " id="fix_button" style="display: none">수정</button>
+                <button type="button" class="btn is-secondary " id="close_button" style="display: block;">닫기</button>
+                <button type="button" class="btn is-primary" id="save_button" style="display: none">저장</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal__mask"></div>
+    <!--    <div class="modal__mask" data-function="modalClose"></div>-->
+
+</div>

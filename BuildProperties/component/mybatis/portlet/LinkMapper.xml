@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="LinkMapper">
+
+    <!-- 개인 링크 여부 확인 -->
+    <select id="getUserLinkCnt" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto" resultType="int">
+        /*LinkMapper.getUserLinkCnt*/
+        SELECT COUNT(0) AS cnt
+          FROM dwp.tbl_dwp_link_user
+         WHERE user_key = #{userKey}
+           <if test="linkId != null">
+           AND link_id = #{linkId}
+           </if>
+    </select>
+
+    <!-- 개인화 링크 목록 조회 -->
+    <select id="getUserLinkList" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto" resultType="com.gsbizple.wiz.portlet.dto.PortletLinkDto">
+        /*LinkMapper.getUserLinkList*/
+        SELECT link.link_id
+             , link.corporate_id
+             , link.link_ico
+             , link.link_nm
+             , link.link_url
+             , link.link_desc
+             , linkUser.sort_order
+             , linkUser.use_flag
+          FROM dwp.tbl_dwp_link_user linkUser
+         INNER JOIN dwp.tbl_dwp_link link
+            ON linkUser.link_id = link.link_id
+         WHERE linkUser.user_key = #{userKey}
+           AND linkUser.use_flag = 1
+           AND link.use_flag = 1
+           AND link.corporate_id = #{corporateId}
+         ORDER BY linkUser.sort_order ASC
+    </select>
+
+    <!-- 디폴트 링크 목록 조회 -->
+    <select id="getDefaultLinkList" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto" resultType="com.gsbizple.wiz.portlet.dto.PortletLinkDto">
+        /*LinkMapper.getDefaultLinkList*/
+        SELECT link_id
+             , corporate_id
+             , link_ico
+             , link_nm
+             , link_url
+             , link_desc
+             , sort_order
+             , use_flag
+          FROM dwp.tbl_dwp_link
+         WHERE use_flag = 1
+           AND corporate_id = #{corporateId}
+         ORDER BY sort_order ASC
+    </select>
+
+    <!-- 링크 전체 목록 조회 -->
+    <select id="getAllList" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto" resultType="com.gsbizple.wiz.portlet.dto.PortletLinkDto">
+        /*LinkMapper.getAllList*/
+        SELECT link_id
+             , corporate_id
+             , link_ico
+             , link_nm
+             , link_url
+             , link_desc
+             , sort_order
+             , use_flag
+          FROM dwp.tbl_dwp_link
+         WHERE use_flag = 1
+           AND corporate_id = #{corporateId}
+         ORDER BY sort_order ASC
+    </select>
+
+    <!-- 개인 링크 사용여부 업데이트 -->
+    <update id="updateLinkFlagInfo" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto">
+        /*LinkMapper.updateLinkFlagInfo*/
+        UPDATE dwp.tbl_dwp_link_user
+           SET use_flag = #{useFlag}
+             <if test="sortOrder != null">
+             , sort_order = #{sortOrder}
+             </if>
+             , update_dt = NOW()
+         WHERE user_key = #{userKey}
+           <if test="linkId != null">
+           AND link_id = #{linkId}
+           </if>
+    </update>
+
+    <!-- 개인 링크 정보 저장 -->
+    <insert id="setUserLinkInfo" parameterType="com.gsbizple.wiz.portlet.dto.PortletLinkDto">
+        /*LinkMapper.setUserLinkInfo*/
+        INSERT INTO dwp.tbl_dwp_link_user (user_key, link_id, sort_order, use_flag, create_dt, create_user_key, update_dt)
+        VALUES (#{userKey}, #{linkId}, #{sortOrder}, #{useFlag}, NOW(), #{createUserKey}, NOW())
+    </insert>
+
+</mapper>

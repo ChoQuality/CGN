@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="WeeklyReportMapper">
+
+    <!-- 보고서 작성 전 사용자의 auth_cd를 조회한다 -->
+    <select id="getReportAuthCd" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" resultType="String">
+        /*WeeklyReportMapper.getReportAuthCd*/
+        SELECT IFNULL(auth_cd, 'USER') AS authCd
+          FROM dwp.tbl_com_user
+         WHERE user_key = #{reportUserKey}
+    </select>
+
+    <!-- 주간보고 조회 조건 -->
+    <sql id="reportListWhere">
+        <if test="reportYyyymm != null and reportYyyymm != ''">AND tb2.report_yyyymm_week LIKE CONCAT(#{reportYyyymm}, '%')</if>
+        <if test="reportYyyymmWeek  != null and reportYyyymmWeek != ''">AND tb2.report_yyyymm_week = #{reportYyyymmWeek}</if>
+        <if test="wklyReportNm  != null and wklyReportNm != ''">AND tb2.wk_report_nm LIKE CONCAT('%', #{wklyReportNm}, '%')</if>
+        <if test="reportContents  != null and reportContents != ''">
+            AND (   <![CDATA[ 1 <> 1 ]]>
+                    OR tb2.this_week_conts LIKE CONCAT('%', #{reportContents}, '%')
+                    OR tb2.next_week_conts LIKE CONCAT('%', #{reportContents}, '%')
+                    OR tb2.report_etc_conts LIKE CONCAT('%', #{reportContents}, '%')
+            )
+        </if>
+        <if test="all  != null and all != ''">
+            AND (   <![CDATA[ 1 <> 1 ]]>
+                    OR tb2.wk_report_nm LIKE CONCAT('%', #{all}, '%')
+                    OR tb2.this_week_conts LIKE CONCAT('%', #{all}, '%')
+                    OR tb2.next_week_conts LIKE CONCAT('%', #{all}, '%')
+                    OR tb2.report_etc_conts LIKE CONCAT('%', #{all}, '%')
+            )
+        </if>
+        <if test="workFromDt  != null and workToDt != ''">
+            AND ( tb2.work_from_dt <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND tb2.work_to_dt <![CDATA[ >= ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d'))
+        </if>
+    </sql>
+
+    <!-- 주간업무보고 총 건수 -->
+    <select id="selectWeeklyReportCnt" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportSearchDto" resultType="int">
+        /*WeeklyReportMapper.selectWeeklyReportCnt*/
+        SELECT COUNT(tb2.wk_report_id) AS totalCount
+          FROM (SELECT tb2.org_key, tb2.org_nm
+                  FROM dwp.tbl_com_org tb1
+                 INNER JOIN dwp.tbl_com_org tb2
+                    ON (tb2.org_key = #{reportOrgKey} OR tb1.org_cd = tb2.upper_org_cd)
+                 WHERE tb1.org_key = #{reportOrgKey}) tb1
+         INNER JOIN dwp.tbl_dwp_wk_report tb2
+            ON tb1.org_key = tb2.report_org_key
+           AND (tb2.report_org_key = #{reportOrgKey} OR tb2.report_auth_cd = 'RESP')
+         INNER JOIN dwp.tbl_com_user tb3
+            ON tb2.report_user_key = tb3.user_key
+         WHERE tb2.use_flag = 1
+         <include refid="reportListWhere"/>
+    </select>
+
+    <!-- 주간업무보고 목록 조회 -->
+    <select id="selectWeeklyReportList" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportSearchDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpWkReportDto">
+        /*WeeklyReportMapper.selectWeeklyReportList*/
+        SELECT tb2.wk_report_id
+             , ROW_NUMBER() OVER(ORDER BY tb2.merge_flag DESC, tb2.create_dt DESC) AS rowNum
+             , tb2.merge_flag
+             , tb2.wk_report_nm
+             , tb2.report_yyyymm_week
+             , tb2.report_status
+             , tb2.report_org_key
+             , tb2.report_user_key
+             , tb2.use_flag
+             , tb3.user_nm as report_user_nm
+             , tb1.org_nm AS report_org_nm
+             , DATE_FORMAT(tb2.work_from_dt, '%Y.%m.%d') AS work_from_dt
+             , DATE_FORMAT(tb2.work_to_dt, '%Y.%m.%d') AS work_to_dt
+             , DATE_FORMAT(tb2.next_work_from_dt, '%Y.%m.%d') AS next_work_from_dt
+             , DATE_FORMAT(tb2.next_work_to_dt, '%Y.%m.%d') AS next_work_to_dt
+             , DATE_FORMAT(tb2.create_dt, '%Y.%m.%d %H:%i') AS create_dt
+          FROM (SELECT tb2.org_key, tb2.org_nm
+                  FROM dwp.tbl_com_org tb1
+                 INNER JOIN dwp.tbl_com_org tb2
+                    ON (tb2.org_key = #{reportOrgKey} OR tb1.org_cd = tb2.upper_org_cd)
+                 WHERE tb1.org_key = #{reportOrgKey}) tb1
+         INNER JOIN dwp.tbl_dwp_wk_report tb2
+            ON tb1.org_key = tb2.report_org_key
+           AND (tb2.report_org_key = #{reportOrgKey} OR tb2.report_auth_cd = 'RESP')
+         INNER JOIN dwp.tbl_com_user tb3
+            ON tb2.report_user_key = tb3.user_key
+         WHERE tb2.use_flag = 1
+         <include refid="reportListWhere"/>
+         ORDER BY tb2.merge_flag DESC, tb2.create_dt DESC
+         <if test="limit != null and offset != null ">
+            LIMIT ${limit} OFFSET ${offset}
+         </if>
+    </select>
+
+    <!-- 주간업무보고 생성 -->
+    <insert id="insertWeeklyReport" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" useGeneratedKeys="true" keyProperty="wkReportId" keyColumn="WK_REPORT_ID">
+        /* WeeklyReportMapper.insertWeeklyReport */
+        INSERT INTO dwp.tbl_dwp_wk_report (
+                    merge_flag, wk_report_nm, report_yyyymm_week
+                  , work_from_dt, work_to_dt, next_work_from_dt, next_work_to_dt
+                  , report_status, report_auth_cd, report_org_key, report_user_key
+                  , this_week_period, this_week_text, this_week_conts
+                  , next_week_period, next_week_text, next_week_conts
+                  , report_etc_conts
+                  , use_flag, create_dt, update_dt )
+            VALUES( #{mergeFlag}, #{wkReportNm}, #{reportYyyymmWeek}
+                  , #{workFromDt}, #{workToDt}, #{nextWorkFromDt}, #{nextWorkToDt}
+                  , #{reportStatus}, #{reportAuthCd}, #{reportOrgKey}, #{reportUserKey}
+                  , #{thisWeekPeriod}, #{thisWeekText}, #{thisWeekConts}
+                  , #{nextWeekPeriod}, #{nextWeekText}, #{nextWeekConts}
+                  , #{reportEtcConts}
+                  , #{useFlag}, NOW(), NOW())
+    </insert>
+
+    <!-- 주간보고 합하기에 사용한 주간보고 목록 저장 -->
+    <insert id="insertMergeWeeklyReportList" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto">
+        /*WeeklyReportMapper.insertWeeklyReport*/
+        INSERT INTO dwp.tbl_dwp_wk_report_merge(wk_report_id, merge_wk_report_id,  create_dt)
+        VALUES
+            <foreach collection="mergeReportIdtList" item="mergeReportId" separator=",">
+                (#{wkReportId}, #{mergeReportId}, NOW())
+            </foreach>
+    </insert>
+
+    <!-- 주간보고서 상태값 변경 처리 -->
+    <update id="updateWeeklyReportStatus" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto">
+        /*WeeklyReportMapper.updateWeeklyReportStatus*/
+        UPDATE dwp.tbl_dwp_wk_report
+           SET report_status = #{reportStatus}
+             , update_dt = current_timestamp()
+         WHERE wk_report_id = ${wkReportId}
+
+    </update>
+
+    <!-- AI연동 실시간 이력 저장 -->
+    <insert id="insertAIJobRealInfo" parameterType="com.gsbizple.wiz.todo.dto.TblAIJobRealDto" useGeneratedKeys="true" keyProperty="jobId" keyColumn="JOB_ID">
+        /*WeeklyReportMapper.insertAIJobRealInfo*/
+        INSERT INTO batch.tbl_ai_job_real (ai_service_id, job_exec_user_key, job_exec_status, job_start_dt, job_result, ai_service_param, create_dt, create_user_key)
+        VALUES (#{aiServiceId}, #{jobExecUserKey}, #{jobExecStatus}, NOW(), #{jobResult}, #{aiServiceParam}, NOW(), #{createUserKey})
+    </insert>
+
+    <!-- AI연동 결과 저장처리 -->
+    <update id="updateAIJobRealInfo" parameterType="com.gsbizple.wiz.todo.dto.TblAIJobRealDto">
+        /*WeeklyReportMapper.updateAIJobRealInfo*/
+        UPDATE batch.tbl_ai_job_real
+           SET JOB_EXEC_STATUS = #{jobExecStatus}
+             , JOB_END_DT = NOW()
+             , AI_SERVICE_RESULT = #{aiServiceResult}
+         WHERE JOB_ID = #{jobId}
+    </update>
+
+    <!-- 주간업무보고 삭제 -->
+    <update id="deleteWeeklyReport" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" >
+        /* WeeklyReportMapper.deleteWeeklyReport */
+        UPDATE dwp.tbl_dwp_wk_report
+           SET USE_FLAG = 0
+             , DELETE_DT = current_timestamp()
+         WHERE WK_REPORT_ID = ${wkReportId}
+    </update>
+
+    <!-- 주간업무보고 수정 -->
+    <update id="updateWeeklyReport" parameterType="com.gsbizple.wiz.todo.dto.TblDwpWkReportDto" >
+        /* WeeklyReportMapper.updateWeeklyReport */
+        UPDATE dwp.tbl_dwp_wk_report
+           SET update_dt = NOW()
+        <if test="mergeFlag != null and mergeFlag != ''">
+             , merge_flag = #{mergeFlag}
+        </if>
+        <if test="wkReportNm != null and wkReportNm != ''">
+             , wk_report_nm = #{wkReportNm}
+        </if>
+        <if test="reportYyyymmWeek != null and reportYyyymmWeek != ''">
+            , report_yyyymm_week = #{reportYyyymmWeek}
+        </if>
+        <if test="workFromDt != null and workFromDt != ''">
+             , work_from_dt = #{workFromDt}
+        </if>
+        <if test="workToDt != null and workToDt != ''">
+             , work_to_dt = #{workToDt}
+        </if>
+        <if test="nextWorkFromDt != null and nextWorkFromDt != ''">
+             , next_work_from_dt = #{nextWorkFromDt}
+        </if>
+        <if test="nextWorkToDt != null and nextWorkToDt != ''">
+             , next_work_to_dt = #{nextWorkToDt}
+        </if>
+        <if test="reportStatus != null and reportStatus != ''">
+             , report_status = #{reportStatus}
+        </if>
+             , this_week_period = #{thisWeekPeriod}
+             , this_week_text = #{thisWeekText}
+             , this_week_conts = #{thisWeekConts}
+             , next_week_period = #{nextWeekPeriod}
+             , next_week_text = #{nextWeekText}
+             , next_week_conts = #{nextWeekConts}
+             , report_etc_conts = #{reportEtcConts}
+        <if test="useFlag != null">
+             , use_flag = #{useFlag}
+        </if>
+         WHERE wk_report_id = ${wkReportId}
+    </update>
+
+    <!-- 주간업무보고 상세 조회 -->
+    <select id="selectWeeklyReport" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" resultType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto">
+        /** WeeklyReportMapper.selectWeeklyReport */
+        SELECT dwr.wk_report_id
+             , dwr.merge_flag
+             , dwr.report_yyyymm_week
+             , dwr.wk_report_nm
+             , dwr.work_from_dt
+             , dwr.work_to_dt
+             , dwr.next_work_from_dt
+             , dwr.next_work_to_dt
+             , dwr.report_org_key
+             , tco.org_nm AS report_org_nm
+             , dwr.report_user_key
+             , tcu.user_nm AS report_user_nm
+             , dwr.this_week_period
+             , dwr.this_week_text
+             , dwr.this_week_conts
+             , dwr.next_week_period
+             , dwr.next_week_text
+             , dwr.next_week_conts
+             , dwr.report_etc_conts
+             , DATE_FORMAT(dwr.create_dt, '%Y.%m.%d %H:%i') AS create_dt
+             , DATE_FORMAT(dwr.update_dt, '%Y.%m.%d %H:%i') AS update_dt
+          FROM dwp.tbl_dwp_wk_report dwr
+         INNER JOIN dwp.tbl_com_user tcu
+            ON dwr.report_user_key = tcu.user_key
+         INNER JOIN dwp.tbl_com_org tco
+            ON tcu.org_key = tco.org_key
+         WHERE dwr.wk_report_id = ${wkReportId}
+    </select>
+
+    <!-- 보고서 합치기 AI전송 데이터 조회 -->
+    <select id="selectAISendMergeReportInfo" parameterType="com.gsbizple.wiz.todo.dto.TodoWkReportWriteDto" resultType="map">
+        /*WeeklyReportMapper.selectAISendMergeReportInfo*/
+        SELECT tb2.user_nm AS name
+             , IFNULL(tb1.this_week_conts, '') AS this_week
+             , IFNULL(tb1.next_week_conts, '') AS next_week
+             , IFNULL(tb1.report_etc_conts, '') AS etc
+          FROM dwp.tbl_dwp_wk_report tb1
+         INNER JOIN dwp.tbl_com_user tb2
+            ON tb1.report_user_key = tb2.user_key
+         WHERE tb1.wk_report_id IN <foreach item="reportId" collection="mergeReportIdtList" open="(" separator="," close=")">#{reportId}</foreach>
+    </select>
+
+
+</mapper>
+
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AlarmTemplateMapper">
+
+    <!-- 알림 템플릿 정보 조회 -->
+    <select id="getAlarmTemplateInfo" parameterType="com.gsbizple.wiz.messenger.dto.AlarmTemplateDto" resultType="com.gsbizple.wiz.messenger.dto.AlarmTemplateDto">
+        /*AlarmTemplateMapper.getAlarmTemplateInfo*/
+        SELECT template_key
+             , template_code
+             , language
+             , template_name
+             , template_message
+             , default_yn
+             , use_yn
+             , create_user_key
+             , create_dt
+             , modify_user_key
+             , modify_dt
+          FROM messenger.tbl_alarm_template ta
+         WHERE template_code = #{templateCode}
+           AND use_yn = #{useYn}
+           AND language = #{language}
+    </select>
+
+</mapper>

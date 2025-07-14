@@ -1,0 +1,91 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    project.ext.lombok = "../../../BuildGradle/build-lombok.gradle"
+    project.ext.spring_3 = "../../../BuildGradle/build-spring3.4-default.gradle"
+    project.ext.jwt = "../../../BuildGradle/build-jwt.gradle"
+    project.ext.maria = "../../../BuildGradle/build-maria.gradle"
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+apply from : lombok
+apply from : spring_3
+apply from : jwt
+apply from : maria
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+project.ext.archivesBaseName = 'com.gsbizple.wiz.common'
+
+tasks.named("compileJava"){
+    dependsOn(tasks.named("clean"))
+}
+
+tasks.named("jar") {
+    def libs = file("../Jars/common") // 절대 경로를 생성
+    enabled = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def yyMMddHH= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHH"))
+    def major=yyMMddHH.substring(0,2);
+    def miner=yyMMddHH.substring(2,6);
+    def fix=yyMMddHH.substring(6,8);
+    archiveFileName.set("${project.ext.archivesBaseName}.${major}.${miner}.${fix}.jar")
+    exclude '*.yml'
+    exclude 'mybatis/**'
+    exclude 'static/**'
+    exclude 'templates/**'
+    exclude 'company/**'
+    destinationDirectory.set(libs)
+}
+
+tasks.named("bootJar") {
+    enabled = false
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+tasks.register("delBuildLibs", Delete) {
+
+    def libs = ["../../../BuildLibs/","../Jars/"]
+    libs.each { lib ->
+        delete(libs)
+    }
+}
+
+// clean 작업에 delToJar 의존성 추가
+tasks.named("clean") {
+    dependsOn(tasks.named("delBuildLibs"))
+}
+

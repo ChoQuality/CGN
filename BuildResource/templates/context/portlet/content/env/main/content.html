@@ -1,0 +1,426 @@
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+
+<div class="portlet">
+    <div class="portlet__group is-col-2">
+        <div class="card" style="background-color: #E5EBF5;">
+            <div class="d-flex align-items-center">
+                <div class="d-flex justify-content-center" style="width: 50%;">
+                    <div class="datePicker">
+                        <input type="text" id="portletCalendarInput" class="datePicker__input" style="display: none">
+                        <div id="portletCalendar" class="datePicker__calendar"><div class="tui-datepicker">      <div class="tui-datepicker-body tui-datepicker-type-date">      <div class="tui-calendar-container"><div class="tui-calendar">    <div class="tui-calendar-header"><div class="tui-calendar-header-inner">      <button class="tui-calendar-btn tui-calendar-btn-prev-month">Prev month</button>      <em class="tui-calendar-title tui-calendar-title-month">2025.03</em>      <button class="tui-calendar-btn tui-calendar-btn-next-month">Next month</button>    </div>    <div class="tui-calendar-header-info">    <p class="tui-calendar-title-today">오늘: 2025.03.11 (화)</p>  </div></div>    <div class="tui-calendar-body"><table class="tui-calendar-body-inner" cellspacing="0" cellpadding="0">  <caption><span>Dates</span></caption>  <thead class="tui-calendar-body-header">    <tr>      <th class="tui-sun" scope="col">일</th>      <th scope="col">월</th>      <th scope="col">화</th>      <th scope="col">수</th>      <th scope="col">목</th>      <th scope="col">금</th>      <th class="tui-sat" scope="col">토</th>    </tr>  </thead>  <tbody>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-prev-month tui-calendar-sun tui-is-selectable" data-timestamp="1740236400000">23</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740322800000">24</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740409200000">25</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740495600000">26</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740582000000">27</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740668400000">28</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1740754800000">1</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1740841200000">2</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1740927600000">3</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741014000000">4</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741100400000">5</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741186800000">6</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741273200000">7</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1741359600000">8</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1741446000000">9</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741532400000">10</td>            <td class="tui-calendar-date tui-calendar-today tui-is-selectable tui-is-selected" data-timestamp="1741618800000">11</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741705200000">12</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741791600000">13</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741878000000">14</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1741964400000">15</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1742050800000">16</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742137200000">17</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742223600000">18</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742310000000">19</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742396400000">20</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742482800000">21</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1742569200000">22</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1742655600000">23</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742742000000">24</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742828400000">25</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742914800000">26</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743001200000">27</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743087600000">28</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1743174000000">29</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1743260400000">30</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743346800000">31</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743433200000">1</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743519600000">2</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743606000000">3</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743692400000">4</td>            <td class="tui-calendar-date tui-calendar-next-month tui-calendar-sat tui-is-selectable" data-timestamp="1743778800000">5</td>          </tr>      </tbody></table></div></div></div>    </div>  </div></div>
+                    </div>
+                </div>
+
+                <div class="pl-45" style="width: 50%; border-left: 0.1rem solid #D0DBE8;">
+                    <h2 class="title text-center">12월 20일 (금)</h2>
+                    <ul class="detailList mt-30">
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup gap-10">
+                                    <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                    <i class="icon is-24 is-system-complete"></i>
+                                </div>
+                                <p>U.STRA WORKS 고도화 협의</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup gap-10">
+                                    <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                    <i class="icon is-24 is-system-complete"></i>
+                                </div>
+                                <p>Saas 영업팀 월간회의</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup gap-10">
+                                    <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                </div>
+                                <p>2025년 KPI 작성요령 교육 화상회의 준비</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup gap-10">
+                                    <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                </div>
+                                <p>주간회의</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portlet__group">
+        <div class="card">
+            <div class="portlet__top">
+                <h2 class="title">TODO</h2>
+
+                <div class="btnGroup">
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+                </div>
+            </div>
+
+            <div class="card__body">
+                <ul class="board">
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title">서비스 기획팀 2024연말 회식 참석하기</h3>
+                            <div class="badge">오늘</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title">서비스 기획팀 2024연말 회식 참석하기</h3>
+                            <div class="badge">오늘</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title">U.STRA WORK 2.0 고도화 협의</h3>
+                            <div class="badge is-delay">D+10</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item is-bookmark">
+                            <h3 class="board__title">U.STRA WORK 2.0 고도화 협의</h3>
+                            <div class="badge is-dDay">D-2</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="" class="board__item is-bookmark">
+                            <h3 class="board__title">2025 트렌드 코리아 세미나  보고서 작성하기2025 트렌드 코리아 세미나  보고서 작성하기</h3>
+                            <div class="badge is-dDay">D-2</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item is-important">
+                            <h3 class="board__title">2025 KPI 작성2025 KPI 작성2025 KPI 작성2025 KPI 작성</h3>
+                            <div class="badge is-dDay">D-107</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="portlet__group gap-15">
+        <div class="myLink">
+            <div class="myLink__top">
+                <div class="portlet__top">
+                    <h2 class="title">마이링크</h2>
+
+                    <div class="btnGroup">
+                        <button type="button" class="btn has-icon"><i class="icon is-30 is-setting-white-30"></i></button>
+                        <button type="button" class="btn has-icon"><i class="icon is-30 is-link-white-30"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="myLink__body">
+                <div class="profile">
+                    <div class="userThumb is-max">
+                        <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                    </div>
+                    <div class="profileText">
+                        <p class="name">정우성 이사/본부장</p>
+                        <div class="profile__desc">
+                            <p><span>IT2024</span><span>전략 기획팀</span></p>
+                            <p>abcdefghi123@gsitm.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="linkList">
+            <li><a href="javascript:void(0);" class="linkList__item">GS비즈풀 eHR 시스템 <i class="icon is-24 is-go-round-24"></i></a></li>
+            <li><a href="javascript:void(0);" class="linkList__item">USTRA ITSM <i class="icon is-24 is-go-round-24"></i></a></li>
+            <li><a href="javascript:void(0);" class="linkList__item">GS비즈플 eHR 시스템 <i class="icon is-24 is-go-round-24"></i></a></li>
+            <li><a href="javascript:void(0);" class="linkList__item">사업관리 시스템 (PMS) <i class="icon is-24 is-go-round-24"></i></a></li>
+        </ul>
+    </div>
+
+    <div class="portlet__group">
+        <div class="card pb-20">
+            <div class="portlet__top">
+                <h2 class="title">전자결재</h2>
+
+                <div class="btnGroup">
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+                </div>
+            </div>
+
+            <div class="card__body">
+                <div id="tab01" class="tab__contents is-active" style="height: 25.8rem;">
+                    <ul class="detailList has-line">
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup">
+                                    <div class="badge is-approval">품의서</div>
+                                    <div class="badge is-ing">진행중</div>
+                                </div>
+                                <p>GS칼텍스 그룹웨어 고도화 프로젝트 품의입니다.GS칼텍스 그룹웨어 고도화 프로젝트 품의입니다.</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup">
+                                    <div class="badge is-approval">휴가기안서</div>
+                                    <div class="badge is-ing">진행중</div>
+                                </div>
+                                <p>크리스마스가 다가와서 발리를 갑니다. 허가부탁드립니다.</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div class="badgeGroup">
+                                    <div class="badge is-approval">휴가기안서</div>
+                                    <div class="badge is-finish">완료</div>
+                                </div>
+                                <p>연말휴가 신청서입니다.</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="tab02" class="tab__contents" style="height: 25.8rem;">
+                    <ul class="detailList has-line">
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div>
+                                    <div class="badge is-approval">휴가기안서</div>
+                                    <div class="badge is-ing">진행중</div>
+                                </div>
+                                <p>크리스마스가 다가와서 발리를 갑니다. 허가부탁드립니다.</p>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="javascript:void(0);" class="detailList__item">
+                                <div>
+                                    <div class="badge is-approval">휴가기안서</div>
+                                    <div class="badge is-finish">완료</div>
+                                </div>
+                                <p>연말휴가 신청서입니다.</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-28">
+                    <ul class="tabs is-round" data-tabs="tabs">
+                        <li><a href="javascript:void(0);" class="tab__link is-active">기안함</a></li>
+                        <li><a href="javascript:void(0);" class="tab__link">결재함</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="portlet__group">
+        <div class="portlet__top">
+            <h2 class="title">자원예약</h2>
+
+            <div class="btnGroup">
+                <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+            </div>
+        </div>
+
+        <div class="card bg-skyBlue-100">
+            <div class="card__body">
+                <ul class="board is-reservation">
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-meetingRoom">대회의실 (5F)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-car">카니발(7799)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-car">대회의실 (5F)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-meetingRoom">보헌빌딩 C룸 (3F)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-car">카니발(7799)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title is-car">카니발(7799)</h3>
+                            <div class="date">2024.12.25 10:30</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="portlet__group">
+        <div class="card">
+            <div class="portlet__top">
+                <h2 class="title">공지사항</h2>
+
+                <div class="btnGroup">
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+                </div>
+            </div>
+
+            <div class="card__body">
+                <ul class="board">
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[공지]</span> 25년 하계 성수기 휴가신청..</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-point-1">[재무]</span> 12월 업무경비 기안처리</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-point-2">[교육]</span> 2024년 필수교육 신청기간 공지</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-point-2">[교육]</span> 이알리미 사용법 게시</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[공지]</span> 사내연말 이벤트 참요 공지</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[공지]</span> 인사팀 한도훈님 득녀 축하드립니...</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="portlet__group">
+        <div class="card">
+            <div class="portlet__top">
+                <h2 class="title">경조사</h2>
+
+                <div class="btnGroup">
+                    <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+                </div>
+            </div>
+
+            <div class="card__body">
+                <ul class="board">
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[경사]</span> 사업2팀 임예솔님 결혼 축하드립니다.</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[경사]</span> 인사팀 한도훈님 득녀 축하드립니다.</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-point-2">[조사]</span> 부고 서비스기획팀 임이랑 외조부상</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-point-2">[조사]</span> 부고 서비스기획팀 임이랑 외조부상</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[경사]</span> 인사팀 한도훈님 득녀 축하드립다</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="board__item">
+                            <h3 class="board__title"><span class="text-primary">[경사]</span> 인사팀 한도훈님 득녀 축하</h3>
+                            <div class="date">2024.12.23</div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="portlet__group">
+        <div class="portlet__top">
+            <h2 class="title">연차현황</h2>
+
+            <div class="btnGroup">
+                <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+            </div>
+        </div>
+
+        <div class="vacation">
+            <div class="vacation__item">
+                <div class="vacation__title">
+                    <i class="icon is-60 is-vacation-1"></i>
+                    총연차
+                </div>
+                <div class="vacation__count">20</div>
+            </div>
+
+            <div class="vacation__item">
+                <div class="vacation__title">
+                    <i class="icon is-60 is-vacation-2"></i>
+                    사용연차
+                </div>
+                <div class="vacation__count">8.5</div>
+            </div>
+
+            <div class="vacation__item">
+                <div class="vacation__title">
+                    <i class="icon is-60 is-vacation-3"></i>
+                    잔여연차
+                </div>
+                <div class="vacation__count">10.5</div>
+            </div>
+
+            <div class="vacation__item">
+                <div class="vacation__title">
+                    <i class="icon is-60 is-vacation-4"></i>
+                    기타
+                </div>
+                <div class="vacation__count">1</div>
+            </div>
+        </div>
+    </div>
+</div>

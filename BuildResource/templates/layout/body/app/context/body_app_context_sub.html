@@ -1,0 +1,39 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+
+<!--/*@thymesVar id="loginMenuInfoList" type="java.util.List"*/-->
+<!--/*@thymesVar id="loginMenuInfo" type="com.gsbizple.wiz.common.dto.LoginMenuInfoDto"*/-->
+<!--/*@thymesVar id="loginSubMenuList" type="java.util.List"*/-->
+<!--/*@thymesVar id="menuInfo" type="com.gsbizple.wiz.common.dto.LoginMenuInfoDto"*/-->
+<!--/*@thymesVar id="loginSub2MenuList" type="java.util.List"*/-->
+<!--/*@thymesVar id="menuInfo2" type="com.gsbizple.wiz.common.dto.LoginMenuInfoDto"*/-->
+<th:block th:if="${layoutService.getContextType() == @ContextTypeTodo}" th:with="loginMenuInfoList=${layoutService?.getLoginInfo()?.getMenuList(1)}">
+    <div class="subSidebar__title">
+        <i class="icon is-24"></i>
+        <h2 class="title">MY TO DO</h2>
+    </div>
+    <nav>
+        <th:block th:each=" loginMenuInfo : ${loginMenuInfoList} ">
+            <th:block th:if="${loginMenuInfo.getMenuServiceCode() == layoutService.getContextType().name()}" class="pageMenu">
+                <ul class="pageMenu">
+                <th:block th:with="loginSubMenuList=${layoutService.getLoginInfo().getSubMenuList(2, loginMenuInfo.getMenuId())}">
+                    <th:block th:each=" menuInfo : ${loginSubMenuList} ">
+                        <li><a th:href="@{${menuInfo.getMenuExecutePath()}}" class="pageMenu__item" th:text="${menuInfo.getMenuName()}"
+                               th:data-icoPath="${menuInfo.getMenuIcoPath()}" th:data-menuPath="${menuInfo.getMenuExecutePath()}"  th:data-menuType="${menuInfo.getMenuType()}" th:data-menuId="${menuInfo.getMenuId()}" th:data-titleNm="${menuInfo.getMenuName()}" ></a>
+                        <ul th:with="loginSub2MenuList=${layoutService.getLoginInfo().getSubMenuList(3, menuInfo.getMenuId())}" class="pageMenu is-twoDepth">
+                            <th:block th:each=" menuInfo2 : ${loginSub2MenuList} ">
+                                <li><a th:href="@{${menuInfo2.getMenuExecutePath()}}" class="pageMenu__item" th:text="${menuInfo2.getMenuName()}"
+                                       th:data-icoPath="${menuInfo.getMenuIcoPath()}" th:data-menuPath="${menuInfo2.getMenuExecutePath()}" th:data-menuType="${menuInfo2.getMenuType()}" th:data-menuId="${menuInfo2.getMenuId()}" th:data-titleNm="${menuInfo.getMenuName()}" ></a></li>
+                            </th:block>
+                        </ul>
+                        </li>
+                    </th:block>
+                </th:block>
+                </ul>
+            </th:block>
+        </th:block>
+    </nav>
+</th:block>
+
+<th:block th:unless="${layoutService.getContextType() == @ContextTypeTodo}" th:utext="${layoutService.getContextSub()}"></th:block>

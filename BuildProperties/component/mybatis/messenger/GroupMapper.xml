@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="GroupMapper">
+
+    <!--전체 조직정보 조회 -->
+    <select id="getOrgList" parameterType="com.gsbizple.wiz.messenger.dto.GroupDto" resultType="com.gsbizple.wiz.messenger.dto.GroupDto">
+        /*GroupMapper.getOrgList*/
+        SELECT org.org_key
+             , org.org_cd
+             , org.corporate_id
+             , org.org_path
+             , org.upper_org_cd
+             , org.org_nm
+             , org.org_type
+             , org.sort_order
+             , org.use_flag
+             , corporate.corporate_nm
+             , corporate.corporate_contact
+          FROM dwp.tbl_com_org org
+         INNER JOIN dwp.tbl_com_corporate_info corporate
+            ON org.corporate_id = corporate.corporate_id
+         WHERE org.corporate_id = #{corporateId}
+           AND org.use_flag = 1
+           AND corporate.use_flag = 1
+    </select>
+
+    <!-- 조직명 조회 -->
+    <select id="getGroupSearchList" parameterType="com.gsbizple.wiz.messenger.dto.GroupDto" resultType="com.gsbizple.wiz.messenger.dto.GroupDto">
+        /*GroupMapper.getGroupSearchList*/
+        WITH RECURSIVE groupInfo AS (SELECT org_key
+                                          , org_cd
+                                          , org_nm
+                                          , org_path
+                                          , corporate_id
+                                       FROM dwp.tbl_com_org
+                                      WHERE use_flag = 1
+                                        AND upper_org_cd IS NULL
+                                      UNION ALL
+                                     SELECT tb1.org_key
+                                          , tb1.org_cd
+                                          , CONCAT(tb2.org_nm, '|', tb1.org_nm) AS org_nm
+                                          , tb1.org_path
+                                          , tb1.corporate_id
+                                       FROM dwp.tbl_com_org tb1
+                                      INNER JOIN groupInfo tb2
+                                         ON tb1.upper_org_cd = tb2.org_cd
+                                        AND tb1.corporate_id = tb2.corporate_id
+                                        AND tb1.use_flag = 1)
+        SELECT org.org_key
+             , org.org_nm
+             , org.corporate_id
+             , groupInfo.org_nm AS org_path_nm
+          FROM dwp.tbl_com_org org
+         INNER JOIN dwp.tbl_com_corporate_info corporate
+            ON org.corporate_id = corporate.corporate_id
+         INNER JOIN groupInfo groupInfo
+            ON org.org_cd = groupinfo.org_cd
+         WHERE org.corporate_id = #{corporateId}
+           AND org.org_nm LIKE CONCAT('%', #{keyword}, '%')
+           AND org.use_flag = 1
+           AND corporate.use_flag = 1
+    </select>
+
+    <!-- 그룹의 사용자 목록 조회 -->
+    <select id="getGroupUserList" parameterType="com.gsbizple.wiz.messenger.dto.GroupDto" resultType="com.gsbizple.wiz.messenger.dto.UserDto">
+        /*GroupMapper.getGroupUserList*/
+        WITH RECURSIVE groupInfo AS (SELECT org_key
+                                          , org_cd
+                                          , org_nm
+                                          , org_path
+                                          , corporate_id
+                                       FROM dwp.tbl_com_org
+                                      WHERE use_flag = 1
+                                        AND upper_org_cd IS NULL
+                                      UNION ALL
+                                     SELECT tb1.org_key
+                                          , tb1.org_cd
+                                          , CONCAT(tb2.org_nm, '|', tb1.org_nm) AS org_nm
+                                          , tb1.org_path
+                                          , tb1.corporate_id
+                                       FROM dwp.tbl_com_org tb1
+                                      INNER JOIN groupInfo tb2
+                                         ON tb1.upper_org_cd = tb2.org_cd
+                                        AND tb1.corporate_id = tb2.corporate_id
+                                        AND tb1.use_flag = 1)
+        SELECT user.user_key
+             , user.org_key
+             , org.org_nm
+             , org.corporate_id
+             , user.user_id
+             , user.user_nm
+             , user.thumb_img_type
+             , user.thumb_img_path
+             , user.email
+             , user.POSITION_CD
+             , user.RESPONSIBILITY_CD
+             , user.mobile_phone_no
+             , user.office_phone_no
+             , user.emp_no
+             , user.auth_cd
+             , groupinfo.org_path
+             , groupinfo.org_nm as org_path_nm
+          FROM dwp.tbl_com_user user
+         INNER JOIN dwp.tbl_com_org org
+            ON user.org_key = org.org_key
+         INNER JOIN dwp.tbl_com_corporate_info corporate
+            ON org.corporate_id = corporate.corporate_id
+         INNER JOIN groupInfo groupInfo
+            ON org.org_cd = groupInfo.org_cd
+         WHERE user.use_flag = 1
+           AND user.org_key = #{orgKey}
+           AND org.corporate_id = #{corporateId}
+           AND org.use_flag = 1
+           AND corporate.use_flag = 1
+    </select>
+
+</mapper>

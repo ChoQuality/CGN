@@ -1,0 +1,49 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+  tomcat:
+    max-http-form-post-size: 15MB
+  port: 8080
+  address: 0.0.0.0
+spring:
+  messages:
+    encoding: UTF-8
+    basename: i18n/ai/ai,i18n/common/common,i18n/messenger/messenger,i18n/portlet/portlet,i18n/todo/todo,i18n/view/view
+  application:
+    name: wiz
+  config:
+    import:
+      - mybatis.yml
+      - redis.yml
+      - file.yml
+      - websocket.yml
+      - jwt.yml
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 20MB
+  web:
+    resources:
+      cache:
+        period: 31536000  # 1년 (초 단위)
+      chain:
+        cache: true
+        strategy:
+          content:
+            enabled: true
+            paths:
+              - /**
+
+logging:
+  pattern:
+    console: '%d{YYYY-MM-dd HH:mm:ss} | %-5level | %C | %method | %msg %n'
+  level:
+    root: debug
+
+

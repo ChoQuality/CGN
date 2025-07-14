@@ -1,0 +1,124 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="roomDto" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="loginInfoDto" type="com.gsbizple.wiz.common.dto.LoginInfoDto"*/-->
+<!--/*@thymesVar id="room" type="com.gsbizple.wiz.messenger.dto.RoomListDto"*/-->
+<!--/*@thymesVar id="layoutUtilService" type="com.gsbizple.wiz.common.service.view.LayoutUtilService"*/-->
+<th:block th:with="layoutUtilService = ${layoutUtilService}">
+    <th:block th:if="${not #lists.isEmpty(roomDto.getData())}">
+        <th:block th:each="room : ${roomDto.getData()}">
+            <a href="javascript:void(0);" class="chatList"
+               th:data-chat-room-id="${room.getRoomId()}"
+               th:data-chat-room-type="${room.getRoomType()}"
+               th:data-chat-room-name="${room.getRoomName()}"
+               th:data-chat-room-description="${room.getDescription()}"
+               th:data-chat-room-unread-message-count="${room.getUnreadMessageCount()}"
+               th:data-chat-room-message-type="${room.getMessageType()}"
+               th:data-chat-room-last-message-content="${room.getLastMessageContent()}"
+               th:data-chat-room-message-id="${room.getMessageId()}"
+               th:data-chat-room-read-message-id="${room.getReadMessageId()}"
+               th:data-chat-room-last-message-dt="${room.getLastMessageDtFormatted()}"
+               th:data-chat-room-fix-order="${room.getFixOrder()}"
+               th:data-chat-participant-list="${room.getParticipantList()}"
+            >
+                <th:block th:switch="${room.getRoomType()}">
+                    <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).ALARM}">
+                        <div class="userThumb is-bot">
+                            <div class="userThumb__img">
+                            </div>
+                        </div>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).DOROTHY}">
+                        <div class="userThumb is-dorothy">
+                            <div class="userThumb__img">
+                            </div>
+                        </div>
+                    </th:block>
+                    <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).SELF}">
+                        <div class="userThumb is-mine">
+                            <div class="userThumb__img">
+                                <img th:src="${loginInfoDto?.userImageUrl ?: ''}" alt="">
+                            </div>
+                        </div>
+                    </th:block>
+                    <th:block th:case="*">
+                        <div class="userThumb">
+                            <div class="userThumb__img">
+                                <img th:src="${loginInfoDto.getUserImageUrl()}" alt="">
+                            </div>
+                        </div>
+                    </th:block>
+                </th:block>
+
+                <div class="chatList__body">
+                    <div class="chatUser">
+                        <h3 class="name" th:text="${room.getRoomName()}"></h3>
+                        <span class="time" th:text="${room.getLastMessageDtFormatted()}"></span>
+                        <th:block th:switch="${room.getRoomType()}">
+                            <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).ALARM}">
+                            </th:block>
+                            <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).DOROTHY}">
+                            </th:block>
+                            <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).SELF}">
+                            </th:block>
+                            <th:block th:case="*">
+                                <div class="more">
+                                    <button type="button" data-btntype="more" class="btn has-icon">
+                                        <i class="icon is-14 is-chat-more-14"></i>
+                                    </button>
+                                </div>
+                            </th:block>
+                        </th:block>
+                    </div>
+                    <div class="chat">
+
+                        <th:block th:switch="${room.getRoomType()}">
+
+                            <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).DOROTHY}">
+                                <p class="chat__text"
+
+                                   th:text="${layoutUtilService.convertString(room.getLastMessageContent())}">
+
+                                </p>
+                                <span style="display: none" class="chat__count" th:text="${room.getUnreadMessageCount()}"></span>
+                            </th:block>
+
+                            <th:block th:case="${T(com.gsbizple.wiz.common.spec.messenger.RoomType).SELF}">
+                                <p class="chat__text"
+
+                                   th:text="${layoutUtilService.convertString(room.getLastMessageContent())}">
+
+                                </p>
+                                <span style="display: none" class="chat__count" th:text="${room.getUnreadMessageCount()}"></span>
+                            </th:block>
+                            <th:block th:case="*">
+                                <p class="chat__text"
+                                   th:text="${layoutUtilService.convertString(room.getLastMessageContent())}">
+                                </p>
+                                <span class="chat__count"
+                                      th:text="${room.getUnreadMessageCount()}"
+                                      th:style="${room.getUnreadMessageCount() == 0} ? 'display: none;' : ''">
+                            </span>
+
+                            </th:block>
+                        </th:block>
+
+
+                    </div>
+                </div>
+            </a>
+        </th:block>
+    </th:block>
+</th:block>
+
+
+<th:block th:if="${#lists.isEmpty(roomDto.getData())}">
+    <div class="chatList is-empty">
+        <span class="fw-600">참여한 대화방이 없습니다.</span>
+        대화방을 만들어 동료들과<br>
+        이야기를 나눠보세요
+    </div>
+</th:block>
+
+

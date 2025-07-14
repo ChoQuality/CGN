@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HrMapper">
+
+    <!-- HR의 조직정보 조회 -->
+    <select id="getOrgList" parameterType="String" resultType="com.gsbizple.wiz.scheduler.dto.HrOrgDto">
+        /*HrMapper.getOrgList*/
+        SELECT org_code
+             , org_name_han
+             , org_name_eng
+             , dept_full_nm
+             , level_code
+             , org_code_up
+             , display_order
+             , chart_dsp_ind
+          FROM batch.if_ororg_v
+    </select>
+
+    <!-- HR의 인사정보 조회 -->
+    <select id="getUserList" parameterType="String" resultType="com.gsbizple.wiz.scheduler.dto.HrUserDto">
+        /*HrMapper.getUserList*/
+        SELECT empl_no
+             , empl_name_han
+             , empl_name_eng
+             , sex_code
+             , birth_date
+             , hire_type_code
+             , email
+             , org_code
+             , org_name_han
+             , position_code
+             , position_name_han
+             , title_code
+             , title_name_han
+             , co_tel
+             , entrance_date
+             , yr_continue
+             , retire_date
+             , cellular_tel
+             , solar_code
+             , org_yn
+          FROM batch.if_psmstr_v
+    </select>
+
+</mapper>

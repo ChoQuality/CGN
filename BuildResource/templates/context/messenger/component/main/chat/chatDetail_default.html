@@ -1,0 +1,337 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="lastReadMessageId" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="unReadCount" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="roomDto" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="room" type="com.gsbizple.wiz.messenger.dto.RoomDto"*/-->
+<!--/*@thymesVar id="messageDtos" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<!--/*@thymesVar id="messageDto" type="com.gsbizple.wiz.messenger.dto.MessageDto"*/-->
+<!--/*@thymesVar id="upperMessageDto" type="com.gsbizple.wiz.messenger.dto.UpperMessageDto"*/-->
+<!--/*@thymesVar id="attachmentDto" type="com.gsbizple.wiz.messenger.dto.AttachmentDto"*/-->
+<div class="messenger__header">
+    <div class="messenger__headerTop">
+        <div class="messenger__title">
+            <th:block th:with="room=${roomDto.getData()}">
+                <div class="userThumb">
+                    <div class="userThumb__img">
+                        <img th:src="${loginInfoDto.getUserImageUrl()}" alt="">
+                    </div>
+                </div>
+                <div class="title">
+                    <h3 th:text="${room.getRoomName()}"></h3>
+                    <p class="description" th:text="${room.getDescription()}"></p>
+                </div>
+            </th:block>
+        </div>
+
+        <div class="btnGroup gap-3">
+            <button type="button" data-function="sideBoxOpen" data-type="is-search" class="btn has-icon" id="searchBtn"><i class="icon is-32 is-chat-search"></i></button>
+            <button type="button" data-function="sideBoxOpen" data-type="is-setting" class="btn has-icon" id="settingBtn"><i class="icon is-32 is-chat-setting"></i></button>
+        </div>
+    </div>
+
+    <ul data-tabs="tabs" class="tabs is-line">
+        <li id="contentsTab"><a href="#tab01" class="tab__link is-active">채팅</a></li>
+        <li id="fileTab"><a href="#tab02" class="tab__link">파일</a></li>
+    </ul>
+</div>
+
+<div class="messenger__body">
+    <div id="tab01" class="tab__contents" style="display: block;">
+        <div class="chatBox" data-function="dropZone">
+            <div class="dragGuide"><span>여기에 파일을 끌어 놓으세요.</span></div>
+            <div class="chatBox__scroll has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                <div class="chatBox__body"></div>
+            </div>
+                <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+
+            <div class="chatBox__footer">
+                <input type="hidden" id="lastReadMessageId" th:value="${lastReadMessageId.getData()}">
+                <input type="hidden" id="unReadCount" th:value="${unReadCount.getData()}">
+                <button style="display: none" type="button" class="btn chatScrollBtn" data-function="modal" data-target="#aiModal" id="summaryBtn">안 읽은 대화 요약하기<i class="icon"></i></button>
+
+                <div class="chatBox__writeField">
+                    <textarea id="emojiTargeet" class="textarea" placeholder="새 대화를 시작하세요." maxlength="10000"></textarea>
+                    <span id="attachmentInfo" style="display: none; text-align: left; font-size: 13px; color: #666; margin-top: 6px; margin-left: 30px; line-height: 1.4;">
+                        파일개수: <span style="font-weight: bold;" class="current-count"></span> / 10개 <span class="bar"></span> 총용량: <span style="font-weight: bold;" class="current-size"></span> / 20MB
+                    </span>
+                    <div class="attachmentList" id="attachmentList" data-function="attachmentList"></div>
+                </div>
+
+                <div class="chatBox__writeButton">
+                    <div class="btnGroup gap-10">
+                        <div class="emoji">
+                            <button type="button" class="btn has-icon emoji__btn" data-target="#emojiTarget" id="emojiBtn"><i class="icon is-24 is-chat-emoji"></i></button>
+                        </div>
+                        <button type="button" class="btn is-icon" id="file_button" ><i class="icon is-24 is-chat-file"></i></button>
+                        <input type="file" id="file_input" multiple hidden accept=".hwp, .doc, .docx, .ppt, .pptx, .xls, .xlsx, .jpg, .jpeg, .gif, .bmp, .png, .txt, .zip, .pdf, .tif, .mp4, .pdf"/>
+
+<!--                        <input type="file" id="file_input" style="display: none;" accept=".hwp, .doc, .docx, .ppt, .pptx, .xls, .xlsx, .jpg, .jpeg, .gif, .bmp, .png, .txt, .zip, .pdf, .tif, .mp4, .pdf">-->
+                    </div>
+
+                    <button type="button" class="btn chatSendBtn">전송<i class="icon is-18 is-chat-send"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab02" class="tab__contents messenger__file" style="display: none;">
+        <!--
+        <div class="formGroup justify-content-end gap-5 mb-15">
+            <div class="formSelect" style="width: 10rem;">
+                <div class="select-1">
+                    <div class="tui-select-box">
+                        <div class="tui-select-box-input" tabindex="0"><p class="tui-select-box-placeholder">전체</p><span class="tui-select-box-icon">select</span></div>
+                        <ul class="tui-select-box-dropdown tui-select-box-hidden">
+                            <li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="all" data-index="0">전체</li>
+                            <li class="tui-select-box-item tui-select-box-selected" tabindex="-2" data-value="all" data-index="0">일부</li>
+                        </ul>
+                        <select class="tui-select-box-hidden" tabindex="-1">
+                            <option value="all" label="전체"></option>
+                            <option value="all2" label="일부"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formSelect" style="width: 12rem;">
+                <div class="select-2"><div class="tui-select-box"><div class="tui-select-box-input" tabindex="0"><p class="tui-select-box-placeholder">전체</p><span class="tui-select-box-icon">select</span></div><ul class="tui-select-box-dropdown tui-select-box-hidden"><li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="all" data-index="0">전체</li></ul><select class="tui-select-box-hidden" tabindex="-1"><option value="all" label="전체"></option></select></div></div>
+            </div>
+
+            <div class="formSearch is-square" style="width: 25rem;">
+                <input type="text" class="form__search" placeholder="선택하세요">
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+        -->
+
+        <div class="tui-grid-container-wrap">
+            <div id="fileGrid" class="grid" style="width: 100%;"></div>
+            <div class="tui-pagination tui-grid-pagination" id="pagination" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <div class="messenger__side is-search" data-function="sideBox" id="msgSearch">
+        <div class="sideBox">
+            <div class="sideBox__top">
+                <div class="title">
+                    <h3>대화방 채팅 검색</h3>
+                    <button type="button" data-function="sideBoxClose" class="btn has-icon">
+                        <i class="icon is-24 is-close-24"></i>
+                    </button>
+                </div>
+                <div class="sideBox__search">
+                    <div id="msgSearchForm" class="formSearch is-round is-background">
+                        <input type="text" class="form__search" placeholder="검색어를 입력하세요.">
+                        <button class="btn has-icon form__searchBtn">
+                            <i class="icon is-24 is-search-24"></i>
+                            <span class="visually-hidden">검색</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sideBox__body">
+                <div class="searchList">
+                    <span class="searchList__count">검색결과: <span></span>건</span>
+                    <div class="searchList__list">
+                        <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                            <div class="os-size-observer">
+                                <div class="os-size-observer-listener">
+                                </div>
+                            </div>
+                            <div id="msgSearchList" class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                <!--<a href="" class="chatList is-small">
+                                    <div class="userThumb is-state is-offline">
+                                        <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                                    </div>
+                                    <div class="chatList__body">
+                                        <div class="chatUser">
+
+                                        </div>
+                                        <div class="chat">
+                                            <p class="chat__text">
+                                                곧 <span class="word">점심</span>
+                                                시간이네요
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>-->
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track">
+                                    <div class="os-scrollbar-handle"></div>
+                                </div>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-visible os-scrollbar-cornerless" style="--os-viewport-percent: 0.3852; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track">
+                                    <div class="os-scrollbar-handle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="messenger__side is-setting" data-function="sideBox" id="setting">
+        <div class="sideBox">
+            <div class="sideBox__top">
+                <div class="title">
+                    <h3>대화방 설정</h3>
+                    <button type="button" data-function="sideBoxClose" class="btn has-icon"><i class="icon is-24 is-close-24"></i></button>
+                </div>
+            </div>
+
+            <div class="sideBox__body">
+                <div class="settingList">
+                    <div class="settingList__item">
+                        <div class="label">대화방 이름</div>
+                        <div class="formGroup">
+                            <!-- 썸네일 이미지는 일단 제외
+                            <div class="userThumb is-small is-state is-online">
+                                <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                            </div>
+                            -->
+                            <input type="text" class="form__input" placeholder="대화방 이름을 입력하세요." id="roomName">
+                            <button type="button" class="btn has-btn" id="roomNameButton"><i class="icon is-24 is-edit-24"></i></button>
+                        </div>
+                    </div>
+                    <div class="settingList__item">
+                        <div class="label">설명</div>
+                        <div class="formGroup">
+                            <input type="text" class="form__input" placeholder="대화방 설명을 입력하세요." id="description">
+                            <button type="button" class="btn has-btn" id="descriptionButton"><i class="icon is-24 is-edit-24"></i></button>
+                        </div>
+                    </div>
+                    <div class="settingList__item gap-20">
+                        <div class="label">멤버 <span class="bold" id="participantCnt"></span>명</div>
+                        <div class="has-scrollbars is-small" data-overlayscrollbars="host">
+                            <div class="os-size-observer"><div class="os-size-observer-listener"></div></div>
+                            <div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYScroll" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                <ul class="memberList" id="participantList">
+                                    <li class="memberList__item">
+                                        <button type="button" class="btn memberList__add" id="addChatModalOpenBtn">
+                                            <i class="icon is-28 is-chat-addMember"></i>
+                                            <p>멤버 추가</p>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                            </div>
+                            <div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;">
+                                <div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:if="${not #lists.isEmpty(messageDtos.getData())}">
+    <div id="tempServerChatData" style="display: none;">
+        <th:block th:each="messageDto : ${messageDtos.getData()}"
+                  th:with="upperMessageDto=${messageDto.getUpperMessageDto()}">
+
+            <!-- 메시지 데이터 div -->
+            <div
+                    th:data-room-id="${messageDto.getRoomId()}"
+                    th:data-company="${messageDto.getCompany()}"
+                    th:data-corporate_id="${messageDto.getCorporateId()}"
+                    th:data-room-type="${messageDto.getRoomType()}"
+                    th:data-message-content="${messageDto.getMessageContent()}"
+                    th:data-message-type="${messageDto.getMessageType()}"
+                    th:data-user-nm="${messageDto.getUserNm()}"
+                    th:data-message-uuid="${messageDto.getMessageUuid()}"
+                    th:data-reply-message-id="${messageDto.getReplyMessageId()}"
+                    th:data-message-id="${messageDto.getMessageId()}"
+                    th:data-deleted-yn="${messageDto.getDeletedYn()}"
+                    th:data-update-yn="${messageDto.getUpdateYn()}"
+                    th:data-org-nm="${messageDto.getOrgNm()}"
+                    th:data-send-user-key="${messageDto.getSendUserKey()}"
+                    th:data-create-user-key="${messageDto.getCreateUserKey()}"
+                    th:data-modify-user-key="${messageDto.getModifyUserKey()}"
+                    th:data-modify-dt="${messageDto.getModifyDt()}"
+                    th:data-create-dt="${messageDto.getCreateDtFormatted()}"
+                    th:data-create-dt-formatted="${messageDto.getCreateDtFormatted()}"
+                    th:data-room-name="${messageDto.getRoomName()}"
+                    th:data-description="${messageDto.getDescription()}"
+                    th:data-publish-type="${messageDto.getPublishType()}"
+
+                    th:data-upper-message-id="${upperMessageDto != null ? upperMessageDto.getMessageId() : null}"
+                    th:data-upper-room-id="${upperMessageDto != null ? upperMessageDto.getRoomId() : null}"
+                    th:data-upper-send-user-key="${upperMessageDto != null ? upperMessageDto.getSendUserKey() : null}"
+                    th:data-upper-user-nm="${upperMessageDto != null ? upperMessageDto.getUserNm() : null}"
+                    th:data-upper-message-content="${upperMessageDto != null ? upperMessageDto.getMessageContent() : null}"
+                    th:data-upper-deleted-yn="${upperMessageDto != null ? upperMessageDto.getDeletedYn() : null}"
+                    th:data-upper-create-dt="${upperMessageDto != null ? upperMessageDto.getCreateDtFormatted() : null}"
+                    th:data-upper-create-dt-formatted="${upperMessageDto != null ? upperMessageDto.getCreateDtFormatted() : null}">
+
+                    <!-- 현재 메시지 첨부파일 목록 -->
+                    <th:block th:if="${not #lists.isEmpty(messageDto.attachmentList)}">
+                        <div id="messageAttachments">
+                            <th:block th:each="attachmentDto : ${messageDto.attachmentList}">
+                                <div class="attachmentData"
+                                     th:data-attachment-id="${attachmentDto.attachmentId}"
+                                     th:data-origin-file-name="${attachmentDto.originFileName}"
+                                     th:data-file-size="${attachmentDto.fileSize}"
+                                     th:data-saved-file-path="${attachmentDto.savedFilePath}"
+                                     th:data-file-extension="${attachmentDto.fileExtension}"
+                                     th:data-deleted-yn="${attachmentDto.deletedYn}">
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+
+                    <!-- 상위 메시지 첨부파일 목록 -->
+                    <th:block th:if="${upperMessageDto != null and not #lists.isEmpty(upperMessageDto.attachmentList)}">
+                        <div id="upperMessageAttachments">
+                            <th:block th:each="attachmentDto : ${upperMessageDto.attachmentList}">
+                                <div class="attachmentData"
+                                     th:data-attachment-id="${attachmentDto.attachmentId}"
+                                     th:data-origin-file-name="${attachmentDto.originFileName}"
+                                     th:data-file-size="${attachmentDto.fileSize}"
+                                     th:data-saved-file-path="${attachmentDto.savedFilePath}"
+                                     th:data-file-extension="${attachmentDto.fileExtension}"
+                                     th:data-deleted-yn="${attachmentDto.deletedYn}">
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+
+                <th:block th:each="emojiDto : ${messageDto.getEmojiList()}">
+                    <div class="emoji-dto"
+                         th:data-message-id="${emojiDto.messageId}"
+                         th:data-emoji-type="${emojiDto.emojiType}"
+                         th:data-count="${emojiDto.count}"
+                         th:data-modify-dt="${#temporals.format(emojiDto.modifyDt, 'yyyy-MM-dd HH:mm:ss')}"
+                    >
+
+                        <th:block th:each="userDto : ${emojiDto.getUserList()}">
+                            <div class="emoji-user-dto"
+                                 th:data-message-id="${emojiDto.messageId}"
+                                 th:data-emoji-type="${emojiDto.emojiType}"
+                                 th:data-user-key="${userDto.userKey}"
+                                 th:data-org-nm="${userDto.orgNm}"
+                                 th:data-user-nm="${userDto.userNm}"
+                            >
+                            </div>
+
+                        </th:block>
+
+                    </div>
+
+                </th:block>
+            </div>
+
+        </th:block>
+    </div>
+
+
+</th:block>

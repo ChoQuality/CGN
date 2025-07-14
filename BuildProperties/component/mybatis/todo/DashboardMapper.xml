@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DashboardMapper">
+    <sql id="selectTodoItems">
+        SELECT tdt.TODO_ID, tdt.REQ_USER_KEY, tdt.REQ_DT, tdt.JOB_START_DT, tdt.JOB_END_DT
+            , DATEDIFF(CURRENT_DATE(), STR_TO_DATE( date_format(tdt.JOB_END_DT, '%Y-%m-%d' ), '%Y-%m-%d' )) AS JOB_END_DAY
+            , tdt.COMPLETE_DT, tdt.TODO_STATUS, tdt.IMPORTANT_YN, tdt.PRIVATE_YN, tdt.TODO_REQ_CONTS
+            , tdt.COMPLETE_RATIO, tdt.TODO_FLAG, tdt.REF_TODO_ID, tdt.CREATE_USER_KEY
+            , tdt.CREATE_DT, tdt.UPDATE_DT, tdt.DELETE_DT
+            , tcu.USER_NM as REQ_USER_NM, tcu.LOGIN_STATUS as REQ_USER_LOGIN_STATUS, tco.ORG_NM as REQ_ORG_NM
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("repUserKey", t0.rep_user_key, "repUserNm", t1.user_nm, "repOrgNm", t2.ORG_NM, "loginStatus", t1.LOGIN_STATUS) ), ']')
+                from dwp.tbl_dwp_todo_rep t0 inner join dwp.tbl_com_user t1 on t0.rep_user_key = t1.user_key
+                left outer join dwp.tbl_com_org t2 on t1.ORG_KEY = t2.ORG_KEY
+                where TODO_ID = tdt.TODO_ID  and REP_STATUS NOT IN ('R', 'C') ) repUserKeyListStr
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("memoId", t0.MEMO_ID, "memoConts", t0.MEMO_CONTS, "createUserNm", t1.USER_NM, "createUserOrgNm", t2.ORG_NM, "createDt", t0.CREATE_DT) ORDER BY t0.CREATE_DT DESC), ']')
+                from dwp.tbl_dwp_todo_memo t0 left outer join dwp.tbl_com_user t1 on t0.CREATE_USER_KEY  = t1.USER_KEY
+                left outer join dwp.tbl_com_org t2 on t1.ORG_KEY = t2.ORG_KEY
+                where t0.TODO_ID = tdt.TODO_ID  and t0.USE_FLAG = 1  ORDER BY t0.CREATE_DT DESC ) memoListStr
+            , ( select CONCAT(  '[', group_concat( JSON_OBJECT("fileId", t0.FILE_ID, "fileNm", t1.FILE_NM, "fileSize", t1.FILE_SIZE, "createDt", t0.CREATE_DT) ORDER BY t0.CREATE_DT DESC), ']')
+                from dwp.tbl_dwp_todo_file t0 inner join dwp.tbl_com_file t1 on t0.FILE_ID = t1.FILE_ID
+                where TODO_ID = tdt.TODO_ID  and t0.USE_FLAG = 1  ORDER BY t0.CREATE_DT DESC ) fileListStr
+    </sql>
+
+    <!-- 개인별 AwpTODO 현황 ( 해당 조직 내 )  -->
+    <select id="selectPersonTodoSituation" parameterType="com.gsbizple.wiz.todo.dto.DashboardSearchDto" resultType="com.gsbizple.wiz.todo.dto.DashboardDetailDto">
+        /** DashboardMapper.selectPersonTodoSituation */
+        SELECT TCO.ORG_CD, TCU.USER_KEY, TCU.USER_NM,  SUM(CASE WHEN TDT.TODO_STATUS in ('S','P') THEN 1 ELSE 0 END) TODO_ONGOING_CNT
+             , SUM(CASE WHEN TDT.TODO_STATUS = 'F' THEN 1 ELSE 0 END) TODO_COMPLETE_CNT
+          FROM DWP.TBL_COM_ORG TCO INNER JOIN DWP.TBL_COM_USER TCU ON TCU.ORG_KEY = TCO.ORG_KEY
+                LEFT JOIN DWP.TBL_DWP_TODO_REP DTR ON DTR.REP_USER_KEY = TCU.USER_KEY AND DTR.REP_STATUS NOT IN ('R', 'C')
+                LEFT JOIN DWP.TBL_DWP_TODO TDT ON DTR.TODO_ID = TDT.TODO_ID
+                    AND TDT.JOB_START_DT <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d')
+                    AND TDT.TODO_STATUS IN ('S', 'F', 'P')
+         WHERE 1 = 1
+            AND TCO.ORG_CD = #{orgCd}
+            AND TCU.USE_FLAG = 1
+            AND TDT.PRIVATE_YN = 0
+            AND TDT.DELETE_YN = 0
+         GROUP BY REP_USER_KEY , TCO.ORG_CD, TCU.USER_NM
+    </select>
+
+    <!-- 조직별 AwpTODO 현황 ( 해당 조직 내 )  -->
+    <select id="selectOrganizationTodoSituation" parameterType="com.gsbizple.wiz.todo.dto.DashboardSearchDto" resultType="com.gsbizple.wiz.todo.dto.DashboardDetailDto">
+        /** DashboardMapper.selectOrganizationTodoSituation */
+        WITH RECURSIVE TEMP_ORG AS (
+            select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+                , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG
+            where ifnull(UPPER_ORG_CD, '') = ''
+            union all
+            select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+                , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , '>', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , '>', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG P
+            inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        ), TEMP_SEARCH_ORG AS (
+            SELECT B.ORG_CD AS GROUP_CD, B.ORG_NM AS GROUP_NM,  A.*
+            FROM TEMP_ORG A INNER JOIN TEMP_ORG B ON A.CORPORATE_ID = B.CORPORATE_ID AND B.UPPER_ORG_CD = #{orgCd}
+            WHERE (A.ORG_CD_PATH LIKE CONCAT(B.ORG_CD_PATH,'>','%') OR A.ORG_CD_PATH = B.ORG_CD_PATH )
+            UNION ALL
+            SELECT A.ORG_CD AS GROUP_CD, A.ORG_NM AS GROUP_NM, A.*
+            FROM TEMP_ORG A
+            WHERE ORG_CD = #{orgCd} )
+        SELECT TCO.GROUP_CD AS ORG_CD, TCO.GROUP_NM AS ORG_NM,  SUM(CASE WHEN TDT.TODO_STATUS in ('S','P') THEN 1 ELSE 0 END) TODO_ONGOING_CNT
+             , SUM(CASE WHEN TDT.TODO_STATUS = 'F' THEN 1 ELSE 0 END) TODO_COMPLETE_CNT
+             , COUNT(TCU.USER_KEY) as USER_CNT
+             , COUNT(DTR.TODO_ID) as TODO_TOTAL_CNT
+        FROM TEMP_SEARCH_ORG TCO INNER JOIN DWP.TBL_COM_USER TCU  ON TCU.ORG_KEY = TCO.ORG_KEY
+            left join DWP.TBL_DWP_TODO_REP DTR ON DTR.REP_USER_KEY = TCU.USER_KEY AND DTR.REP_STATUS != 'C'
+            left join DWP.TBL_DWP_TODO TDT ON DTR.TODO_ID = TDT.TODO_ID
+                AND TDT.JOB_START_DT <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d')
+                AND TDT.TODO_STATUS IN ('S', 'P', 'F')
+                AND TDT.DELETE_YN = 0
+                AND TDT.PRIVATE_YN = 0
+        WHERE 1 = 1
+        GROUP BY GROUP_NM , TCO.GROUP_CD
+    </select>
+
+    <!-- 개인별 AwpTODO 목록 ( 해당 조직 내 )  -->
+    <select id="selectPersonTodoList" parameterType="com.gsbizple.wiz.todo.dto.DashboardSearchDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        /** DashboardMapper.selectPersonTodoSituation */
+        <include refid="selectTodoItems"/>
+          FROM dwp.tbl_dwp_todo tdt left outer join dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY
+                left outer join dwp.tbl_com_org tco on tcu.ORG_KEY = tco.ORG_KEY
+         WHERE 1 = 1
+            AND tdt.JOB_START_DT <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND TDT.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d')
+            AND tdt.TODO_STATUS IN ('S', 'P', 'F')
+            AND TDT.DELETE_YN = 0
+            AND TDT.PRIVATE_YN = 0
+            AND tdt.TODO_ID in ( select TODO_ID from dwp.tbl_dwp_todo_rep t0 where t0.rep_user_key = ${userKey} AND REP_STATUS NOT IN ('R', 'C'))
+    </select>
+
+    <!-- 조직내 AwpTODO 목록 ( 해당 조직 내 )  -->
+    <select id="selectOrganizationTodoList" parameterType="com.gsbizple.wiz.todo.dto.DashboardSearchDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpTodoDto">
+        /** DashboardMapper.selectOrganizationTodoList */
+        WITH RECURSIVE TEMP_ORG AS (
+            select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+                , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG
+            where ifnull(UPPER_ORG_CD, '') = ''
+            union all
+            select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+                , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , '>', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , '>', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG P
+        inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        ), TEMP_SEARCH_ORG AS (
+            SELECT B.ORG_CD AS GROUP_CD, B.ORG_NM AS GROUP_NM,  A.*
+              FROM TEMP_ORG A INNER JOIN TEMP_ORG B ON A.CORPORATE_ID = B.CORPORATE_ID AND B.UPPER_ORG_CD = #{orgCd}
+             WHERE (A.ORG_CD_PATH LIKE CONCAT(B.ORG_CD_PATH,'>','%') OR A.ORG_CD_PATH = B.ORG_CD_PATH )
+            UNION ALL
+            SELECT A.ORG_CD AS GROUP_CD, A.ORG_NM AS GROUP_NM, A.*
+              FROM TEMP_ORG A
+             WHERE ORG_CD = #{orgCd} )
+        <include refid="selectTodoItems"/>
+          FROM dwp.tbl_dwp_todo tdt
+            INNER JOIN dwp.tbl_com_user tcu on tdt.REQ_USER_KEY = tcu.USER_KEY AND TDT.PRIVATE_YN = 0
+            INNER JOIN dwp.TBL_COM_ORG TCO ON TCU.ORG_KEY = TCO.ORG_KEY
+         WHERE 1 = 1
+            AND EXISTS (
+                SELECT 1
+                FROM TEMP_SEARCH_ORG T0 INNER JOIN DWP.TBL_COM_USER T1 ON T0.ORG_KEY = T1.ORG_KEY
+                    INNER join DWP.TBL_DWP_TODO_REP T2 ON T2.REP_USER_KEY = T1.USER_KEY AND T2.REP_STATUS NOT IN ('R', 'C')
+                    INNER join DWP.TBL_DWP_TODO T3 ON T2.TODO_ID = T3.TODO_ID
+                WHERE T3.JOB_START_DT <![CDATA[ <= ]]> STR_TO_DATE(#{workToDt}, '%Y-%m-%d') AND T3.JOB_END_DT <![CDATA[ >=  ]]> STR_TO_DATE(#{workFromDt}, '%Y-%m-%d')
+                    AND T3.TODO_STATUS IN ('S', 'P', 'F')
+                    AND T3.DELETE_YN = 0
+                    AND T3.TODO_ID = tdt.TODO_ID )
+    </select>
+
+    <select id="selectKeywordList" parameterType="com.gsbizple.wiz.todo.dto.DashboardSearchDto" resultType="com.gsbizple.wiz.todo.dto.TblDwpKeywordDto">
+        /** DashboardMapper.selectKeywordList */
+        WITH RECURSIVE TEMP_ORG AS (
+            select ORG_KEY, ORG_CD, CORPORATE_ID, UPPER_ORG_CD, ORG_NM, SORT_ORDER, 1 as LVL
+                , CONVERT(ORG_NM, VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(ORG_CD, VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG
+            where ifnull(UPPER_ORG_CD, '') = ''
+            union all
+            select P.ORG_KEY, P.ORG_CD, P.CORPORATE_ID, P.UPPER_ORG_CD, P.ORG_NM, P.SORT_ORDER, 1 + LVL as LVL
+                , CONVERT(CONCAT(TEMP_ORG.ORG_NM_PATH , '>', P.ORG_NM), VARCHAR(9999)) as ORG_NM_PATH
+                , CONVERT(CONCAT(TEMP_ORG.ORG_CD_PATH , '>', P.ORG_CD), VARCHAR(9999)) as ORG_CD_PATH
+            from dwp.TBL_COM_ORG P
+            inner join TEMP_ORG on P.UPPER_ORG_CD = TEMP_ORG.ORG_CD and P.CORPORATE_ID = TEMP_ORG.CORPORATE_ID
+        ), TEMP_SEARCH_ORG AS (
+            SELECT B.ORG_CD AS GROUP_CD, B.ORG_NM AS GROUP_NM,  A.*
+              FROM TEMP_ORG A INNER JOIN TEMP_ORG B ON A.CORPORATE_ID = B.CORPORATE_ID AND B.UPPER_ORG_CD = #{orgCd}
+             WHERE (A.ORG_CD_PATH LIKE CONCAT(B.ORG_CD_PATH,'>','%') OR A.ORG_CD_PATH = B.ORG_CD_PATH )
+            UNION ALL
+            SELECT A.ORG_CD AS GROUP_CD, A.ORG_NM AS GROUP_NM, A.*
+              FROM TEMP_ORG A
+             WHERE ORG_CD = #{orgCd} )
+        SELECT t0.BASE_YYYY_MM, t0.CORPORATE_ID, t0.KEYWORD_NM, SUM(t0.KEYWORD_CNT) KEYWORD_CNT, COUNT(t0.ORG_CD) ORG_CD_CNT
+          FROM dwp.tbl_dwp_keyword t0 inner join TEMP_SEARCH_ORG t1 on t0.ORG_CD = t1.ORG_CD
+         WHERE BASE_YYYY_MM like concat(#{searchYyyyMm}, '%') and t0.USE_FLAG = 1
+        GROUP BY t0.BASE_YYYY_MM, t0.CORPORATE_ID, t0.KEYWORD_NM
+        ORDER BY KEYWORD_CNT DESC
+        LIMIT 20
+    </select>
+
+</mapper>

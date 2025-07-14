@@ -1,0 +1,131 @@
+<div class="contents" style="zoom: 0.7;">
+
+    <div class="contents__title">
+        <h3 class="title">AI 서비스</h3>
+    </div>
+
+    <div class="contents__inner dashboard">
+
+        <div class="has-scrollbars-x is-small" data-overlayscrollbars="host">
+            <div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                <div class="d-flex gap-30 mt-20">
+                    <div class="contentsCard flex-grow-1">
+                        <div class="contentsCard__top">
+                            <h4 class="title">AWP</h4>
+                        </div>
+
+                        <div class="d-flex gap-10 progressCard">
+                            <div class="progressCard__item" style="cursor: pointer;"  onclick="openAWPRFP()">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>AWP</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="AWP_rfp">RFP 분석</p>
+                                </button>
+                                <script>
+                                    function openAWPRFP() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.location.href = '/ai/view/rfp/main';
+                                    }
+                                </script>
+                            </div>
+
+                            <div class="progressCard__item" onclick="openAWPMeeting()" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>AWP</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="AWP_meeting">회의록 작성</p>
+                                </button>
+                                <script>
+                                    function openAWPMeeting() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.location.href = '/ai/view/meeting/main';
+                                    }
+                                </script>
+                            </div>
+                            <div class="progressCard__item" onclick="openAWPSummary()" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>AWP</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="AWP_summary">문서 요약</p>
+                                </button>
+                                <script>
+                                    function openAWPSummary() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.location.href = '/ai/view/summary/main';
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                <div class="d-flex gap-30 mt-20">
+                    <div class="contentsCard flex-grow-1">
+                        <div class="contentsCard__top">
+                            <h4 class="title">GPT</h4>
+                        </div>
+
+                        <div class="d-flex gap-10 progressCard" onclick="openGTPRFP()">
+                            <div class="progressCard__item" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>GPT</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="gpt_rfp">RFP 분석(GPT)</p>
+                                </button>
+                                <script>
+                                    function openGTPRFP() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.open('https://chatgpt.com/g/g-680993ab41a88191a3f2f431b0f995f9-rfpbunseoggi', '_blank');
+                                    }
+                                </script>
+                            </div>
+                            <div class="progressCard__item" onclick="openMinutes()" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>GPT</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="gpt_decisions">회의록 정리</p>
+                                </button>
+                                <script>
+                                    function openMinutes() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.open('https://chatgpt.com/g/g-6811ae182660819185ff882186e47d4d-hoeyirog-jeongri-doumi', '_blank');
+                                    }
+                                </script>
+                            </div>
+                            <div class="progressCard__item" onclick="openMake1Page()" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>GPT</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="gpt_make1Page">1-Page 보고서 작성</p>
+                                </button>
+                                <script>
+                                    function openMake1Page() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.open('https://chatgpt.com/g/g-6822999070388191977231255e1d99f1-1peiji-gihoeg-bogoseo-jagseong-ai', '_blank');
+                                    }
+                                </script>
+                            </div>
+                            <div class="progressCard__item" onclick="openInvest()" style="cursor: pointer;">
+                                <div class="progressCard__title"><i class="icon is-18 is-dashboard-total"></i>GPT</div>
+                                <button type="button">
+                                    <p class="progressCare__value" id="gpt_invest">투자심사보고서 작성</p>
+                                </button>
+                                <script>
+                                    function openInvest() {
+                                        /* 세 번째 파라미터(옵션) 없이 '_blank' 만 주면
+                                           브라우저 기본 동작 = 새 탭/창 */
+                                        window.open('https://chatgpt.com/g/g-685fdaeb4c20819192f586c6368732b6-tujasimsabogoseo-jagseong-doumi', '_blank');
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

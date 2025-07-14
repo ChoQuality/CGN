@@ -1,0 +1,65 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="yyyyMMdd" type="com.gsbizple.wiz.common.config.view.ViewConfig.InnerViewData"*/-->
+<div class="listSearch">
+    <div class="listSearch__count" th:text="${yyyyMMdd.getData()}"></div>
+
+    <div class="d-flex align-items-center gap-10">
+        <div class="searchGroup">
+            <div class="formSelect" style="width: 11rem;">
+                <div class="listSearchSelect">
+                    <div class="tui-select-box">
+                        <div class="tui-select-box-input" tabindex="0">
+                            <p class="tui-select-box-placeholder">전체</p>
+                            <span class="tui-select-box-icon">select</span>
+                        </div>
+                        <ul class="tui-select-box-dropdown tui-select-box-hidden">
+                            <li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="all" data-index="0">전체</li>
+                            <li class="tui-select-box-item" tabindex="-1" data-value="name" data-index="1">이름</li>
+                            <li class="tui-select-box-item" tabindex="-1" data-value="team" data-index="2">부서</li>
+                        </ul>
+                        <select class="tui-select-box-hidden" tabindex="-1">
+                            <option value="all" label="전체"></option>
+                            <option value="name" label="이름"></option>
+                            <option value="team" label="부서"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="formSearch is-square">
+                <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요.">
+                <input type="hidden" value="" id="realSearchText" /> <!-- 검색어 -->
+                <input type="hidden" value="all" id="realSearchType" /> <!-- 검색구분 -->
+                <button class="btn has-icon form__searchBtn"><i class="icon is-24 is-search-24"></i><span class="visually-hidden">검색</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between mt-20">
+    <div class="flex-center gap-30">
+        <div class="toggleRadio">
+            <label class="toggleRadio__label">
+                <input type="radio" name="toggleCheck1" class="toggleRadio__input has-value" value="DESC" checked />
+                <span class="toggleRadio__text">내림차순</span>
+            </label>
+            <label class="toggleRadio__label">
+                <input type="radio" name="toggleCheck1" class="toggleRadio__input has-value" value="ASC" />
+                <span class="toggleRadio__text">오름차순</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="btnGroup gap-5">
+        <button type="button" id="exportRowExcel" class="btn is-primary">Raw Data 다운로드</button>
+        <button type="button" id="exportExcel" class="btn is-primary">액셀 다운로드</button>
+    </div>
+</div>
+
+<div class="mt-20">
+    <div class="tui-grid-container-wrap">
+        <div id="grid" class="grid" style="width: 100%;"></div>
+        <div class="tui-pagination tui-grid-pagination" style="padding-top: 20px;"></div>
+        <input type="hidden" value="" id="pageNum" />
+    </div>
+</div>

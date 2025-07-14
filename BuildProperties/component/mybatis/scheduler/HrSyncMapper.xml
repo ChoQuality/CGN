@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="HrSyncMapper">
+
+    <!-- 조직정보 TEMP 테이블 저장 -->
+    <insert id="setTempOrgInfo" parameterType="java.util.List">
+        /*HrSyncMapper.setTempOrgInfo*/
+        INSERT INTO batch.tbl_hr_temp_org (org_code, org_name_han, org_name_eng, dept_full_nm, level_code, org_code_up, display_order, chart_dsp_ind)
+        VALUES <foreach collection="list" item="item" index="idx" separator=",">
+                (#{item.orgCode}, #{item.orgNameHan}, #{item.orgNameEng}, #{item.deptFullNm}, #{item.levelCode}, #{item.orgCodeUp}, #{item.displayOrder}, #{item.chartDspInd})
+               </foreach>
+    </insert>
+
+    <!-- HR 조직정보 인터페이스 일자 업데이트 -->
+    <update id="updateOrgInterfaceDt">
+        /*HrSyncMapper.updateOrgInterfaceDt*/
+        UPDATE batch.tbl_hr_org org
+         INNER JOIN batch.tbl_hr_temp_org temp
+            ON org.org_code = temp.org_code
+           SET org.interface_dt = DATE_FORMAT(NOW(), '%Y%m%d')
+    </update>
+
+    <!-- HR 조직 정보 변경 데이터 조회 -->
+    <select id="getOrgInfoChangeList" resultType="com.gsbizple.wiz.scheduler.dto.HrOrgDto">
+        /*HrSyncMapper.getOrgInfoChangeList*/
+        SELECT temp.org_code
+             , temp.org_name_han
+             , temp.org_name_eng
+             , temp.dept_full_nm
+             , temp.level_code
+             , temp.org_code_up
+             , temp.display_order
+             , temp.chart_dsp_ind
+          FROM batch.tbl_hr_org org
+         INNER JOIN batch.tbl_hr_temp_org temp
+            ON org.org_code = temp.org_code
+         WHERE (   org.org_name_han != temp.org_name_han
+                OR org.org_name_eng != temp.org_name_eng
+                OR org.dept_full_nm != temp.dept_full_nm
+                OR org.level_code != temp.level_code
+                OR org.org_code_up != temp.org_code_up
+                OR org.display_order != temp.display_order
+                OR org.chart_dsp_ind != temp.chart_dsp_ind
+               )
+    </select>
+
+    <!-- HR 조직정보 변경 데이터 수정 -->
+    <update id="updateOrgInfoChange" parameterType="com.gsbizple.wiz.scheduler.dto.HrOrgDto">
+        /*HrSyncMapper.updateOrgInfoChange*/
+        UPDATE batch.tbl_hr_org
+           SET org_name_han = #{orgNameHan}
+             , org_name_eng = #{orgNameEng}
+             , dept_full_nm = #{deptFullNm}
+             , level_code = #{levelCode}
+             , org_code_up = #{orgCodeUp}
+             , display_order = #{displayOrder}
+             , chart_dsp_ind = #{chartDspInd}
+             , update_dt = NOW()
+         WHERE org_code = #{orgCode}
+    </update>
+
+    <!-- HR 조직정보 신규 데이터 조회 -->
+    <select id="getOrgInfoNewList" resultType="com.gsbizple.wiz.scheduler.dto.HrOrgDto">
+        /*HrSyncMapper.getOrgInfoNewList*/
+        SELECT temp.org_code
+             , temp.org_name_han
+             , temp.org_name_eng
+             , temp.dept_full_nm
+             , temp.level_code
+             , temp.org_code_up
+             , temp.display_order
+             , temp.chart_dsp_ind
+          FROM batch.tbl_hr_temp_org temp
+          LEFT OUTER JOIN batch.tbl_hr_org org
+            ON temp.org_code = org.org_code
+         WHERE org.org_code IS NULL
+    </select>
+
+    <!-- HR 조직정보 저장 -->
+    <insert id="setHrOrgList" parameterType="java.util.List">
+        /*HrSyncMapper.setHrOrgList*/
+        INSERT INTO batch.tbl_hr_org (org_code, org_name_han, org_name_eng, dept_full_nm, level_code, org_code_up, display_order, chart_dsp_ind, interface_dt, create_dt, update_dt)
+        VALUES <foreach collection="list" item="item" index="idx" separator=",">
+                (#{item.orgCode}, #{item.orgNameHan}, #{item.orgNameEng}, #{item.deptFullNm}, #{item.levelCode}, #{item.orgCodeUp}, #{item.displayOrder}, #{item.chartDspInd}, DATE_FORMAT(NOW(), '%Y%m%d'), NOW(), NOW())
+               </foreach>
+    </insert>
+
+    <!-- 조직정보 수정(추가)된 데이터 조회 -->
+    <select id="getDwpProcessOrgList" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.getDwpProcessOrgList*/
+        WITH RECURSIVE orgPathInfo AS (SELECT org_code
+                                            , CONCAT('/', org_code) AS org_path
+                                         FROM batch.tbl_hr_org
+                                        WHERE interface_dt = DATE_FORMAT(NOW(), '%Y%m%d')
+                                          AND org_code_up IS NULL
+                                        UNION ALL
+                                       SELECT org.org_code
+                                            , CONCAT(info.org_path, '/', org.org_code) AS org_path
+                                         FROM batch.tbl_hr_org org
+                                        INNER JOIN orgPathInfo info
+                                           ON org.org_code_up = info.org_code
+                                          AND org.interface_dt = DATE_FORMAT(NOW(), '%Y%m%d'))
+        SELECT org.org_code AS org_cd
+             , #{corporateId} AS corporate_id
+             , path.org_path AS org_path
+             , org.org_code_up AS upper_org_cd
+             , org.org_name_han AS org_nm
+             , org.display_order AS sort_order
+             , 1 AS use_flag /*HR VIEW의 CHART_DSP_IND값에 따라 달라질것 같음!!하지만 값을 모름*/
+             , #{createUserKey} AS create_user_key
+             , #{createUserKey} AS update_user_key
+          FROM batch.tbl_hr_org org
+         INNER JOIN orgPathInfo path
+            ON org.org_code = path.org_code
+         WHERE org.update_dt > CURDATE()
+           AND org.interface_dt = DATE_FORMAT(NOW(), '%Y%m%d')
+    </select>
+
+    <!-- 조직정보 신규 여부 확인 -->
+    <select id="getDwpOrgCheck" parameterType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.getDwpOrgCheck*/
+        SELECT org_key
+          FROM dwp.tbl_com_org
+         WHERE org_cd = #{orgCd}
+           AND corporate_id = #{corporateId}
+    </select>
+
+    <!-- DWP 조직정보 저장 -->
+    <insert id="insertDwpOrgInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.insertDwpOrgInfo*/
+        INSERT INTO dwp.tbl_com_org (org_cd, corporate_id, org_path, upper_org_cd, org_nm, org_type, sort_order, use_flag, create_dt, create_user_key, update_dt, update_user_key)
+        VALUES (#{orgCd}, #{corporateId}, #{orgPath}, #{upperOrgCd}, #{orgNm}, #{orgType}, #{sortOrder}, #{useFlag}, NOW(), #{createUserKey}, NOW(), #{updateUserKey})
+    </insert>
+
+    <!-- DWP 조직정보 수정 -->
+    <update id="updateDwpOrgInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.updateDwpOrgInfo*/
+        UPDATE dwp.tbl_com_org
+           SET org_path = #{orgPath}
+             , upper_org_cd = #{upperOrgCd}
+             , org_nm = #{orgNm}
+             , org_type = #{orgType}
+             , sort_order = #{sortOrder}
+             , use_flag = #{useFlag}
+             , update_user_key = #{updateUserKey}
+             , update_dt = NOW()
+         WHERE org_key = #{orgKey}
+    </update>
+
+    <!-- HR 조직정보 누락된 데이터 조회 -->
+    <select id="getDwpOrgMissingList" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.getDwpOrgMissingList*/
+        SELECT org_code AS org_cd
+             , #{corporateId} AS corporate_id
+             , 0 AS use_flag
+             , #{createUserKey} AS update_user_key
+          FROM batch.tbl_hr_org
+         WHERE interface_dt BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -8 DAY), '%Y%m%d') AND DATE_FORMAT(DATE_ADD( NOW(), INTERVAL -1 DAY), '%Y%m%d')
+    </select>
+
+    <!-- HR 조직정보 누락 데이터 업데이트(사용여부=0) -->
+    <update id="updateDwpOrgMissingInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpOrgDto">
+        /*HrSyncMapper.updateDwpOrgMissingInfo*/
+        UPDATE dwp.tbl_com_org
+           SET use_flag = #{useFlag}
+             , update_user_key = #{updateUserKey}
+             , update_dt = NOW()
+         WHERE org_cd = #{orgCd}
+           AND corporate_id = #{corporateId}
+    </update>
+
+    <!-- 인사정보 TEMP 테이블 저장 -->
+    <insert id="setTempUserInfo" parameterType="java.util.List">
+        /*HrSyncMapper.setTempUserInfo*/
+        INSERT INTO batch.tbl_hr_temp_user (empl_no, empl_name_han, empl_name_eng, sex_code, birth_date, hire_type_code, email, org_code, org_name_han, position_code
+                                          , position_name_han, title_code, title_name_han, co_tel, entrance_date, yr_continue, retire_date, cellular_tel, solar_code, org_yn)
+        VALUES <foreach collection="list" item="item" index="idx" separator=",">
+                (#{item.emplNo}, #{item.emplNameHan}, #{item.emplNameEng}, #{item.sexCode}, #{item.birthDate}, #{item.hireTypeCode}, #{item.email}, #{item.orgCode}, #{item.orgNameHan}, #{item.positionCode}
+               , #{item.positionNameHan}, #{item.titleCode}, #{item.titleNameHan}, #{item.coTel}, #{item.entranceDate}, #{item.yrContinue}, #{item.retireDate}, #{item.cellularTel}, #{item.solarCode}, #{item.orgYn})
+               </foreach>
+    </insert>
+
+    <!-- HR 인사정보 인터페이스 일자 업데이트 -->
+    <update id="updateUserInterfaceDt">
+        /*HrSyncMapper.updateUserInterfaceDt*/
+        UPDATE batch.tbl_hr_user user
+         INNER JOIN batch.tbl_hr_temp_user temp
+            ON user.empl_no = temp.empl_no
+           SET user.interface_dt = DATE_FORMAT(NOW(), '%Y%m%d')
+    </update>
+
+    <!-- HR 인사정보 변경 데이터 조회 -->
+    <select id="getUserInfoChangeList" resultType="com.gsbizple.wiz.scheduler.dto.HrUserDto">
+        /*HrSyncMapper.getUserInfoChangeList*/
+        SELECT temp.empl_no
+             , temp.empl_name_han
+             , temp.empl_name_eng
+             , temp.sex_code
+             , temp.birth_date
+             , temp.hire_type_code
+             , temp.email
+             , temp.org_code
+             , temp.org_name_han
+             , temp.position_code
+             , temp.position_name_han
+             , temp.title_code
+             , temp.title_name_han
+             , temp.co_tel
+             , temp.entrance_date
+             , temp.yr_continue
+             , temp.retire_date
+             , temp.cellular_tel
+             , temp.solar_code
+             , temp.org_yn
+          FROM batch.tbl_hr_user user
+         INNER JOIN batch.tbl_hr_temp_user temp
+            ON user.empl_no = temp.empl_no
+         WHERE (  user.empl_name_han != temp.empl_name_han
+               OR user.empl_name_eng != temp.empl_name_eng
+               OR user.sex_code != temp.sex_code
+               OR user.birth_date != temp.birth_date
+               OR user.hire_type_code != temp.hire_type_code
+               OR user.email != temp.email
+               OR user.org_code != temp.org_code
+               OR user.org_name_han != temp.org_name_han
+               OR user.position_code != temp.position_code
+               OR user.position_name_han != temp.position_name_han
+               OR user.title_code != temp.title_code
+               OR user.title_name_han != temp.title_name_han
+               OR user.co_tel != temp.co_tel
+               OR user.entrance_date != temp.entrance_date
+               OR user.yr_continue != temp.yr_continue
+               OR user.retire_date != temp.retire_date
+               OR user.cellular_tel != temp.cellular_tel
+               OR user.solar_code != temp.solar_code
+               OR user.org_yn != temp.org_yn
+               )
+    </select>
+
+    <!-- HR 인사정보 변경 데이터 수정 -->
+    <update id="updateUserInfoChange" parameterType="com.gsbizple.wiz.scheduler.dto.HrUserDto">
+        /*HrSyncMapper.updateUserInfoChange*/
+        UPDATE batch.tbl_hr_user
+           SET empl_name_han = #{emplNameHan}
+             , empl_name_eng = #{emplNameEng}
+             , sex_code = #{sexCode}
+             , birth_date = #{birthDate}
+             , hire_type_code = #{hireTypeCode}
+             , email = #{email}
+             , org_code = #{orgCode}
+             , org_name_han = #{orgNameHan}
+             , position_code = #{positionCode}
+             , position_name_han = #{positionNameHan}
+             , title_code = #{titleCode}
+             , title_name_han = #{titleNameHan}
+             , co_tel = #{coTel}
+             , entrance_date = #{entranceDate}
+             , yr_continue = #{yrContinue}
+             , retire_date = #{retireDate}
+             , cellular_tel = #{cellularTel}
+             , solar_code = #{solarCode}
+             , org_yn = #{orgYn}
+             , update_dt = NOW()
+         WHERE empl_no = #{emplNo}
+    </update>
+
+    <!-- HR 인사정보 신규 데이터 조회 -->
+    <select id="getUserInfoNewList" resultType="com.gsbizple.wiz.scheduler.dto.HrUserDto">
+        /*HrSyncMapper.getUserInfoNewList*/
+        SELECT temp.empl_no
+             , temp.empl_name_han
+             , temp.empl_name_eng
+             , temp.sex_code
+             , temp.birth_date
+             , temp.hire_type_code
+             , temp.email
+             , temp.org_code
+             , temp.org_name_han
+             , temp.position_code
+             , temp.position_name_han
+             , temp.title_code
+             , temp.title_name_han
+             , temp.co_tel
+             , temp.entrance_date
+             , temp.yr_continue
+             , temp.retire_date
+             , temp.cellular_tel
+             , temp.solar_code
+             , temp.org_yn
+          FROM batch.tbl_hr_temp_user temp
+          LEFT OUTER JOIN batch.tbl_hr_user user
+            ON temp.empl_no = user.empl_no
+         WHERE user.empl_no IS NULL
+    </select>
+
+    <!-- HR 인사정보 저장 -->
+    <insert id="setHrUserList" parameterType="java.util.List">
+        /*HrSyncMapper.setHrUserList*/
+        INSERT INTO batch.tbl_hr_user (empl_no, empl_name_han, empl_name_eng, sex_code, birth_date, hire_type_code, email, org_code, org_name_han, position_code
+                                     , position_name_han, title_code, title_name_han, co_tel, entrance_date, yr_continue, retire_date, cellular_tel, solar_code, org_yn
+                                     , interface_dt, create_dt, update_dt)
+        VALUES <foreach collection="list" item="item" index="idx" separator=",">
+                (#{item.emplNo}, #{item.emplNameHan}, #{item.emplNameEng}, #{item.sexCode}, #{item.birthDate}, #{item.hireTypeCode}, #{item.email}, #{item.orgCode}, #{item.orgNameHan}, #{item.positionCode}
+               , #{item.positionNameHan}, #{item.titleCode}, #{item.titleNameHan}, #{item.coTel}, #{item.entranceDate}, #{item.yrContinue}, #{item.retireDate}, #{item.cellularTel}, #{item.solarCode}, #{item.orgYn}
+               , DATE_FORMAT(NOW(), '%Y%m%d'), NOW(), NOW())
+               </foreach>
+    </insert>
+
+    <!-- 인사정보 수정(추가)된 데이터 조회 -->
+    <select id="getDwpProcessUserList" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.getDwpProcessUserList*/
+        SELECT org.org_key
+             , user.email AS user_id
+             , user.email AS user_password
+             , user.empl_name_han AS user_nm
+             , user.email AS email
+             , user.position_code AS position_cd
+             , user.title_code AS responsibility_cd
+             , user.cellular_tel AS  mobile_phone_no
+             , user.co_tel AS office_phone_no
+             , user.empl_no AS emp_no
+             , IF(user.org_yn = 'Y', 1, 0) AS use_flag
+             , #{createUserKey} AS create_user_key
+             , #{createUserKey} AS update_user_key
+          FROM batch.tbl_hr_user user
+         INNER JOIN dwp.tbl_com_org org
+            ON user.org_code = org.org_cd
+           AND org.corporate_id = #{corporateId}
+         WHERE user.update_dt > CURDATE()
+           AND user.interface_dt = DATE_FORMAT(NOW(), '%Y%m%d')
+    </select>
+
+    <!-- 인사정보 신규 여부 확인 -->
+    <select id="getDwpUserCheck" parameterType="com.gsbizple.wiz.scheduler.dto.DwpUserDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.getDwpUserCheck*/
+        SELECT user_key
+          FROM dwp.tbl_com_user
+         WHERE emp_no = #{empNo}
+    </select>
+
+    <!-- DWP 인사정보 저장 -->
+    <insert id="insertDwpUserInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.insertDwpUserInfo*/
+        INSERT INTO dwp.tbl_com_user (org_key, user_id, user_password, user_nm, email, position_cd, responsibility_cd
+                                    , mobile_phone_no, office_phone_no, emp_no, auth_cd, use_flag
+                                    , create_dt, create_user_key, update_dt, update_user_key)
+        VALUES (#{orgKey}, #{userId}, #{userPassword}, #{userNm}, #{email}, #{positionCd}, #{responsibilityCd}
+              , #{mobilePhoneNo}, #{officePhoneNo}, #{empNo}, #{authCd},  #{useFlag}
+              , NOW(), #{createUserKey}, NOW(), #{updateUserKey})
+    </insert>
+
+    <!-- DWP 인사정보 수정 -->
+    <update id="updateDwpUserInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.updateDwpUserInfo*/
+        UPDATE dwp.tbl_com_user
+           SET org_key = #{orgKey}
+             , user_id = #{userId}
+             , user_nm = #{userNm}
+             , email = #{email}
+             , position_cd = #{positionCd}
+             , responsibility_cd = #{responsibilityCd}
+             , mobile_phone_no = #{mobilePhoneNo}
+             , office_phone_no = #{officePhoneNo}
+             , use_flag = #{useFlag}
+             , update_dt = NOW()
+             , update_user_key = #{updateUserKey}
+         WHERE user_key = #{userKey}
+    </update>
+
+    <!-- HR 인사정보 누락 데이터 조회 -->
+    <select id="getDwpUserMissingList" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" resultType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.getDwpUserMissingList*/
+        SELECT empl_no AS emp_no
+             , 0 AS use_flag
+             , #{createUserKey} AS update_user_key
+          FROM batch.tbl_hr_user
+         WHERE interface_dt BETWEEN DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -8 DAY), '%Y%m%d') AND DATE_FORMAT(DATE_ADD( NOW(), INTERVAL -1 DAY), '%Y%m%d')
+    </select>
+
+    <!-- HR 인사정보 누락 데이터 업데이트(사용여부=0) -->
+    <update id="updateDwpUserMissingInfo" parameterType="com.gsbizple.wiz.scheduler.dto.DwpUserDto">
+        /*HrSyncMapper.updateDwpUserMissingInfo*/
+        UPDATE dwp.tbl_com_user
+           SET use_flag = #{useFlag}
+             , update_user_key = #{updateUserKey}
+             , update_dt = NOW()
+         WHERE emp_no = #{empNo}
+    </update>
+
+    <!-- 직위(명, 코드) 조회 -->
+    <select id="getPositionList" resultType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.getPositionList*/
+        SELECT position_code AS position_cd
+             , position_name_han AS position_nm
+          FROM batch.tbl_hr_user
+         GROUP BY position_code, position_name_han
+    </select>
+
+    <!-- 직위 정보 여부 확인 -->
+    <select id="getPositionCheck" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto" resultType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.getPositionCheck*/
+        SELECT position_key
+          FROM dwp.tbl_com_job_pos
+         WHERE position_cd = #{positionCd}
+           AND corporate_id = #{corporateId}
+    </select>
+
+    <!-- 직위 정보 저장 -->
+    <insert id="insertPositionInfo" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.insertPositionInfo*/
+        INSERT INTO dwp.tbl_com_job_pos (position_cd, corporate_id, position_nm, use_flag, create_dt, create_user_key, update_dt, update_user_key)
+        VALUES (#{positionCd}, #{corporateId}, #{positionNm}, #{useFlag}, NOW(), #{createUserKey}, NOW(), #{updateUserKey})
+    </insert>
+
+    <!-- 직위 정보 수정 -->
+    <update id="updatePositionInfo" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.updatePositionInfo*/
+        UPDATE dwp.tbl_com_job_pos
+           SET position_nm = #{positionNm}
+             , update_dt = NOW()
+             , update_user_key = #{updateUserKey}
+         WHERE position_key = #{updateUserKey}
+    </update>
+
+    <!-- 직책(명, 코드) 조회 -->
+    <select id="getResponsibilityList" resultType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.getPositionList*/
+        SELECT title_code AS responsibility_cd
+             , title_name_han AS responsibility_nm
+          FROM batch.tbl_hr_user
+         GROUP BY title_code, title_name_han
+    </select>
+
+    <!-- 직책 정보 여부 확인 -->
+    <select id="getResponsibilityCheck" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto" resultType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.getResponsibilityCheck*/
+        SELECT responsibility_key
+          FROM dwp.tbl_com_job_resp
+         WHERE responsibility_cd = #{responsibilityCd}
+           AND corporate_id = #{corporateId}
+    </select>
+
+    <!-- 직책 정보 저장 -->
+    <insert id="insertResponsibilityInfo" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.insertResponsibilityInfo*/
+        INSERT INTO dwp.tbl_com_job_resp (responsibility_cd, corporate_id, responsibility_nm, responsibility_auth_flag, use_flag, create_dt, create_user_key, update_dt, update_user_key)
+        VALUES (#{responsibilityCd}, #{corporateId}, #{responsibilityNm}, #{responsibilityAuthFlag}, #{useFlag}, NOW(), #{createUserKey}, NOW(), #{updateUserKey})
+    </insert>
+
+    <!-- 직위 정보 수정 -->
+    <update id="updateResponsibilityInfo" parameterType="com.gsbizple.wiz.scheduler.dto.JobDto">
+        /*HrSyncMapper.updateResponsibilityInfo*/
+        UPDATE dwp.tbl_com_job_resp
+           SET responsibility_nm = #{responsibilityNm}
+             , update_dt = NOW()
+             , update_user_key = #{updateUserKey}
+         WHERE responsibility_key = #{responsibilityKey}
+    </update>
+
+    <!-- DWP 인사정보 Keycloak 기준 insert -->
+    <insert id="updateDwpUserInfoForKeycloak" parameterType="com.gsbizple.wiz.scheduler.dto.KeycloakUserDto">
+        /*HrSyncMapper.updateDwpUserInfoForKeycloak*/
+        INSERT INTO dwp.tbl_com_user ( USER_KEY, org_key, user_id, user_password, user_nm, email
+                                     , create_dt, create_user_key, update_dt, update_user_key)
+        VALUES (#{attributes.userKey}, #{attributes.orgKey}, #{attributes.userId}, #{attributes.userPassword}, #{attributes.userNm}, #{email}
+               , NOW(), #{attributes.userKey}, NOW(), #{attributes.userKey})
+        on duplicate key update email     = #{email},
+                                USER_NM   = #{attributes.userNm},
+                                UPDATE_DT = now()
+    </insert>
+
+</mapper>

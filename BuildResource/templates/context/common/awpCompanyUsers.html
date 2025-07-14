@@ -1,0 +1,25 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="loginInfoDto" type="com.gsbizple.wiz.common.dto.LoginInfoDto"*/-->
+
+<th:block th:if="${not #lists.isEmpty(roomDto.getData())}">
+    <div id="com-user-info" style="display: none;">
+        <th:block th:each="room : ${roomDto.getData()}">
+            <div th:data-awp-corp-id="${loginInfoDto.getCorpId()}"
+                 th:data-awp-org-key="${loginInfoDto.getOrgKey()}"
+                 th:data-awp-org-name="${loginInfoDto.getOrgName()}"
+                 th:data-awp-user-key="${loginInfoDto.getUserKey()}"
+                 th:data-awp-user-name="${loginInfoDto.getUserName()}"
+                 th:data-awp-user-image="${loginInfoDto.getUserImageUrl()}"
+                 th:data-awp-selected-db="${loginInfoDto.getSelectedDB()}"
+                 th:data-awp-token="${loginInfoDto.getToken()}">
+            </div>
+        </th:block>
+    </div>
+</th:block>
+
+
+
+
+

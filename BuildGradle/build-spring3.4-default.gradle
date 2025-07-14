@@ -1,0 +1,31 @@
+apply plugin :"java"
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.json:json:20240303'
+    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.jsoup:jsoup:1.15.4'
+    implementation 'com.cronutils:cron-utils:9.2.0'
+}
+
+test {
+    useJUnitPlatform()
+}

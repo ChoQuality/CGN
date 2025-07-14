@@ -1,0 +1,32 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<div id="publicYnPopup" data-modal="modal" class="modal">
+    <div class="modal__inner is-alert">
+        <div class="modal__header addMemCancel">
+            <button data-modal-close="close" class="modal__close">닫기</button>
+        </div>
+        <div class="modal__content">
+            <p class="alertText">
+                초대된 멤버에게 대화 내용을 공개 하시겠습니까?
+            </p>
+            <div class="formGroup gap-30 justify-content-center mt-30" id="publicYnRadio">
+                <label class="radio__label">
+                    <input type="radio" class="radio__input" name="radio1" value="Y" checked="">
+                    <span class="radio__style"></span>
+                    <span class="radio__text">이전 대화 공개</span>
+                </label>
+
+                <label class="radio__label">
+                    <input type="radio" class="radio__input" name="radio1" value="N">
+                    <span class="radio__style"></span>
+                    <span class="radio__text">이전 대화 비공개</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button type="button" data-modal-close="close" class="btn is-default is-outline-black is-sm addMemCancel">취소</button>
+            <button type="button" data-modal-close="close" class="btn is-default is-fill-black is-sm" id="addMemBtn">확인</button>
+        </div>
+    </div>
+    <div class="modal__mask"></div>
+</div>

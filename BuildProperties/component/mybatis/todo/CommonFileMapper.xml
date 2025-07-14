@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="todo.CommonFileMapper">
+
+    <!-- 첨부파일 저장 (File ID 생성) -->
+    <insert id="saveFile" parameterType="com.gsbizple.wiz.common.dto.TblComFileDto" useGeneratedKeys="true" keyProperty="fileId"
+            keyColumn="FILE_ID">
+        /* CommonFileMapper.saveFile */
+        INSERT INTO dwp.tbl_com_file
+        (FILE_USE_FLAG, FILE_UUID, USE_FLAG, FILE_TYPE, FILE_SIZE, FILE_NM
+        , FILE_PATH, CREATE_DT, CREATE_USER_KEY)
+        VALUES(#{fileUseFlag}, #{fileUuid}, 1, #{fileType}, #{fileSize}, #{fileNm}
+        , #{filePath}, current_timestamp(), #{createUserKey})
+    </insert>
+
+    <!-- 첨부파일 다운로드 -->
+    <select id="getFileDtl" parameterType="int" resultType="com.gsbizple.wiz.common.dto.TblComFileDto">
+        /*AttachmentMapper.downloadAttachment*/
+        SELECT FILE_ID, FILE_USE_FLAG, FILE_UUID, USE_FLAG, FILE_TYPE, FILE_SIZE, FILE_NM, FILE_PATH, CREATE_DT, CREATE_USER_KEY
+        FROM dwp.tbl_com_file
+        WHERE FILE_ID = #{fileId}
+    </select>
+
+</mapper>

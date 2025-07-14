@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PraiseMapper">
+
+    <!-- 칭찬 하기 현황(전사) 목록 조회 -->
+    <select id="selectPraiseList" parameterType="com.gsbizple.wiz.todo.dto.PraiseSearchDto" resultType="com.gsbizple.wiz.todo.dto.PraiseStatusDto">
+        /** PraiseMapper.selectReportList */
+        WITH temp_tbl_praise AS (
+            SELECT praise_sender_user_key AS userKey, COUNT(*) AS send_cnt, 0 AS receive_cnt
+              FROM dwp.tbl_dwp_praise
+             WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+             GROUP BY praise_sender_user_key
+             UNION ALL
+            SELECT PRAISE_RECEIVE_USER_KEY AS userKey , 0 AS send_cnt, COUNT(*)  AS receive_cnt
+              FROM dwp.tbl_dwp_praise
+             WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+             GROUP BY praise_receive_user_key
+        )
+        SELECT ROW_NUMBER() OVER(ORDER BY totCnt ${orderBy}, tb3.org_nm, tb2.user_nm) AS rowNum
+             , tb1.userKey AS praiseUserKey
+             , tb2.user_nm AS praiseUserNm
+             , tb3.org_nm AS praiseOrgNm
+             , SUM(send_cnt) AS sendCnt
+             , SUM(receive_cnt) AS receiveCnt
+             , SUM(send_cnt) + SUM(receive_cnt) AS totCnt
+          FROM temp_tbl_praise tb1
+         INNER JOIN dwp.tbl_com_user tb2
+            ON tb1.userKey = tb2.user_key
+         INNER JOIN dwp.tbl_com_org tb3
+            ON tb2.org_key = tb3.org_key
+         WHERE 1=1
+         <if test='userNm != null and userNm != ""'> AND tb2.user_nm LIKE CONCAT('%', #{userNm}, '%')</if>
+         <if test='orgNm != null and orgNm != ""'> AND tb3.org_nm LIKE CONCAT('%', #{orgNm}, '%')</if>
+         <if test='all != null and all != ""'>
+            AND (tb2.user_nm LIKE CONCAT('%', #{all}, '%') OR tb3.org_nm LIKE CONCAT('%', #{all}, '%'))
+         </if>
+         GROUP BY tb1.userKey
+         ORDER BY totCnt ${orderBy}, tb3.org_nm, tb2.user_nm
+         <if test="limit != null and offset != null ">
+             LIMIT ${limit} OFFSET ${offset}
+         </if>
+    </select>
+
+    <select id="selectPraiseCnt" parameterType="com.gsbizple.wiz.todo.dto.PraiseSearchDto" resultType="int">
+        /*PraiseMapper.selectPraiseCnt*/
+        WITH temp_tbl_praise AS (
+            SELECT praise_sender_user_key AS userKey, COUNT(*) AS send_cnt, 0 AS receive_cnt
+            FROM dwp.tbl_dwp_praise
+            WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+            GROUP BY praise_sender_user_key
+            UNION ALL
+            SELECT PRAISE_RECEIVE_USER_KEY AS userKey , 0 AS send_cnt, COUNT(*)  AS receive_cnt
+            FROM dwp.tbl_dwp_praise
+            WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+            GROUP BY praise_receive_user_key
+        )
+        SELECT COUNT(*) AS totalCount
+          FROM (SELECT tb1.userKey AS praiseUserKey
+                     , tb2.user_nm AS praiseUserNm
+                     , tb3.org_nm AS praiseOrgNm
+                     , SUM(send_cnt) AS sendCnt
+                     , SUM(receive_cnt) AS receiveCnt
+                  FROM temp_tbl_praise tb1
+                 INNER JOIN dwp.tbl_com_user tb2
+                    ON tb1.userKey = tb2.user_key
+                 INNER JOIN dwp.tbl_com_org tb3
+                    ON tb2.org_key = tb3.org_key
+                 WHERE 1=1
+                 <if test='userNm != null and userNm != "" '> AND tb2.user_nm LIKE CONCAT('%', #{userNm}, '%')</if>
+                 <if test='orgNm != null and orgNm != "" '> AND tb3.org_nm LIKE CONCAT('%', #{orgNm}, '%')</if>
+                 <if test='all != null and all != ""'>
+                    AND (tb2.user_nm LIKE CONCAT('%', #{all}, '%') OR tb3.org_nm LIKE CONCAT('%', #{all}, '%'))
+                 </if>
+                 GROUP BY tb1.userKey
+               ) tb1
+    </select>
+
+    <!-- 보낸 칭찬 현황 -->
+    <select id="getSendMonthly" parameterType="com.gsbizple.wiz.todo.dto.PraiseSearchDto" resultType="com.gsbizple.wiz.todo.dto.PraiseMonthlyStatusDto">
+        /*PraiseMapper.getSendMonthly*/
+        SELECT DATE_FORMAT(NOW(), '%Y') AS praise_year
+             , praise_month AS praise_month
+             , COUNT(0) AS praise_count
+        FROM dwp.tbl_dwp_praise
+        WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+          AND praise_sender_user_key = #{userKey}
+        GROUP BY praise_year, praise_sender_user_key, praise_month
+        ORDER BY praise_month
+    </select>
+
+    <!-- 받은 칭찬 현황 -->
+    <select id="getReceiveMonthly" parameterType="com.gsbizple.wiz.todo.dto.PraiseSearchDto" resultType="com.gsbizple.wiz.todo.dto.PraiseMonthlyStatusDto">
+        /*PraiseMapper.getReceivePraiseInfo*/
+        SELECT DATE_FORMAT(NOW(), '%Y') AS praise_year
+             , praise_month AS praise_month
+             , COUNT(0) AS praise_count
+          FROM dwp.tbl_dwp_praise
+         WHERE praise_year = DATE_FORMAT(NOW(), '%Y')
+           AND praise_receive_user_key = #{userKey}
+         GROUP BY praise_year, praise_receive_user_key, praise_month
+         ORDER BY praise_month
+    </select>
+    
+    <!-- 칭찬 현황 ROW 데이터 조회 -->
+    <select id="selectPraiseRowDataList" parameterType="com.gsbizple.wiz.todo.dto.PraiseSearchDto" resultType="com.gsbizple.wiz.todo.dto.PraiseStatusDto">
+        /*PraiseMapper.selectPraiseRowDataList*/
+        SELECT ROW_NUMBER() OVER(ORDER BY tb1.praise_dt ASC, tb2.user_nm ASC) AS rowNum
+             , tb2.user_nm AS receiveNm
+             , tb3.org_nm AS receiveOrgNm
+             , tb4.user_nm AS senderNm
+             , tb5.org_nm AS senderOrgNm
+             , tb1.praise_msg
+          FROM dwp.tbl_dwp_praise tb1
+         INNER JOIN dwp.tbl_com_user tb2
+            ON tb1.praise_receive_user_key = tb2.user_key
+         INNER JOIN dwp.tbl_com_org tb3
+            ON tb2.org_key = tb3.org_key
+         INNER JOIN dwp.tbl_com_user tb4
+            ON tb1.praise_sender_user_key = tb4.user_key
+         INNER JOIN dwp.tbl_com_org tb5
+            ON tb4.org_key = tb5.org_key
+         WHERE tb1.praise_year = DATE_FORMAT(NOW(), '%Y')
+         ORDER BY tb1.praise_dt ASC, tb2.user_nm ASC
+    </select>
+    
+</mapper>

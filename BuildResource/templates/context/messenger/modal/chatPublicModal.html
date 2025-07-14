@@ -1,0 +1,34 @@
+<div id="chatPublicModal" class="modal is-alert">
+  <div class="modal__inner">
+    <div class="modal__header">
+      <div class="top">
+        <h2 class="title">알럿</h2>
+        <button type="button" class="btn has-icon" data-function="modalClose"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+      </div>
+    </div>
+    <div class="modal__contents">
+      초대된 멤버에게 대화 내용을 공개 하시겠습니까?
+
+      <div class="formGroup gap-30 mtb-25">
+        <label class="radio__label">
+          <input type="radio" class="radio__input" name="radio1" value="Y" checked>
+          <span class="radio__style"></span>
+          <span class="radio__text">공개</span>
+        </label>
+
+        <label class="radio__label">
+          <input type="radio" class="radio__input" name="radio1" value="N">
+          <span class="radio__style"></span>
+          <span class="radio__text">비공개</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <button type="button" class="btn is-secondary is-small" data-function="modalClose">취소</button>
+      <button type="button" class="btn is-primary is-small" >확인</button>
+    </div>
+  </div>
+
+  <div class="modal__mask" data-function="modalClose"></div>
+</div>

@@ -1,0 +1,60 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group is-col-2"
+     th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="card" style="background-color: #E5EBF5;">
+        <div class="d-flex align-items-center">
+            <div class="d-flex justify-content-center" style="width: 50%;">
+                <div class="datePicker">
+                    <input type="text" id="portletCalendarInput" class="datePicker__input" style="display: none">
+                    <div id="portletCalendar" class="datePicker__calendar"><div class="tui-datepicker">      <div class="tui-datepicker-body tui-datepicker-type-date">      <div class="tui-calendar-container"><div class="tui-calendar">    <div class="tui-calendar-header"><div class="tui-calendar-header-inner">      <button class="tui-calendar-btn tui-calendar-btn-prev-month">Prev month</button>      <em class="tui-calendar-title tui-calendar-title-month">2025.03</em>      <button class="tui-calendar-btn tui-calendar-btn-next-month">Next month</button>    </div>    <div class="tui-calendar-header-info">    <p class="tui-calendar-title-today">오늘: 2025.03.11 (화)</p>  </div></div>    <div class="tui-calendar-body"><table class="tui-calendar-body-inner" cellspacing="0" cellpadding="0">  <caption><span>Dates</span></caption>  <thead class="tui-calendar-body-header">    <tr>      <th class="tui-sun" scope="col">일</th>      <th scope="col">월</th>      <th scope="col">화</th>      <th scope="col">수</th>      <th scope="col">목</th>      <th scope="col">금</th>      <th class="tui-sat" scope="col">토</th>    </tr>  </thead>  <tbody>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-prev-month tui-calendar-sun tui-is-selectable" data-timestamp="1740236400000">23</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740322800000">24</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740409200000">25</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740495600000">26</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740582000000">27</td>            <td class="tui-calendar-date tui-calendar-prev-month tui-is-selectable" data-timestamp="1740668400000">28</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1740754800000">1</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1740841200000">2</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1740927600000">3</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741014000000">4</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741100400000">5</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741186800000">6</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741273200000">7</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1741359600000">8</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1741446000000">9</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741532400000">10</td>            <td class="tui-calendar-date tui-calendar-today tui-is-selectable tui-is-selected" data-timestamp="1741618800000">11</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741705200000">12</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741791600000">13</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1741878000000">14</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1741964400000">15</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1742050800000">16</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742137200000">17</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742223600000">18</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742310000000">19</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742396400000">20</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742482800000">21</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1742569200000">22</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1742655600000">23</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742742000000">24</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742828400000">25</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1742914800000">26</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743001200000">27</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743087600000">28</td>            <td class="tui-calendar-date tui-calendar-sat tui-is-selectable" data-timestamp="1743174000000">29</td>          </tr>        <tr class="tui-calendar-week">            <td class="tui-calendar-date tui-calendar-sun tui-is-selectable" data-timestamp="1743260400000">30</td>            <td class="tui-calendar-date tui-is-selectable" data-timestamp="1743346800000">31</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743433200000">1</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743519600000">2</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743606000000">3</td>            <td class="tui-calendar-date tui-calendar-next-month tui-is-selectable" data-timestamp="1743692400000">4</td>            <td class="tui-calendar-date tui-calendar-next-month tui-calendar-sat tui-is-selectable" data-timestamp="1743778800000">5</td>          </tr>      </tbody></table></div></div></div>    </div>  </div></div>
+                </div>
+            </div>
+
+            <div class="pl-45" style="width: 50%; border-left: 0.1rem solid #D0DBE8;">
+                <h2 class="title text-center">12월 20일 (금)</h2>
+                <ul class="detailList mt-30">
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup gap-10">
+                                <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                <i class="icon is-24 is-system-complete"></i>
+                            </div>
+                            <p>U.STRA WORKS 고도화 협의</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup gap-10">
+                                <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                                <i class="icon is-24 is-system-complete"></i>
+                            </div>
+                            <p>Saas 영업팀 월간회의</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup gap-10">
+                                <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                            </div>
+                            <p>2025년 KPI 작성요령 교육 화상회의 준비</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="javascript:void(0);" class="detailList__item">
+                            <div class="badgeGroup gap-10">
+                                <div class="badge prl-15">10 : 00 ~ 11 : 00</div>
+                            </div>
+                            <p>주간회의</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

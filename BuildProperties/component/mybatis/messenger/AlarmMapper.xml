@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AlarmMapper">
+
+    <!-- 알림용 roomId조회 -->
+    <select id="getAlarmRoomId" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto" resultType="String">
+        /*AlarmMapper.getAlarmRoomId*/
+        SELECT participant.room_id
+          FROM messenger.tbl_participant participant
+         INNER JOIN messenger.tbl_room room
+            ON participant.room_id = room.room_id
+         WHERE participant.user_key = #{receiveUserKey}
+           AND participant.present_yn = 'Y'
+           AND room.room_type = 'ALARM'
+           AND room.active_yn = 'Y'
+    </select>
+
+    <!-- 알림 메시지 저장 -->
+    <insert id="saveAlarm" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto" useGeneratedKeys="true" keyProperty="messageId">
+        /*AlarmMapper.saveAlarm*/
+        INSERT INTO messenger.tbl_alarm_message ( room_id, send_user_key, send_system
+                                                , alarm_type, template_code, template_body, message_text
+                                                , link_text, link_url, accept_url, reject_url, confirm_yn
+                                                , create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES ( #{roomId}, #{sendUserKey}, #{sendSystem}
+               , #{alarmType}, #{templateCode}, #{templateBody}, #{messageText}
+               , #{linkText}, #{linkUrl}, #{acceptUrl}, #{rejectUrl}, #{confirmYn}
+               , #{createUserKey}, NOW(), #{modifyUserKey}, NOW())
+    </insert>
+
+    <!-- 알림 메시지 리스트 조회 -->
+    <select id="getAlarmList" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.getAlarmList*/
+        SELECT alarm.message_id
+             , alarm.room_id
+             , alarm.send_user_key
+             , alarm.send_system
+             , alarm.alarm_type
+             , alarm.template_code
+             , alarm.template_body
+             , template.template_message
+             , alarm.message_text
+             , alarm.link_text
+             , alarm.link_url
+             , alarm.accept_url
+             , alarm.reject_url
+             , alarm.confirm_yn
+             , alarm.confirm_dt
+             , alarm.deleted_yn
+             , alarm.create_user_key
+             , alarm.create_dt
+             , alarm.modify_user_key
+             , alarm.modify_dt
+          FROM messenger.tbl_alarm_message alarm
+          LEFT JOIN messenger.tbl_alarm_template template
+            ON alarm.template_code = template.template_code
+           AND template.language = #{language}
+         WHERE alarm.room_id = #{roomId}
+           <if test="messageId != null and messageId != 0">
+           AND alarm.message_id <![CDATA[<]]> #{messageId}
+           </if>
+           <if test="keyword != null and keyword != ''">
+           AND alarm.message_text LIKE CONCAT('%',#{keyword}, '%')
+           </if>
+         ORDER BY alarm.message_id DESC
+         LIMIT 50
+    </select>
+
+    <!-- 읽은 메시지 정보 조회 -->
+    <select id="getAlarmReadInfo" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto" resultType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*AlarmMapper.getAlarmReadInfo*/
+        SELECT room_id
+             , user_key
+             , present_yn
+             , deleted_yn
+             , public_yn
+             , enter_dt
+             , read_message_id
+             , create_user_key
+             , create_dt
+             , modify_user_key
+             , modify_dt
+          FROM messenger.tbl_participant
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </select>
+
+    <!-- 안읽은 메시지 조회 -->
+    <select id="getAlarmUnReadList" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.getAlarmUnReadList*/
+        SELECT alarm.message_id
+             , alarm.room_id
+             , alarm.send_user_key
+             , alarm.send_system
+             , alarm.alarm_type
+             , alarm.template_code
+             , alarm.template_body
+             , template.template_message
+             , alarm.message_text
+             , alarm.link_text
+             , alarm.link_url
+             , alarm.accept_url
+             , alarm.reject_url
+             , alarm.confirm_yn
+             , alarm.confirm_dt
+             , alarm.deleted_yn
+             , alarm.create_user_key
+             , alarm.create_dt
+             , alarm.modify_user_key
+             , alarm.modify_dt
+          FROM messenger.tbl_alarm_message alarm
+          LEFT JOIN messenger.tbl_alarm_template template
+            ON alarm.template_code = template.template_code
+           AND template.language = #{language}
+         WHERE alarm.room_id = #{roomId}
+           AND alarm.message_id <![CDATA[>]]> #{readMessageId}
+         ORDER BY alarm.message_id DESC
+    </select>
+
+    <!-- 채팅방의 마지막 메시지ID값을 조회 -->
+    <select id="getLastMessageId" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto" resultType="long">
+        /*AlarmMapper.getLastMessageId*/
+        SELECT nvl(MAX(message_id),0) AS messageId
+          FROM messenger.tbl_alarm_message
+         WHERE room_id = #{roomId}
+    </select>
+
+    <!-- 읽은 메시지ID 업데이트 -->
+    <update id="updateAlarmReadInfo" parameterType="com.gsbizple.wiz.messenger.dto.ParticipantDto">
+        /*AlarmMapper.updateAlarmReadInfo*/
+        UPDATE messenger.tbl_participant
+           SET read_message_id = IFNULL(#{readMessageId}, 0)
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE room_id = #{roomId}
+           AND user_key = #{userKey}
+    </update>
+
+    <!-- 메시지 삭제(deleteYn = Y) -->
+    <update id="updateDiscardMessage" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.updateDiscardMessage*/
+        UPDATE messenger.tbl_alarm_message
+           SET deleted_yn = 'Y'
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE message_id = #{messageId}
+    </update>
+
+    <!-- 수락/거절처리 요청 메시지에 대한 정보 확인 -->
+    <select id="getAlarmMessageInfo" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.getAlarmMessageInfo*/
+        SELECT message_id
+             , room_id
+             , send_user_key
+             , send_system
+             , alarm_type
+             , template_code
+             , template_body
+             , message_text
+             , link_text
+             , link_url
+             , accept_url
+             , reject_url
+             , confirm_yn
+             , confirm_dt
+             , deleted_yn
+             , create_user_key
+             , create_dt
+             , modify_user_key
+             , modify_dt
+          FROM messenger.tbl_alarm_message
+         WHERE message_id = #{messageId}
+    </select>
+
+    <!-- 메시지 수락/거절 처리 -->
+    <update id="updateConfirmInfo" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.updateConfirmInfo*/
+        UPDATE messenger.tbl_alarm_message
+           SET confirm_yn = #{confirmYn}
+             , confirm_dt = NOW()
+             , modify_user_key = #{modifyUserKey}
+             , modify_dt = NOW()
+         WHERE message_id = #{messageId}
+    </update>
+
+    <!-- 칭찬하기 테이블 저장 처리 -->
+    <insert id="savePraise" parameterType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.savePraise*/
+        INSERT INTO dwp.tbl_dwp_praise (praise_year, praise_month, praise_sender_user_key, praise_receive_user_key, praise_card_type, praise_msg, praise_dt)
+        VALUES (DATE_FORMAT(NOW(), '%Y'), DATE_FORMAT(NOW(), '%m'), #{sendUserKey}, #{receiveUserKey}, #{templateCode}, #{praiseMsg}, NOW())
+    </insert>
+
+    <!-- To_do의 메시지정보를 조회한다. -->
+    <select id="getTodoConfirmInfo" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.getTodoConfirmInfo*/
+        SELECT tb3.message_id
+             , #{confirmYn} AS confirm_yn
+             , tb1.user_key AS modify_user_key
+          FROM messenger.tbl_participant tb1
+         INNER JOIN messenger.tbl_room tb2
+            ON tb1.room_id = tb2.room_id
+           AND tb2.room_type = 'ALARM'
+         INNER JOIN messenger.tbl_alarm_message tb3
+            ON tb2.room_id = tb3.room_id
+           AND tb3.accept_url LIKE CONCAT('%', #{todoId}, '/', #{userKey})
+         WHERE user_key = #{userKey}
+           AND tb1.present_yn = 'Y'
+           AND tb1.deleted_yn = 'N'
+           AND tb3.confirm_yn IS NULL
+    </select>
+
+    <select id="searchMessageByKeyword" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.searchMessageByKeyword*/
+        select m1_0.message_id
+             , m1_0.message_text
+             , m1_0.create_dt
+             , s1_0.user_nm
+             , s1_0.THUMB_IMG_PATH
+             , s1_0.LOGIN_STATUS
+        from messenger.tbl_alarm_message m1_0
+                 join messenger.tbl_room r1_0 on m1_0.room_id = r1_0.room_id
+                 join dwp.tbl_com_user s1_0 on s1_0.USER_KEY = m1_0.send_user_key
+        where m1_0.room_id = #{roomId}
+          AND m1_0.message_text LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+          and m1_0.send_user_key = #{userKey}
+          and m1_0.deleted_yn = 'N'
+    </select>
+
+    <select id="countMessageByKeyword" resultType="java.lang.Integer">
+        /*AlarmMapper.countMessageByKeyword*/
+        select count(m1_0.message_id)
+        from messenger.tbl_alarm_message m1_0
+                 join messenger.tbl_room r1_0 on m1_0.room_id = r1_0.room_id
+                 join dwp.tbl_com_user s1_0 on s1_0.USER_KEY = m1_0.send_user_key
+        where m1_0.room_id = #{roomId}
+          AND m1_0.message_text LIKE CONCAT('%', #{keyword}, '%') ESCAPE '!'
+          and m1_0.send_user_key = #{userKey}
+          and m1_0.deleted_yn = 'N'
+
+    </select>
+
+    <!-- 알림 저장일시 일괄 처리를 위한 사전 조회 -->
+    <select id="getAlarmCreateDt" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.getAlarmCreateDt*/
+        SELECT NOW() AS create_dt
+    </select>
+
+    <!-- Step 4. 메시지(리스트) 저장 -->
+    <insert id="insertAlarmList" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="messageId">
+        /*AlarmMapper.getAlarmCreateDt*/
+        INSERT INTO messenger.tbl_alarm_message ( room_id, send_user_key, send_system
+                                                , alarm_type, template_code, template_body, message_text
+                                                , link_text, link_url, accept_url, reject_url, confirm_yn
+                                                , create_user_key, create_dt, modify_user_key, modify_dt)
+        VALUES <foreach collection="list" item="item" separator=",">
+                    ( #{item.roomId}, #{item.sendUserKey}, #{item.sendSystem}
+                    , #{item.alarmType}, #{item.templateCode}, #{item.templateBody}, #{item.messageText}
+                    , #{item.linkText}, #{item.linkUrl}, #{item.acceptUrl}, #{item.rejectUrl}, #{item.confirmYn}
+                    , #{item.createUserKey}, NOW(), #{item.modifyUserKey}, NOW())
+                </foreach>
+    </insert>
+
+    <!-- 검색된 결과의 MessageId까지의 메시지 List를 조회한다. -->
+    <select id="alarmListToSearch" parameterType="map" resultType="com.gsbizple.wiz.messenger.dto.AlarmDto">
+        /*AlarmMapper.alarmListToSearch*/
+        SELECT alarm.message_id
+             , alarm.room_id
+             , alarm.send_user_key
+             , alarm.send_system
+             , alarm.alarm_type
+             , alarm.template_code
+             , alarm.template_body
+             , template.template_message
+             , alarm.message_text
+             , alarm.link_text
+             , alarm.link_url
+             , alarm.accept_url
+             , alarm.reject_url
+             , alarm.confirm_yn
+             , alarm.confirm_dt
+             , alarm.deleted_yn
+             , alarm.create_user_key
+             , alarm.create_dt
+             , alarm.modify_user_key
+             , alarm.modify_dt
+          FROM messenger.tbl_alarm_message alarm
+          LEFT JOIN messenger.tbl_alarm_template template
+            ON alarm.template_code = template.template_code
+           AND template.language = #{language}
+         WHERE alarm.room_id = #{roomId}
+           AND alarm.message_id <![CDATA[<]]> #{messageId}
+           AND alarm.message_id <![CDATA[>=]]> #{upperMessageId}
+         ORDER BY alarm.message_id DESC
+    </select>
+
+
+</mapper>

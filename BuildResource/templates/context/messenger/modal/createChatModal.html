@@ -1,0 +1,94 @@
+<!--/*@thymesVar id="messageSource" type="java.util.Map"*/-->
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<div id="createChatModal" class="modal is-large">
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">새로운 대화방</h2>
+                <button type="button" class="btn has-icon" data-function="modalClose"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+            <div class="modal__search">
+                <div class="searchGroup">
+                    <div class="formSelect">
+                        <div class="modalSelect-1">
+                            <div class="tui-select-box">
+                                <div class="tui-select-box-input" tabindex="0">
+                                    <p class="tui-select-box-placeholder">이름</p>
+                                    <span class="tui-select-box-icon">select</span>
+                                </div>
+                                <ul class="tui-select-box-dropdown tui-select-box-hidden">
+                                    <li class="tui-select-box-item tui-select-box-selected" tabindex="-1" data-value="name" data-index="0">이름</li>
+                                    <li class="tui-select-box-item" tabindex="-1" data-value="team" data-index="1">부서</li>
+                                    <li class="tui-select-box-item" tabindex="-1" data-value="id" data-index="2">아이디</li>
+                                    <li class="tui-select-box-item" tabindex="-1" data-value="phone" data-index="3">휴대전화번호</li>
+                                </ul>
+                                <select class="tui-select-box-hidden" tabindex="-1">
+                                    <option value="name" label="이름"></option>
+                                    <option value="team" label="부서"></option>
+                                    <option value="id" label="아이디"></option>
+                                    <option value="phone" label="휴대전화번호"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="formSearch is-square">
+                        <input type="text" class="form__search is-hover" placeholder="검색어를 입력하세요.">
+                        <button class="btn has-icon form__searchBtn" id="searchButton"><i class="icon is-24 is-search-24"></i> <span class="visually-hidden">검색</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="modalTree">
+                <div class="modalTree__item" style="width: 34rem;">
+                    <div class="has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                        <div id="orgTree" class="tui-tree-wrap tree"></div>
+                    </div><div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+                </div>
+                <div class="modalTree__item" style="width: 30rem;">
+                    <div class="has-scrollbars" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                        <ul class="modalTree__list" id="orgUser"></ul>
+                    </div><div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+                </div>
+                <div class="modalTree__item" style="width: 36rem;">
+                    <div class="settingList">
+                        <div class="settingList__item">
+                            <div class="label">대화방 이름</div>
+                            <div class="formGroup">
+                                <!--
+                                <div class="userThumb is-small is-state is-online">
+                                    <div class="userThumb__img"><img src="/assets/images/profile-img.jpg" alt=""></div>
+                                </div>
+                                -->
+                                <input type="text" class="form__input" placeholder="대화방 이름을 입력하세요." id="roomName">
+                                <!--<button type="button" class="btn has-btn"><i class="icon is-24 is-edit-24"></i></button>-->
+                            </div>
+                        </div>
+                        <div class="settingList__item">
+                            <div class="label">설명</div>
+                            <div class="formGroup">
+                                <input type="text" class="form__input" placeholder="대화방 설명을 입력하세요." id="description">
+                                <!--<button type="button" class="btn has-btn"><i class="icon is-24 is-edit-24"></i></button>-->
+                            </div>
+                        </div>
+
+                        <div class="settingList__item gap-20" id="invitedDiv">
+                            <div class="label">초대멤버 <span class="bold" id="invitedUserCnt"></span>명</div>
+                            <div class="has-scrollbars is-small" data-overlayscrollbars="host"><div class="os-size-observer"><div class="os-size-observer-listener"></div></div><div class="" data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden" tabindex="-1" style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; right: 0px; left: 0px; padding: 0px;">
+                                <ul class="memberList" id="invitedUser"></ul>
+                            </div><div class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div><div class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable" style="--os-viewport-percent: 1; --os-scroll-direction: 0;"><div class="os-scrollbar-track"><div class="os-scrollbar-handle"></div></div></div></div>
+                        </div>
+                    </div>
+                    <div class="modalTree__btn justify-content-end">
+                        <div class="btnGroup gap-3">
+                            <button type="button" class="btn is-secondary is-small" data-function="modalClose">취소</button>
+                            <button type="button" class="btn is-primary is-small" data-function="modal" id="confirm">확인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask" data-function="modalClose"></div>
+</div>

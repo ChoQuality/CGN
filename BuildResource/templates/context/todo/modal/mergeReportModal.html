@@ -1,0 +1,127 @@
+<div id="mergeReportModal" class="modal is-xlarge">
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title" id="modalTitle">주간보고 합하기</h2>
+                <input type="hidden" id="modalType" />
+                <button type="button" class="btn has-icon" id="closeBtn"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <div>
+                    <table class="formTable">
+                        <colgroup><col style="width: 14rem;"><col style="width: auto;"><col style="width: 14rem;"><col style="width: 26rem;"></colgroup>
+                        <tbody>
+                            <tr>
+                                <th><div class="label"><span>보고서명</span></div></th>
+                                <td>
+                                    <div class="formTable__item">
+                                        <div class="formGroup">
+                                            <span id="wkReportNm"></span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <th><div class="label"><span>소속부서</span></div></th>
+                                <td><div class="formTable__item" id="orgNm"></div></td>
+                            </tr>
+                            <tr>
+                                <th><div class="label is-required"><span>업무기간</span></div></th>
+                                <td colspan="3">
+                                    <div class="formTable__item" id="workDt">
+                                        2024.11.18 ~ ㅍ 2024.11.18
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><div class="label"><span>작성자</span></div></th>
+                                <td><div class="formTable__item" id="userNm"></div></td>
+                                <th><div class="label"><span>작성일시</span></div></th>
+                                <td><div class="formTable__item" id="writeDt"></div></td> <!-- 형식 : 2025.02.18 11:32 -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <h3 class="title">기본정보</h3>
+                    <table class="formTable is-line mt-12">
+                        <colgroup><col style="width: 14rem;"><col style="width: calc(50% - 14rem);"><col style="width: 14rem;"><col style="width: calc(50% - 14rem);"></colgroup>
+                        <thead>
+                        <tr>
+                            <th colspan="2">
+                                <div class="formTable__item">
+                                    <div class="formControl"><input type="text" class="form__input has-value" id="thisWeekPeriod" placeholder="입력해주세요."></div>
+                                </div>
+                            </th>
+                            <th colspan="2">
+                                <div class="formTable__item">
+                                    <div class="formControl"><input type="text" class="form__input has-value" id="nextWeekPeriod" placeholder="입력해주세요."></div>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th class="is-baseline">
+                                <div class="formControl gap-0">
+                                    <input type="text" class="form__input is-noneBorder has-value" id="thisWeekText">
+                                    <i class="icon is-24 is-edit-24 ml-8"></i>
+                                </div>
+                            </th>
+                            <td class="p-5">
+                                <div class="formTable__item">
+                                    <div class="formControl">
+                                        <textarea class="form__textarea is-noneBorder" placeholder="내용을 입력해주세요." style="height: 21.3rem;" id="thisWeekConts"></textarea>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <th class="is-baseline">
+                                <div class="formControl gap-0">
+                                    <input type="text" class="form__input is-noneBorder has-value" id="nextWeekText">
+                                    <i class="icon is-24 is-edit-24 ml-8"></i>
+                                </div>
+                            </th>
+                            <td class="p-5">
+                                <div class="formTable__item">
+                                    <div class="formControl">
+                                        <textarea class="form__textarea is-noneBorder" placeholder="내용을 입력해주세요." style="height: 21.3rem;" id="nextWeekConts"></textarea>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 class="title">기타</h3>
+                    </div>
+                    <div class="formControl mt-10">
+                        <textarea class="form__textarea" placeholder="내용을 입력해주세요." id="reportEtcConts"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button type="button" class="btn is-secondary" id="deleteReport" style="display: none;">삭제</button>
+                <button type="button" class="btn is-secondary" id="cancelReport" >취소</button>
+                <button type="button" class="btn is-primary" id="saveReport">저장</button>
+                <input type="hidden" id="wkReportId" value="" />
+                <input type="hidden" id="reportYyyymmWeek" value="" />
+                <input type="hidden" id="workFromDt" value="" />
+                <input type="hidden" id="workToDt" value="" />
+                <input type="hidden" id="nextWorkFromDt" value="" />
+                <input type="hidden" id="nextWorkToDt" value="" />
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask"></div>
+<!--    <div class="modal__mask" data-function="modalClose"></div>-->
+</div>

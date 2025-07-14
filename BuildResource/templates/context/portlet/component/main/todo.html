@@ -1,0 +1,57 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<!--/*@thymesVar id="portlet" type="com.gsbizple.wiz.portlet.dto.PortletDto"*/-->
+
+<div class="portlet__group" th:attr="data-portletId=${portlet.getPortletId()},data-pgmNm=${portlet.getPgmNm()},data-pgmPath=${portlet.getPgmPath()},data-linkApiUrl=${portlet.getLinkApiUrl()},data-linkUrl=${portlet.getLinkUrl()}">
+    <div class="card">
+        <div class="portlet__top">
+            <h2 class="title" th:text="${portlet.portletNm}">TODO</h2>
+
+            <div class="btnGroup">
+                <button type="button" class="btn has-icon"><i class="icon is-30 is-link-30"></i></button>
+            </div>
+        </div>
+
+        <div class="card__body">
+            <ul class="board">
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title">서비스 기획팀 2024연말 회식 참석하기</h3>
+                        <div class="badge">오늘</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title">서비스 기획팀 2024연말 회식 참석하기</h3>
+                        <div class="badge">오늘</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item">
+                        <h3 class="board__title">U.STRA WORK 2.0 고도화 협의</h3>
+                        <div class="badge is-delay">D+10</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item is-bookmark">
+                        <h3 class="board__title">U.STRA WORK 2.0 고도화 협의</h3>
+                        <div class="badge is-dDay">D-2</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item is-bookmark">
+                        <h3 class="board__title">2025 트렌드 코리아 세미나  보고서 작성하기2025 트렌드 코리아 세미나  보고서 작성하기</h3>
+                        <div class="badge is-dDay">D-2</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0);" class="board__item is-important">
+                        <h3 class="board__title">2025 KPI 작성2025 KPI 작성2025 KPI 작성2025 KPI 작성</h3>
+                        <div class="badge is-dDay">D-107</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

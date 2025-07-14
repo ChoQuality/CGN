@@ -1,0 +1,67 @@
+<div id="viewGeneralReportModal" class="modal is-xlarge">
+    <!-- 일반보고서 상세보기 모달 -->
+
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">일반보고 상세보기</h2>
+                <button type="button" class="btn has-icon" id="closeBtn"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <div>
+                    <table class="formTable">
+                        <colgroup><col style="width: 14rem;"><col style="width: auto;"><col style="width: 14rem;"><col style="width: 26rem;"></colgroup>
+                        <tbody>
+                            <tr>
+                                <th><div class="label"><span>보고서명</span></div></th>
+                                <td><div class="formTable__item" id="writeReportNm"></div></td>
+                                <th><div class="label"><span>소속부서</span></div></th>
+                                <td><div class="formTable__item" id="writeReportOrgNm"></div></td>
+                            </tr>
+                            <tr>
+                                <th><div class="label is-required"><span>업무기간</span></div></th>
+                                <td colspan="3"><div class="formTable__item" id="writeWork"></div></td>
+                            </tr>
+                            <tr>
+                                <th><div class="label"><span>작성자</span></div></th>
+                                <td><div class="formTable__item" id="writeReportUserNm"></div></td>
+                                <th><div class="label"><span>작성일시</span></div></th>
+                                <td><div class="formTable__item" id="writeCreateDt"></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <h3 class="title">내용</h3>
+                    <div class="formControl divider">
+                        <textarea class="form__textarea is-borderBottom bg-white-100 has-value" style="height: 27.2rem;" readonly="" id="writeReportDtlConts"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-30">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 class="title">기타</h3>
+                        <div class="formCount"><span id="generalTextCnt">0</span>/500</div>
+                    </div>
+                    <div class="formControl mt-10">
+                        <textarea class="form__textarea bg-white-100 has-value" readonly="" id="writeReportEtcConts"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button type="button" class="btn is-secondary" id="closeBtn2">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal__mask"></div>
+    <!--    <div class="modal__mask" data-function="modalClose"></div>-->
+
+</div>

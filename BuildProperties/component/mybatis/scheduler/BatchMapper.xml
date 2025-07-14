@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BatchMapper">
+
+    <!-- 테이블 truncate 처리 -->
+    <delete id="truncateTable" parameterType="String">
+        /*BatchMapper.truncateTable*/
+        TRUNCATE TABLE ${tableName}
+    </delete>
+
+    <!-- 배치 시작 내역 저장 -->
+    <insert id="setStartBatchInfo" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" useGeneratedKeys="true" keyProperty="batchJobId">
+        /*BatchMapper.setStartBatchInfo*/
+        INSERT INTO batch.tbl_batch_result(pgm_cd, SCHEDULE_ID, job_exec_status, job_exec_server_info, job_exec_result, job_start_dt, job_end_dt, create_dt, create_user_key)
+        VALUES (#{pgmCd}, #{scheduleId}, #{jobExecStatus}, #{jobExecServerInfo}, #{jobExecResult}, NOW(), #{jobEndDt}, NOW(), #{createUserKey})
+    </insert>
+
+    <!-- 배치 프로그램 코드가 등록되어져 있는지 확인 -->
+    <select id="getBatchProgramExists" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" resultType="String">
+        /*BatchMapper.getBatchProgramExists*/
+        SELECT use_flag AS result
+          FROM batch.tbl_batch tb
+         WHERE pgm_cd = #{pgmCd}
+    </select>
+
+    <!-- 사용 가능한 배치 프로그램 목록 -->
+    <select id="selectBatchList" parameterType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchDto" resultType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchDto">
+        /*BatchMapper.getBatchProgram*/
+        SELECT BATCH_ID, PGM_CD, BATCH_TYPE, BATCH_NM, METHOD_NM, AI_SERVICE_ID, CLASS_NM
+          FROM batch.tbl_batch tb
+         WHERE USE_FLAG = 1
+    </select>
+
+    <!-- 배치 결과 저장 -->
+    <insert id="insertBatchInfo" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto" useGeneratedKeys="true" keyProperty="batchJobId">
+        /*BatchMapper.setStartBatchInfo*/
+        INSERT INTO batch.tbl_batch_result(pgm_cd, job_exec_status, job_exec_server_info, job_exec_result, job_start_dt, job_end_dt, create_dt, create_user_key)
+        VALUES (#{pgmCd}, #{jobExecStatus}, #{jobExecServerInfo}, #{jobExecResult}, NOW(), #{jobEndDt}, NOW(), #{createUserKey})
+    </insert>
+
+    <!-- 배치 실행 결과 저장 -->
+    <update id="updateEndBatchInfo" parameterType="com.gsbizple.wiz.scheduler.dto.BatchDto">
+        /*BatchMapper.updateEndBatchInfo*/
+        UPDATE batch.tbl_batch_result
+           SET job_exec_status = #{jobExecStatus}
+             , job_exec_result = #{jobExecResult}
+             , job_end_dt = NOW()
+         WHERE batch_job_id = #{batchJobId}
+    </update>
+
+    <!-- 배치 실행 결과 목록 조회 -->
+    <select id="selectBatchResultList" parameterType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchDto" resultType="com.gsbizple.wiz.scheduler.dto.BatchDto">
+        select tbr.BATCH_JOB_ID, tbr.PGM_CD, tb.BATCH_NM, tb.METHOD_NM, tb.CLASS_NM
+             , tbr.JOB_EXEC_STATUS, tbr.JOB_EXEC_SERVER_INFO, tbr.JOB_EXEC_RESULT, tbr.JOB_START_DT, tbr.JOB_END_DT
+          from batch.TBl_BATCH tb inner join  batch.tbl_batch_result tbr on tb.PGM_CD = tbr.PGM_CD
+         where tb.PGM_CD = #{pgmCd}
+         order by tbr.BATCH_JOB_ID desc
+        limit 20
+    </select>
+
+    <!-- 배치 신규 생성 -->
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="batchId">
+        INSERT INTO batch.tbl_batch (
+            PGM_CD, BATCH_TYPE, BATCH_NM, METHOD_NM,
+            AI_SERVICE_ID, CLASS_NM, USE_FLAG, CREATE_DT
+        ) VALUES (
+            #{pgmCd}, #{batchType}, #{batchNm}, #{methodNm},
+            #{aiServiceId}, #{classNm}, 'Y', NOW()
+        )
+    </insert>
+
+    <update id="updateBatch">
+        UPDATE batch.tbl_batch
+        SET
+            PGM_CD = #{pgmCd},
+            BATCH_TYPE = #{batchType},
+            BATCH_NM = #{batchNm},
+            METHOD_NM = #{methodNm},
+            AI_SERVICE_ID = #{aiServiceId},
+            CLASS_NM = #{classNm},
+            USE_FLAG = #{useFlag}
+        WHERE BATCH_ID = #{batchId}
+    </update>
+
+    <!-- 단건 조회 -->
+    <select id="selectBatchSchedule" parameterType="int" resultType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchSchedule">
+        SELECT SCHEDULE_ID, BATCH_ID, SCHEDULE_NAME, BATCH_EXEC_TYPE, SCHEDULE_SS, SCHEDULE_MM, SCHEDULE_HH, SCHEDULE_DAY, SCHEDULE_MONTH, SCHEDULE_DAYWEEK, SCHEDULE_YEAR, USE_YN, NEXT_EXEC_DT, CREATE_DT, CREATE_USER_KEY, UPDATE_DT, UPDATE_USER_KEY
+        FROM batch.TBL_BATCH_SCHEDULE
+        WHERE SCHEDULE_ID = #{scheduleId}
+    </select>
+
+
+    <!-- 목록 조회 -->
+    <select id="selectBatchScheduleList" parameterType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchSchedule" resultType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchSchedule">
+        SELECT tbc.SCHEDULE_ID, tbc.BATCH_ID, tbc.SCHEDULE_NAME, tbc.BATCH_EXEC_TYPE, tb.CLASS_NM, tb.METHOD_NM, tb.BATCH_NM
+            , tbc.SCHEDULE_SS, tbc.SCHEDULE_MM, tbc.SCHEDULE_HH, tbc.SCHEDULE_DAY, tbc.SCHEDULE_MONTH, tb.PGM_CD
+            , tbc.SCHEDULE_DAYWEEK, tbc.SCHEDULE_YEAR, tbc.USE_YN, tbc.NEXT_EXEC_DT
+            , tbc.CREATE_DT, tbc.CREATE_USER_KEY, tbc.UPDATE_DT, tbc.UPDATE_USER_KEY
+        FROM batch.TBL_BATCH_SCHEDULE tbc left outer join batch.TBl_BATCH tb on tbc.BATCH_ID = tb.BATCH_ID
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insertBatchSchedule" parameterType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchSchedule" useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO batch.TBL_BATCH_SCHEDULE (
+        BATCH_ID, SCHEDULE_NAME, BATCH_EXEC_TYPE, SCHEDULE_SS, SCHEDULE_MM, SCHEDULE_HH,
+        SCHEDULE_DAY, SCHEDULE_MONTH, SCHEDULE_DAYWEEK, SCHEDULE_YEAR, USE_YN,
+        NEXT_EXEC_DT, CREATE_DT, CREATE_USER_KEY, UPDATE_DT, UPDATE_USER_KEY
+        ) VALUES (
+        #{batchId}, #{scheduleName}, #{batchExecType}, #{scheduleSs}, #{scheduleMm}, #{scheduleHh},
+        #{scheduleDay}, #{scheduleMonth}, #{scheduleDayweek}, #{scheduleYear}, #{useYn},
+        #{nextExecDt}, #{createDt}, #{createUserKey}, #{updateDt}, #{updateUserKey}
+        )
+    </insert>
+
+    <!-- 수정 -->
+    <update id="updateBatchSchedule" parameterType="com.gsbizple.wiz.scheduler.dto.schedule.TblBatchSchedule">
+        UPDATE batch.TBL_BATCH_SCHEDULE
+           SET
+            <if test="batchId != null">BATCH_ID = #{batchId},</if>
+            <if test="scheduleName != null">SCHEDULE_NAME = #{scheduleName},</if>
+            <if test="batchExecType != null">BATCH_EXEC_TYPE = #{batchExecType},</if>
+            <if test="scheduleSs != null">SCHEDULE_SS = #{scheduleSs},</if>
+            <if test="scheduleMm != null">SCHEDULE_MM = #{scheduleMm},</if>
+            <if test="scheduleHh != null">SCHEDULE_HH = #{scheduleHh},</if>
+            <if test="scheduleDay != null">SCHEDULE_DAY = #{scheduleDay},</if>
+            <if test="scheduleMonth != null">SCHEDULE_MONTH = #{scheduleMonth},</if>
+            <if test="scheduleDayweek != null">SCHEDULE_DAYWEEK = #{scheduleDayweek},</if>
+            <if test="scheduleYear != null">SCHEDULE_YEAR = #{scheduleYear},</if>
+            <if test="useYn != null">USE_YN = #{useYn},</if>
+            <if test="nextExecDt != null">NEXT_EXEC_DT = #{nextExecDt},</if>
+            <if test="createDt != null">CREATE_DT = #{createDt},</if>
+            <if test="createUserKey != null">CREATE_USER_KEY = #{createUserKey},</if>
+            <if test="updateUserKey != null">UPDATE_USER_KEY = #{updateUserKey},</if>
+            UPDATE_DT = NOW()
+        WHERE SCHEDULE_ID = #{scheduleId}
+    </update>
+</mapper>

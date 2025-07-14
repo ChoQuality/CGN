@@ -1,0 +1,47 @@
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<!--/*@thymesVar id="layoutService" type="com.gsbizple.wiz.common.service.view.LayoutService"*/-->
+<div class="header__breadcrumbs">
+    <div class="userMenu" data-function="toggle" id="isOpenStatusButton">
+        <div role="button" data-function="btn" class="userMenu__btn">
+<!--            <span id="userStatus" class="status is-gradient is-online"></span>-->
+            <span id="userStatus" class="status is-gradient"></span>
+            <div>
+                [[${layoutService.getLoginInfo().getUserName()}]] <span class="text-blue-600">[[${layoutService.getLoginInfo().getOrgName()}]]</span>
+            </div>
+            <i class="icon is-24 is-open-24"></i>
+        </div>
+
+        <div id="isUserMenu" data-function="list" class="userMenu__wrap" style="max-height: 0px;">
+            <div class="userMenu__list">
+                <div class="userMenu__inner p-5">
+                    <div class="userMenu__team" data-function="toggle" data-child="true" id="_headerPluralJobInfo">
+                        <div data-function="list" data-height="34">
+                            <div class="userMenu__inner">
+                                <ul id="_headerPluralJobList"> </ul>
+                            </div>
+                        </div>
+                        <button type="button" data-function="btn" class="btn has-icon"><i class="icon is-24 is-open-24"></i></button>
+                    </div>
+
+                    <ul id="userStatusChange">
+                        <li><button type="button" class="btn" data-value="LOGIN"><span class="status is-gradient is-online"></span>온라인</button></li>
+                        <li><button type="button" class="btn" data-value="AWAY"><span class="status is-gradient is-leftSeat"></span>자리비움</button></li>
+                        <li><button type="button" class="btn" data-value="LOGOFF"><span class="status is-gradient is-offline"></span>오프라인</button></li>
+                    </ul>
+                </div>
+
+                <div class="userMenu__inner bg-gray-100 p-5">
+                    <ul>
+                        <li id="adminLink"><a href="/admin/main" class="userMenu__item text-blue-500">관리자</a></li>
+                        <li><a href="/portlet/env/user" class="userMenu__item text-blue-500">환경설정</a></li>
+                        <li><a href="/login/logout" class="userMenu__item">로그아웃</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="javascript:void(0);" class="btn is-icon" data-function="modal" data-target="#orgModal"><i class="icon is-42 is-group-42"></i></a>
+</div>

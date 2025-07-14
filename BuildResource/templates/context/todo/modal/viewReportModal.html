@@ -1,0 +1,98 @@
+<div id="viewReportModal" class="modal is-xlarge" style="opacity: 0; display: none; visibility: hidden;">
+    <div class="modal__inner">
+        <div class="modal__header">
+            <div class="top">
+                <h2 class="title">보고서 상세보기</h2>
+                <button type="button" class="btn has-icon" id="closeBtn"><i class="icon is-30 is-close-30"></i><span class="visually-hidden">닫기</span></button>
+            </div>
+        </div>
+        <div class="modal__contents">
+            <div class="inner">
+                <div>
+                    <table class="formTable">
+                        <colgroup><col style="width: 14rem;"><col style="width: auto;"><col style="width: 14rem;"><col style="width: 26rem;"></colgroup>
+                        <tbody>
+                            <tr>
+                                <th><div class="label"><span>보고서명</span></div></th>
+                                <td><div class="formTable__item" id="reportTitle"></div></td>
+                                <th><div class="label"><span>소속부서</span></div></th>
+                                <td><div class="formTable__item" id="orgNm"></div></td>
+                            </tr>
+                            <tr>
+                                <th><div class="label is-required"><span>업무기간</span></div></th>
+                                <td colspan="3"><div class="formTable__item" id="thisWorkDt"></div></td>
+                            </tr>
+                            <tr>
+                                <th><div class="label"><span>작성자</span></div></th>
+                                <td><div class="formTable__item" id="userNm"></div></td>
+                                <th><div class="label"><span>작성일시</span></div></th>
+                                <td><div class="formTable__item" id="writeDt"></div></td><!-- 형식 : 2025.02.18 11:32 -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <h3 class="title">내용</h3>
+                    <table class="formTable is-line mt-12">
+                        <colgroup><col style="width: 14rem;"><col style="width: calc(50% - 14rem);"><col style="width: 14rem;"><col style="width: calc(50% - 14rem);"></colgroup>
+                        <thead>
+                            <tr>
+                                <th colspan="2">
+                                    <div class="formTable__item text-blue-600" id="thisWeekPeriod"></div>
+                                </th>
+                                <th colspan="2">
+                                    <div class="formTable__item text-blue-600" id="nextWeekPeriod"></div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="is-baseline">
+                                    <span class="label" id="thisWeekText"></span>
+                                </th>
+                                <td class="p-5">
+                                    <div class="formTable__item">
+                                        <div class="formControl">
+                                            <textarea class="form__textarea is-noneBorder bg-white-100 has-value" style="height: 21.3rem;" readonly="" id="thisWeekConts"></textarea>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <th class="is-baseline">
+                                    <span class="label" id="nextWeekText"></span>
+                                </th>
+                                <td class="p-5">
+                                    <div class="formTable__item">
+                                        <div class="formControl">
+                                            <textarea class="form__textarea is-noneBorder bg-white-100 has-value" style="height: 21.3rem;" readonly="" id="nextWeekConts"></textarea>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-30">
+                    <div class="d-flex justify-content-between align-items-end">
+                        <h3 class="title">기타</h3>
+<!--                        <div class="formCount"><span>32</span>/500</div>-->
+                    </div>
+                    <div class="formControl divider pt-10 mt-10" style="max-height: 72px;">
+                        <textarea class="form__textarea bg-white-100 has-value" readonly="" id="reportEtcConts"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <div class="btnGroup gap-10">
+                <button type="button" class="btn is-secondary" id="closeBtn2">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal__mask"></div>
+<!--    <div class="modal__mask" data-function="modalClose"></div>-->
+</div>
